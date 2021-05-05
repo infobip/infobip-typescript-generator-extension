@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.*;
 
-public class BasicTypeScriptFileGenerator extends TypeScriptFileGenerator {
+public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
-    public BasicTypeScriptFileGenerator(Path basePath) {
+    public SimpleTypeScriptFileGenerator(Path basePath) {
         super(basePath);
     }
 

@@ -1,4 +1,4 @@
-package com.infobip.typescript.showcase;
+package com.infobip.typescript.showcase.hierarchy;
 
 import org.junit.jupiter.api.Test;
 

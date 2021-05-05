@@ -1,8 +1,8 @@
 package com.infobip.typescript.showcase;
 
 import com.infobip.typescript.GenerateTypescript;
-import com.infobip.typescript.showcase.simple.BasicTypeScriptFileGenerator;
+import com.infobip.typescript.showcase.simple.SimpleTypeScriptFileGenerator;
 
-@GenerateTypescript(generator = BasicTypeScriptFileGenerator.class)
+@GenerateTypescript(generator = SimpleTypeScriptFileGenerator.class)
 public class BasicTypeScriptFileGeneratorConfiguration {
 }

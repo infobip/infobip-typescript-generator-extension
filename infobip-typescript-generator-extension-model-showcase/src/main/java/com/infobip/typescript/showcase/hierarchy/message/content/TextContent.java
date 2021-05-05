@@ -1,4 +1,4 @@
-package com.infobip.typescript.showcase.hierarchy.content;
+package com.infobip.typescript.showcase.hierarchy.message.content;
 
 import lombok.Value;
 

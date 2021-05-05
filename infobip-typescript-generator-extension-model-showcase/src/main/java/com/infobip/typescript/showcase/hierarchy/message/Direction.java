@@ -1,4 +1,4 @@
-package com.infobip.typescript.showcase.hierarchy;
+package com.infobip.typescript.showcase.hierarchy.message;
 
 import com.infobip.jackson.TypeProvider;
 import lombok.AllArgsConstructor;

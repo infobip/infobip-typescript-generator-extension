@@ -240,7 +240,71 @@ export class OutboundSmsMessage implements OutboundMessage {
 
 ## <a name="AnnotationProcessor"></a> Annotation processor
 
+Instead of a Maven Plugin annotation processor is available with one big caveat: model classes and generator 
+configuration have to be compiled before annotation processor is run. 
+In practice this means that they have to be in separate modules.
 
+Most, if not all, options available to TypeScript Generator Maven Plugin are also available with this approach.
+
+Setup:
+1. In Maven module where Java model is defined add the following dependency:
+   ```xml
+   <dependency>
+      <groupId>com.infobip</groupId>
+      <artifactId>infobip-typescript-generator-extension-api</artifactId>
+      <version>${infobip-typescript-generator-extension.version}</version>
+   </dependency>
+   ```
+1. Configure the generator by extending TypeScriptFileGenerator:
+
+   ```java
+   public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
+   
+       public SimpleTypeScriptFileGenerator(Path basePath) {
+           super(basePath);
+       }
+   
+       @Override
+       public Input getInput() {
+           return Input.from(Foo.class);
+       }
+   
+       @Override
+       public Path outputFilePath(Path basePath) {
+           Path lib = basePath.getParent().getParent().resolve("dist");
+   
+           try {
+               Files.createDirectories(lib);
+           } catch (IOException e) {
+               throw new UncheckedIOException(e);
+           }
+   
+           return lib.resolve("Simple.ts");
+       }
+   }
+   ```
+   
+1. Define a separate module where annotation processing will occur (this module depends on model module) 
+   with following dependency:
+   ```xml
+   <dependency>
+      <groupId>com.infobip</groupId>
+      <artifactId>infobip-typescript-generator-extension-api</artifactId>
+      <version>${infobip-typescript-generator-extension.version}</version>
+   </dependency>
+   ```
+1. Add the annotation configuration class (this is only used to trigger the annotation processing with annotation):
+   ```java
+   @GenerateTypescript(generator = SimpleTypeScriptFileGenerator.class)
+   public class BasicTypeScriptFileGeneratorConfiguration {
+   }
+   ```
+   
+For more complex examples look at 
+[infobip-typescript-generator-extension-model-showcase](infobip-typescript-generator-extension-model-showcase) and at
+[infobip-typescript-generator-extension-annotation-processor-showcase](infobip-typescript-generator-extension-annotation-processor-showcase).
+Generated typescript can be seen in [dist folder](infobip-typescript-generator-extension-annotation-processor-showcase/dist).
+In production you'd probably add dist to .gitignore, here it's not mainly to be used a an showcase of how the end result looks like.
 
 ## <a name="Contributing"></a> Contributing
 

@@ -296,7 +296,7 @@ Setup:
 1. Add the annotation configuration class (this is only used to trigger the annotation processing with annotation):
    ```java
    @GenerateTypescript(generator = SimpleTypeScriptFileGenerator.class)
-   public class BasicTypeScriptFileGeneratorConfiguration {
+   public class SimpleTypeScriptFileGeneratorConfiguration {
    }
    ```
    

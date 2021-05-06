@@ -4,5 +4,5 @@ import com.infobip.typescript.GenerateTypescript;
 import com.infobip.typescript.showcase.simple.SimpleTypeScriptFileGenerator;
 
 @GenerateTypescript(generator = SimpleTypeScriptFileGenerator.class)
-public class BasicTypeScriptFileGeneratorConfiguration {
+public class SimpleTypeScriptFileGeneratorConfiguration {
 }

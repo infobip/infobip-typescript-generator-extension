@@ -47,6 +47,7 @@ public abstract class TypeScriptFileGenerator {
         Files.write(filePath, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
         System.out.println(4);
         writeCommonValidationMessagesFile(code, filePath);
+        System.out.println(5);
     }
 
     protected void writeCommonValidationMessagesFile(String code, Path filePath) throws IOException {

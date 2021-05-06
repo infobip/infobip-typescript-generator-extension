@@ -55,6 +55,8 @@ export class Foo {
 
 [class-transformer](https://github.com/typestack/class-transformer) together with [Infobip Jackson Extension](https://github.com/infobip/infobip-jackson-extension) is used to handle hierarchies.
 
+Example for a hierarchy is a multi level hierarchy for inbound and outbound messages.
+
 Input:
 
 ```java

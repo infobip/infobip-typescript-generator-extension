@@ -1,0 +1,21 @@
+{
+  "name": "infobip-typescript-generator-extension-annotation-processor-showcase",
+  "version": "1.0.0-SNAPSHOT",
+  "description": "infobip-typescript-generator-extension-annotation-processor-showcase",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/infobip/infobip-typescript-generator-extension"
+  },
+  "devDependencies": {
+    "typescript": "^3.9.9"
+  },
+  "dependencies": {
+    "class-transformer": "^0.3.1",
+    "class-validator": "^0.12.2"
+  },
+  "scripts": {
+    "build": "tsc"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts"
+}

@@ -43,27 +43,27 @@ public abstract class TypeScriptFileGenerator {
 
     protected void writeFiles(String code, Path filePath) throws IOException {
 
-        System.out.println(3);
         Files.write(filePath, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
-        System.out.println(4);
         writeCommonValidationMessagesFile(code, filePath);
-        System.out.println(5);
     }
 
     protected void writeCommonValidationMessagesFile(String code, Path filePath) throws IOException {
         URI commonValidationMessagesURI;
+        System.out.println(1);
         try {
             commonValidationMessagesURI = requireNonNull(
                     getClass().getClassLoader().getResource(COMMON_VALIDATION_MESSAGES_FILE_NAME)).toURI();
         } catch (URISyntaxException e) {
             throw new IllegalStateException(e);
         }
+        System.out.println(2);
 
         if (code.contains(COMMON_VALIDATION_MESSAGES)) {
             Files.copy(Paths.get(commonValidationMessagesURI),
                        filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
                        StandardCopyOption.REPLACE_EXISTING);
         }
+        System.out.println(3);
     }
 
     protected String generateTypeScript(OrderedTypescriptGenerator generator,

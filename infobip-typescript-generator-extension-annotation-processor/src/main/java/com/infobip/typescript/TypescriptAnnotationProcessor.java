@@ -81,11 +81,9 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
 
     private FileObject getResource(TypeElement element) {
         Filer filer = processingEnv.getFiler();
-        System.out.println(1);
         try {
             return filer.getResource(StandardLocation.CLASS_OUTPUT, "", element.getQualifiedName());
         } catch (IOException e) {
-            System.out.println(2);
             throw new UncheckedIOException(e);
         }
     }

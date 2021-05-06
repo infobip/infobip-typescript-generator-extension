@@ -41,14 +41,14 @@ class HierarchyTypeScriptFileGeneratorTest {
                                "}\n" +
                                "\n" +
                                "export interface Message {\n" +
-                               "    channel: Channel;\n" +
                                "    direction: Direction;\n" +
+                               "    channel: Channel;\n" +
                                "}\n" +
                                "\n" +
                                "export interface OutboundMessage extends Message {\n" +
                                "}\n" +
                                "\n" +
-                               "export interface CommonContent extends SimpleJsonHierarchy<CommonContentType>, Content<CommonContentType> {\n" +
+                               "export interface CommonContent extends Content<CommonContentType> {\n" +
                                "    type: CommonContentType;\n" +
                                "}\n" +
                                "\n" +
@@ -66,13 +66,9 @@ class HierarchyTypeScriptFileGeneratorTest {
                                "    text: string;\n" +
                                "}\n" +
                                "\n" +
-                               "export interface SimpleJsonHierarchy<E> {\n" +
-                               "    type: E;\n" +
-                               "}\n" +
-                               "\n" +
                                "export class InboundSmsMessage implements InboundMessage {\n" +
-                               "    readonly channel: Channel = Channel.SMS;\n" +
                                "    direction: Direction;\n" +
+                               "    readonly channel: Channel = Channel.SMS;\n" +
                                "    @Type(() => Object, {\n" +
                                "        discriminator: {\n" +
                                "            property: 'type', subTypes: [\n" +
@@ -84,8 +80,8 @@ class HierarchyTypeScriptFileGeneratorTest {
                                "}\n" +
                                "\n" +
                                "export class OutboundSmsMessage implements OutboundMessage {\n" +
-                               "    readonly channel: Channel = Channel.SMS;\n" +
                                "    direction: Direction;\n" +
+                               "    readonly channel: Channel = Channel.SMS;\n" +
                                "    @Type(() => Object, {\n" +
                                "        discriminator: {\n" +
                                "            property: 'type', subTypes: [\n" +

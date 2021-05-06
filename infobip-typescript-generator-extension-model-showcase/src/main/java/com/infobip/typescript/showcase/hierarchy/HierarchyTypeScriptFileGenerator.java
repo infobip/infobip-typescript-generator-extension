@@ -28,7 +28,8 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
     @Override
     public Settings customizeSettings(Settings settings) {
         settings.setExcludeFilter(Collections.emptyList(),
-                                  Arrays.asList("**Resolver",
+                                  Arrays.asList("com.infobip.jackson.**",
+                                                "**Resolver",
                                                 "**Visitor",
                                                 "**JsonDeserializer"));
         return settings;

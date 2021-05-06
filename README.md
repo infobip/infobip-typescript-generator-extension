@@ -303,8 +303,12 @@ Setup:
 For more complex examples look at 
 [infobip-typescript-generator-extension-model-showcase](infobip-typescript-generator-extension-model-showcase) and at
 [infobip-typescript-generator-extension-annotation-processor-showcase](infobip-typescript-generator-extension-annotation-processor-showcase).
+
 Generated typescript can be seen in [dist folder](infobip-typescript-generator-extension-annotation-processor-showcase/dist).
 In production you'd probably add dist to .gitignore, here it's not mainly to be used a an showcase of how the end result looks like.
+
+Since there's no maven plugin it's possible to run TypeScript Generator with multiple different configurations in same project!
+Aforementioned showcase folders use this to test and showcase different parts of functionality.
 
 ## <a name="Contributing"></a> Contributing
 

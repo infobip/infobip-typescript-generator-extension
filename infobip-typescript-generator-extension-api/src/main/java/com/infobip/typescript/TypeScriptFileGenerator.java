@@ -45,10 +45,10 @@ public abstract class TypeScriptFileGenerator {
 
         Files.write(filePath, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
 
-        writeValidationFile(code, filePath);
+        writeCommonValidationMessagesFile(code, filePath);
     }
 
-    protected void writeValidationFile(String code, Path filePath) throws IOException {
+    protected void writeCommonValidationMessagesFile(String code, Path filePath) throws IOException {
         URI commonValidationMessagesURI;
         try {
             commonValidationMessagesURI = requireNonNull(

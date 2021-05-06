@@ -39,15 +39,18 @@ public class Foo {
 
 Result:
 ```typescript
+/* tslint:disable */
+/* eslint-disable */
 import { IsDefined, IsNotEmpty, MinLength, ValidateNested, MaxLength } from 'class-validator';
+import { CommonValidationMessages } from './CommonValidationMessages';
 
 export class Foo {
-    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
-    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
-    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
-    @IsDefined({ message: CommonValidationMessages.IsDefined })
-    @ValidateNested()
-    bar: string;
+   @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
+   @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
+   @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
+   @IsDefined({ message: CommonValidationMessages.IsDefined })
+   @ValidateNested()
+   bar: string;
 }
 ```
 
@@ -160,13 +163,17 @@ class OutboundSmsMessage implements OutboundMessage {
 ```
 
 Result:
+
 ```typescript
+/* tslint:disable */
+/* eslint-disable */
 import 'reflect-metadata';
 import { Type } from 'class-transformer';
 import { IsDefined, IsNotEmpty } from 'class-validator';
+import { CommonValidationMessages } from './CommonValidationMessages';
 
 export enum Channel {
-    SMS = 'SMS',
+   SMS = 'SMS',
 }
 
 export enum Direction {
@@ -189,8 +196,8 @@ export interface Message {
 export interface OutboundMessage extends Message {
 }
 
-export interface CommonContent extends SimpleJsonHierarchy<CommonContentType>, Content<CommonContentType> {
-    type: CommonContentType;
+export interface CommonContent extends Content<CommonContentType> {
+   type: CommonContentType;
 }
 
 export interface Content<T> {
@@ -205,10 +212,6 @@ export class TextContent implements CommonContent {
     @IsDefined({ message: CommonValidationMessages.IsDefined })
     @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
     text: string;
-}
-
-export interface SimpleJsonHierarchy<E> {
-    type: E;
 }
 
 export class InboundSmsMessage implements InboundMessage {

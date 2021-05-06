@@ -41,7 +41,14 @@ public abstract class TypeScriptFileGenerator {
         }
     }
 
-    private void writeFiles(String code, Path filePath) throws IOException {
+    protected void writeFiles(String code, Path filePath) throws IOException {
+
+        Files.write(filePath, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+
+        writeValidationFile(code, filePath);
+    }
+
+    protected void writeValidationFile(String code, Path filePath) throws IOException {
         URI commonValidationMessagesURI;
         try {
             commonValidationMessagesURI = requireNonNull(
@@ -50,8 +57,6 @@ public abstract class TypeScriptFileGenerator {
             throw new IllegalStateException(e);
         }
 
-        Files.write(filePath, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
-
         if (code.contains(COMMON_VALIDATION_MESSAGES)) {
             Files.copy(Paths.get(commonValidationMessagesURI),
                        filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
@@ -59,8 +64,8 @@ public abstract class TypeScriptFileGenerator {
         }
     }
 
-    private String generateTypeScript(OrderedTypescriptGenerator generator,
-                                      List<EmitterExtension> extensions) {
+    protected String generateTypeScript(OrderedTypescriptGenerator generator,
+                                        List<EmitterExtension> extensions) {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         String generatedCode = generator.generateTypeScript(getInput())
                                         .replaceAll("\\r", "")
@@ -69,8 +74,8 @@ public abstract class TypeScriptFileGenerator {
         return addMissingImports(generatedCode, extensions);
     }
 
-    private String addMissingImports(String generatedCode,
-                                     List<EmitterExtension> extensions) {
+    protected String addMissingImports(String generatedCode,
+                                       List<EmitterExtension> extensions) {
 
         String imports = extensions.stream()
                                    .filter(extension -> extension instanceof TypeScriptImportResolver)
@@ -87,14 +92,14 @@ public abstract class TypeScriptFileGenerator {
         return generatedCode;
     }
 
-    public List<EmitterExtension> createExtensions() {
+    protected List<EmitterExtension> createExtensions() {
         return Stream.of(new JsonTypeExtension(),
                          new ClassTransformerDecoratorExtension(),
                          new ClassValidatorDecoratorExtension("validations"))
                      .collect(Collectors.toList());
     }
 
-    public OrderedTypescriptGenerator createGenerator(List<EmitterExtension> extensions) {
+    protected OrderedTypescriptGenerator createGenerator(List<EmitterExtension> extensions) {
         Settings settings = new Settings();
         settings.outputKind = TypeScriptOutputKind.module;
         settings.jsonLibrary = JsonLibrary.jackson2;
@@ -110,15 +115,15 @@ public abstract class TypeScriptFileGenerator {
         return new OrderedTypescriptGenerator(generator);
     }
 
-    public Settings customizeSettings(Settings settings) {
+    protected Settings customizeSettings(Settings settings) {
         return settings;
     }
 
-    public Path createFilePath() {
+    protected Path createFilePath() {
         return outputFilePath(basePath);
     }
 
-    public abstract Input getInput();
+    protected abstract Input getInput();
 
-    public abstract Path outputFilePath(Path basePath);
+    protected abstract Path outputFilePath(Path basePath);
 }

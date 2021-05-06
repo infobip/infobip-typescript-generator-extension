@@ -4,6 +4,7 @@ import com.infobip.typescript.TypeScriptImportResolver;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
 import cz.habarta.typescript.generator.emitter.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -12,6 +13,8 @@ import java.util.stream.Stream;
 
 public class ClassValidatorDecoratorExtension extends Extension implements TypeScriptImportResolver {
 
+    public static final String COMMON_VALIDATION_MESSAGES = "CommonValidationMessages";
+    public static final String COMMON_VALIDATION_MESSAGES_FILE_NAME = COMMON_VALIDATION_MESSAGES + ".ts";
     private static final Set<String> DEFAULT_VALIDATIONS;
 
     static {
@@ -34,7 +37,8 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     }
 
     public ClassValidatorDecoratorExtension(String customMessageSource) {
-        this.converter = new CompositeBeanValidationToTsDecoratorConverter(new ValidationMessageReferenceResolver(customMessageSource));
+        this.converter = new CompositeBeanValidationToTsDecoratorConverter(
+                new ValidationMessageReferenceResolver(customMessageSource));
     }
 
     @Override
@@ -62,11 +66,22 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
                                                     .map(validation -> validation.substring(1, validation.length() - 1))
                                                     .collect(Collectors.joining(", "));
         if (!usedValidations.isEmpty()) {
-            String validationImport = "import { " + usedValidations + " } from 'class-validator';";
-            return Collections.singletonList(validationImport);
+            return resolve(typeScript, usedValidations);
         }
 
         return Collections.emptyList();
+    }
+
+    @NotNull
+    private List<String> resolve(String typeScript, String usedValidations) {
+        String validationImport = "import { " + usedValidations + " } from 'class-validator';";
+
+        if (typeScript.contains(COMMON_VALIDATION_MESSAGES)) {
+            String commonValidationMessagesImport = "import { CommonValidationMessages } from './CommonValidationMessages';";
+            return Arrays.asList(validationImport, commonValidationMessagesImport);
+        }
+
+        return Collections.singletonList(validationImport);
     }
 
     private TsBeanModel decorateClass(TsBeanModel bean) {

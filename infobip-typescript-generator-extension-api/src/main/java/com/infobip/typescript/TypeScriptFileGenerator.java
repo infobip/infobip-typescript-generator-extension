@@ -8,12 +8,17 @@ import cz.habarta.typescript.generator.emitter.EmitterExtension;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.infobip.typescript.validation.ClassValidatorDecoratorExtension.COMMON_VALIDATION_MESSAGES;
+import static com.infobip.typescript.validation.ClassValidatorDecoratorExtension.COMMON_VALIDATION_MESSAGES_FILE_NAME;
+import static java.util.Objects.requireNonNull;
 
 public abstract class TypeScriptFileGenerator {
 
@@ -27,12 +32,30 @@ public abstract class TypeScriptFileGenerator {
         List<EmitterExtension> extensions = createExtensions();
         OrderedTypescriptGenerator generator = createGenerator(extensions);
         String code = generateTypeScript(generator, extensions);
-        Path path = createFilePath();
+        Path filePath = createFilePath();
 
         try {
-            Files.write(path, code.getBytes(StandardCharsets.UTF_8));
+            writeFiles(code, filePath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
+        }
+    }
+
+    private void writeFiles(String code, Path filePath) throws IOException {
+        URI commonValidationMessagesURI;
+        try {
+            commonValidationMessagesURI = requireNonNull(
+                    getClass().getClassLoader().getResource(COMMON_VALIDATION_MESSAGES_FILE_NAME)).toURI();
+        } catch (URISyntaxException e) {
+            throw new IllegalStateException(e);
+        }
+
+        Files.write(filePath, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+
+        if (code.contains(COMMON_VALIDATION_MESSAGES)) {
+            Files.copy(Paths.get(commonValidationMessagesURI),
+                       filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
+                       StandardCopyOption.REPLACE_EXISTING);
         }
     }
 

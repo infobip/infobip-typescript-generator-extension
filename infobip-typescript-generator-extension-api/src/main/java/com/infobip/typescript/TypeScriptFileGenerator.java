@@ -41,14 +41,22 @@ public abstract class TypeScriptFileGenerator {
 
     protected void writeFiles(String code, Path filePath) throws IOException {
 
+        writeGeneratedTypeScriptFile(code, filePath);
+        writeCommonValidationMessagesTypeScriptFile(code, filePath);
+    }
+
+    protected void writeGeneratedTypeScriptFile(String code, Path filePath) {
         write(filePath, code);
+    }
+
+    protected void writeCommonValidationMessagesTypeScriptFile(String code, Path filePath) {
         if (code.contains(COMMON_VALIDATION_MESSAGES_CLASS_NAME)) {
             write(filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
                   COMMON_VALIDATION_MESSAGES_SOURCE_CODE);
         }
     }
 
-    private void write(Path path, String code) {
+    protected void write(Path path, String code) {
         try {
             Files.write(path, code.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {

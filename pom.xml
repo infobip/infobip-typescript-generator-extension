@@ -194,7 +194,7 @@
 		<repository>
 			<id>ossrh</id>
 			<name>SonatypeReleases</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 </project>

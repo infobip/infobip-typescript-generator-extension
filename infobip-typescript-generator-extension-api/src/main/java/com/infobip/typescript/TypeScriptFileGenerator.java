@@ -40,12 +40,10 @@ public abstract class TypeScriptFileGenerator {
     protected void writeFiles(String code, Path filePath) throws IOException {
 
         write(filePath, code);
-        System.out.println(1);
         if (code.contains(COMMON_VALIDATION_MESSAGES_CLASS_NAME)) {
             write(filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
                   COMMON_VALIDATION_MESSAGES_SOURCE_CODE);
         }
-        System.out.println(2);
     }
 
     private void write(Path path, String code) {

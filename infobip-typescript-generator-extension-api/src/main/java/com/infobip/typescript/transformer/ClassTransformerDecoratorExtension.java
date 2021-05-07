@@ -31,8 +31,9 @@ public class ClassTransformerDecoratorExtension extends Extension {
 
     @Override
     public List<TransformerDefinition> getTransformers() {
-        return Collections.singletonList(new TransformerDefinition(ModelCompiler.TransformationPhase.AfterDeclarationSorting,
-                                                 this::decorateClass));
+        return Collections.singletonList(
+                new TransformerDefinition(ModelCompiler.TransformationPhase.AfterDeclarationSorting,
+                                          (ModelTransformer) this::decorateClass));
     }
 
     private TsModel decorateClass(SymbolTable symbolTable, TsModel model) {
@@ -44,7 +45,8 @@ public class ClassTransformerDecoratorExtension extends Extension {
         Map<Class<?>, TsBeanModel> originToModel = newBeans.stream()
                                                            .collect(Collectors.toMap(TsDeclarationModel::getOrigin,
                                                                                      Function.identity()));
-        List<TsBeanModel> sorted = new TsBeanModelTransformerDecoratorSorter(originToModel).sort(parentToChildren, newBeans);
+        List<TsBeanModel> sorted = new TsBeanModelTransformerDecoratorSorter(originToModel).sort(parentToChildren,
+                                                                                                 newBeans);
         return model.withBeans(sorted);
     }
 
@@ -84,9 +86,10 @@ public class ClassTransformerDecoratorExtension extends Extension {
                 new TsType.ReferenceType(new Symbol("Object"))));
         TsStringLiteral property = new TsStringLiteral(resolver.getTypePropertyName());
         TsArrayLiteral subTypes = new TsArrayLiteral(getSubtypes(symbolTable, model, resolver));
-        DiscriminatorValueTsObjectLiteral discriminatorValue = new DiscriminatorValueTsObjectLiteral(new TsPropertyDefinition("property", property),
-                                                                                                     new TsPropertyDefinition("subTypes",
-                                                                                                subTypes));
+        DiscriminatorValueTsObjectLiteral discriminatorValue = new DiscriminatorValueTsObjectLiteral(
+                new TsPropertyDefinition("property", property),
+                new TsPropertyDefinition("subTypes",
+                                         subTypes));
         DiscriminatorTsObjectLiteral discriminator = new DiscriminatorTsObjectLiteral(
                 new TsPropertyDefinition("discriminator", discriminatorValue));
         List<TsExpression> arguments = Stream.of(emptyToObject, discriminator).collect(Collectors.toList());

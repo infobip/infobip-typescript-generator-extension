@@ -3,6 +3,7 @@ package com.infobip.typescript.validation;
 import com.infobip.typescript.TypeScriptImportResolver;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
+import cz.habarta.typescript.generator.compiler.ModelTransformer;
 import cz.habarta.typescript.generator.emitter.*;
 import org.jetbrains.annotations.NotNull;
 
@@ -14,7 +15,6 @@ import java.util.stream.Stream;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
 
 public class ClassValidatorDecoratorExtension extends Extension implements TypeScriptImportResolver {
-
 
     private static final Set<String> DEFAULT_VALIDATIONS;
 
@@ -53,10 +53,11 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     public List<TransformerDefinition> getTransformers() {
         return Collections.singletonList(
                 new TransformerDefinition(ModelCompiler.TransformationPhase.BeforeEnums,
-                                          (symbolTable, model) -> model.withBeans(model.getBeans().stream()
-                                                                                       .map(this::decorateClass)
-                                                                                       .collect(Collectors.toList())
-                                          ))
+                                          (ModelTransformer) (symbolTable, model) ->
+                                                  model.withBeans(model.getBeans().stream()
+                                                                       .map(this::decorateClass)
+                                                                       .collect(Collectors.toList())
+                                                  ))
         );
     }
 

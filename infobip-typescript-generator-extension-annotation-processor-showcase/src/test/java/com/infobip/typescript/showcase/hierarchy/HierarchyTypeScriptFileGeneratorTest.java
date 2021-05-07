@@ -72,10 +72,7 @@ class HierarchyTypeScriptFileGeneratorTest {
                               "        }\n" +
                               "    })\n" +
                               "    content: CommonContent;")
-                    .endsWith("export class OutboundSmsMessage implements OutboundMessage {\n" +
-                              "    readonly channel: Channel = Channel.SMS;\n" +
-                              "    direction: Direction;\n" +
-                              "    @Type(() => Object, {\n" +
+                    .endsWith("@Type(() => Object, {\n" +
                               "        discriminator: {\n" +
                               "            property: 'type', subTypes: [\n" +
                               "                { value: TextContent, name: CommonContentType.TEXT }\n" +

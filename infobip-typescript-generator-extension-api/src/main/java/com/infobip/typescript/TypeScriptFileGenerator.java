@@ -9,7 +9,8 @@ import cz.habarta.typescript.generator.emitter.EmitterExtension;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -31,6 +32,7 @@ public abstract class TypeScriptFileGenerator {
         Path filePath = createFilePath();
 
         try {
+            Files.createDirectories(filePath.getParent());
             writeFiles(code, filePath);
         } catch (IOException e) {
             throw new UncheckedIOException(e);
@@ -48,7 +50,7 @@ public abstract class TypeScriptFileGenerator {
 
     private void write(Path path, String code) {
         try {
-            Files.write(path, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+            Files.write(path, code.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

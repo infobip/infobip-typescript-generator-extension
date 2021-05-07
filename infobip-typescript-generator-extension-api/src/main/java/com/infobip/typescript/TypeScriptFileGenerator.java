@@ -6,10 +6,7 @@ import com.infobip.typescript.validation.ClassValidatorDecoratorExtension;
 import cz.habarta.typescript.generator.*;
 import cz.habarta.typescript.generator.emitter.EmitterExtension;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
@@ -18,7 +15,6 @@ import java.util.stream.Stream;
 
 import static com.infobip.typescript.validation.ClassValidatorDecoratorExtension.COMMON_VALIDATION_MESSAGES;
 import static com.infobip.typescript.validation.ClassValidatorDecoratorExtension.COMMON_VALIDATION_MESSAGES_FILE_NAME;
-import static java.util.Objects.requireNonNull;
 
 public abstract class TypeScriptFileGenerator {
 
@@ -48,18 +44,14 @@ public abstract class TypeScriptFileGenerator {
     }
 
     protected void writeCommonValidationMessagesFile(String code, Path filePath) throws IOException {
-        URI commonValidationMessagesURI;
         System.out.println(1);
-        try {
-            commonValidationMessagesURI = requireNonNull(
-                    getClass().getClassLoader().getResource(COMMON_VALIDATION_MESSAGES_FILE_NAME)).toURI();
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException(e);
-        }
-        System.out.println(2);
+        String commonValidationMessagesContent = getCommonValidationMessagesCode()
+                .orElseThrow(
+                        () -> new IllegalStateException("Resource not found: " + COMMON_VALIDATION_MESSAGES_FILE_NAME));
 
+        System.out.println(2);
         if (code.contains(COMMON_VALIDATION_MESSAGES)) {
-            Files.copy(Paths.get(commonValidationMessagesURI),
+            Files.copy(new ByteArrayInputStream(commonValidationMessagesContent.getBytes(StandardCharsets.UTF_8)),
                        filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
                        StandardCopyOption.REPLACE_EXISTING);
         }
@@ -128,4 +120,17 @@ public abstract class TypeScriptFileGenerator {
     protected abstract Input getInput();
 
     protected abstract Path outputFilePath(Path basePath);
+
+    protected Optional<String> getCommonValidationMessagesCode() throws IOException {
+        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream(COMMON_VALIDATION_MESSAGES_FILE_NAME)) {
+            if (inputStream == null) {
+                return Optional.empty();
+            }
+            try (InputStreamReader isr = new InputStreamReader(inputStream);
+                 BufferedReader reader = new BufferedReader(isr)) {
+                return Optional.of(reader.lines().collect(Collectors.joining(System.lineSeparator())));
+            }
+        }
+    }
 }

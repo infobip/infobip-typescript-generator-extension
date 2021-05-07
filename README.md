@@ -243,13 +243,15 @@ export class OutboundSmsMessage implements OutboundMessage {
 
 ## <a name="AnnotationProcessor"></a> Annotation processor
 
-Instead of a Maven Plugin annotation processor is available with one big caveat: model classes and generator 
-configuration have to be compiled before annotation processor is run. 
-In practice this means that they have to be in separate modules.
+Disclaimer: in order for annotation processor to work model classes and generator configuration have to be compiled
+before annotation processor is run. In practice this means that they have to be in separate modules.
 
-Most, if not all, options available to TypeScript Generator Maven Plugin are also available with this approach.
+Main advantage of this approach: easier extension, reusability and no requirement to run Maven to generate TypeScript!
+
+Most, if not all, options available to TypeScript Generator Maven Plugin are also available to the annotation processor.
 
 Setup:
+
 1. In Maven module where Java model is defined add the following dependency:
    ```xml
    <dependency>

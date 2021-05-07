@@ -11,10 +11,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
+
 public class ClassValidatorDecoratorExtension extends Extension implements TypeScriptImportResolver {
 
-    public static final String COMMON_VALIDATION_MESSAGES = "CommonValidationMessages";
-    public static final String COMMON_VALIDATION_MESSAGES_FILE_NAME = COMMON_VALIDATION_MESSAGES + ".ts";
+
     private static final Set<String> DEFAULT_VALIDATIONS;
 
     static {
@@ -76,7 +77,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     private List<String> resolve(String typeScript, String usedValidations) {
         String validationImport = "import { " + usedValidations + " } from 'class-validator';";
 
-        if (typeScript.contains(COMMON_VALIDATION_MESSAGES)) {
+        if (typeScript.contains(COMMON_VALIDATION_MESSAGES_CLASS_NAME)) {
             String commonValidationMessagesImport = "import { CommonValidationMessages } from './CommonValidationMessages';";
             return Arrays.asList(validationImport, commonValidationMessagesImport);
         }

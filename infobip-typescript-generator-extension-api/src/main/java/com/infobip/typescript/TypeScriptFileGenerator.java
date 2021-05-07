@@ -122,8 +122,7 @@ public abstract class TypeScriptFileGenerator {
     protected abstract Path outputFilePath(Path basePath);
 
     protected Optional<String> getCommonValidationMessagesCode() throws IOException {
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        try (InputStream inputStream = classLoader.getResourceAsStream(COMMON_VALIDATION_MESSAGES_FILE_NAME)) {
+        try (InputStream inputStream = getClass().getResourceAsStream(COMMON_VALIDATION_MESSAGES_FILE_NAME)) {
             if (inputStream == null) {
                 return Optional.empty();
             }

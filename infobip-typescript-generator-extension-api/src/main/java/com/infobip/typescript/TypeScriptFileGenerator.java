@@ -8,17 +8,13 @@ import cz.habarta.typescript.generator.emitter.EmitterExtension;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.infobip.typescript.validation.ClassValidatorDecoratorExtension.COMMON_VALIDATION_MESSAGES;
-import static com.infobip.typescript.validation.ClassValidatorDecoratorExtension.COMMON_VALIDATION_MESSAGES_FILE_NAME;
-import static java.util.Objects.requireNonNull;
+import static com.infobip.typescript.validation.CommonValidationMessages.*;
 
 public abstract class TypeScriptFileGenerator {
 
@@ -43,24 +39,18 @@ public abstract class TypeScriptFileGenerator {
 
     protected void writeFiles(String code, Path filePath) throws IOException {
 
-        Files.write(filePath, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
-
-        writeCommonValidationMessagesFile(code, filePath);
+        write(filePath, code);
+        if (code.contains(COMMON_VALIDATION_MESSAGES_CLASS_NAME)) {
+            write(filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
+                  COMMON_VALIDATION_MESSAGES_SOURCE_CODE);
+        }
     }
 
-    protected void writeCommonValidationMessagesFile(String code, Path filePath) throws IOException {
-        URI commonValidationMessagesURI;
+    private void write(Path path, String code) {
         try {
-            commonValidationMessagesURI = requireNonNull(
-                    getClass().getClassLoader().getResource(COMMON_VALIDATION_MESSAGES_FILE_NAME)).toURI();
-        } catch (URISyntaxException e) {
-            throw new IllegalStateException(e);
-        }
-
-        if (code.contains(COMMON_VALIDATION_MESSAGES)) {
-            Files.copy(Paths.get(commonValidationMessagesURI),
-                       filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
-                       StandardCopyOption.REPLACE_EXISTING);
+            Files.write(path, code.getBytes(StandardCharsets.UTF_8), StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 

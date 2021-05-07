@@ -1,7 +1,6 @@
 package com.infobip.typescript.showcase.simple;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.BDDMockito;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,6 +21,7 @@ class SimpleTypeScriptFileGeneratorTest {
         then(actual).isEqualTo("/* tslint:disable */\n" +
                                "/* eslint-disable */\n" +
                                "import { IsDefined, IsNotEmpty, MinLength, ValidateNested, MaxLength } from 'class-validator';\n" +
+                               "import { CommonValidationMessages } from './CommonValidationMessages';\n" +
                                "\n" +
                                "export class Foo {\n" +
                                "    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })\n" +

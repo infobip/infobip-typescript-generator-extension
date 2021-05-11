@@ -12,13 +12,21 @@ public class OrderedTypescriptGenerator {
 
     public String generateTypeScript(Input input) {
         String generated = generator.generateTypeScript(input);
-        int firstExportIndex = generated.indexOf("export") - 1;
-        int firstEnumIndex = generated.indexOf("export enum") - 1;
+        int indexOfExport = generated.indexOf("export");
 
-        if(firstEnumIndex < 0) {
+        if (indexOfExport < 1) {
             return generated;
         }
 
+        int firstExportIndex = indexOfExport - 1;
+
+        int indexOfExportEnum = generated.indexOf("export enum");
+
+        if (indexOfExportEnum < 1) {
+            return generated;
+        }
+
+        int firstEnumIndex = indexOfExportEnum - 1;
         String imports = generated.substring(0, firstExportIndex);
         String nonEnums = generated.substring(firstExportIndex, firstEnumIndex);
         String enums = generated.substring(firstEnumIndex);

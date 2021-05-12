@@ -67,10 +67,7 @@ public abstract class TypeScriptFileGenerator {
     protected String generateTypeScript(OrderedTypescriptGenerator generator,
                                         List<EmitterExtension> extensions) {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-        String generatedCode = generator.generateTypeScript(getInput())
-                                        .replaceAll("\\r", "")
-                                        .replaceAll("\\n$", "");
-
+        String generatedCode = generator.generateTypeScript(getInput());
         return addMissingImports(generatedCode, extensions);
     }
 

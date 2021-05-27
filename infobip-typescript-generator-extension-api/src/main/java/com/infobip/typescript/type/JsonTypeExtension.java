@@ -59,7 +59,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                                             List<TsBeanModel> beans,
                                                             Class<?> type) {
 
-        if (type.equals(SimpleJsonHierarchy.class)) {
+        if (type.equals(SimpleJsonHierarchy.class) || type.equals(PresentPropertyJsonHierarchy.class)) {
             return beans;
         }
 

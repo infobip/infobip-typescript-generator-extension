@@ -3,8 +3,7 @@ package com.infobip.typescript;
 import cz.habarta.typescript.generator.*;
 import cz.habarta.typescript.generator.emitter.EmitterExtension;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public abstract class TestBase {
 
@@ -24,7 +23,8 @@ public abstract class TestBase {
         givenSettings.outputKind = TypeScriptOutputKind.module;
         givenSettings.importDeclarations = importDeclarations;
         givenSettings.extensions.add(extension);
-        givenSettings.setExcludeFilter(Collections.emptyList(), Collections.singletonList("**SimpleJsonHierarchy"));
+        givenSettings.setExcludeFilter(Collections.emptyList(),
+                                       Arrays.asList("**SimpleJsonHierarchy", "**PresentPropertyJsonHierarchy"));
         this.generator = new OrderedTypescriptGenerator(new TypeScriptGenerator(givenSettings));
     }
 

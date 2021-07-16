@@ -1,11 +1,16 @@
 package com.infobip.typescript.showcase.simple;
 
+import com.infobip.typescript.CustomValidationSettings;
 import com.infobip.typescript.TypeScriptFileGenerator;
 import cz.habarta.typescript.generator.Input;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.nio.file.*;
+import java.lang.annotation.Annotation;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 
 public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
@@ -29,5 +34,10 @@ public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
         }
 
         return lib.resolve("Simple.ts");
+    }
+
+    @Override
+    protected CustomValidationSettings getCustomValidationSettings() {
+        return null;
     }
 }

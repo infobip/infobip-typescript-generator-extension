@@ -1,15 +1,18 @@
 package com.infobip.typescript.showcase.hierarchy;
 
+import com.infobip.typescript.CustomValidationSettings;
 import com.infobip.typescript.TypeScriptFileGenerator;
 import cz.habarta.typescript.generator.Input;
 import cz.habarta.typescript.generator.Settings;
+import io.github.classgraph.ClassGraph;
+import io.github.classgraph.ScanResult;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.*;
 
 public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
@@ -46,5 +49,14 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
         }
 
         return lib.resolve("Hierarchy.ts");
+    }
+
+    @Override
+    protected CustomValidationSettings getCustomValidationSettings() {
+        List<String> customValidationNamePatterns = Collections.singletonList(
+                "com.infobip.typescript.showcase.custom.validation.**");
+        List<String> customValidationPackages = Collections.singletonList(
+                "com.infobip.typescript.showcase.custom.validation");
+        return new CustomValidationSettings(customValidationNamePatterns, customValidationPackages);
     }
 }

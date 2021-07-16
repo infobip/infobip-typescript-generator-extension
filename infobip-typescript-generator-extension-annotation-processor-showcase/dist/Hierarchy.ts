@@ -72,3 +72,4 @@ export class OutboundSmsMessage implements OutboundMessage {
     })
     content: CommonContent;
 }
+

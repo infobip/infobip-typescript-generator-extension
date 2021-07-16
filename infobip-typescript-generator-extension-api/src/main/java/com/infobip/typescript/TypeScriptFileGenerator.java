@@ -1,5 +1,6 @@
 package com.infobip.typescript;
 
+import com.infobip.typescript.custom.validation.AnnotationExtractor;
 import com.infobip.typescript.transformer.ClassTransformerDecoratorExtension;
 import com.infobip.typescript.type.JsonTypeExtension;
 import com.infobip.typescript.validation.ClassValidatorDecoratorExtension;
@@ -15,18 +16,23 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.infobip.typescript.validation.CommonValidationMessages.*;
+import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
+import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_FILE_NAME;
+import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_SOURCE_CODE;
 
 public abstract class TypeScriptFileGenerator {
 
     private final Path basePath;
+    private final AnnotationExtractor annotationExtractor;
 
     protected TypeScriptFileGenerator(Path basePath) {
         this.basePath = basePath;
+        this.annotationExtractor = new AnnotationExtractor(getCustomValidationSettings());
     }
 
     public void generate() {
         List<EmitterExtension> extensions = createExtensions();
+        annotationExtractor.extract();
         OrderedTypescriptGenerator generator = createGenerator(extensions);
         String code = generateTypeScript(generator, extensions);
         Path filePath = createFilePath();
@@ -123,4 +129,6 @@ public abstract class TypeScriptFileGenerator {
     protected abstract Input getInput();
 
     protected abstract Path outputFilePath(Path basePath);
+
+    protected abstract CustomValidationSettings getCustomValidationSettings();
 }

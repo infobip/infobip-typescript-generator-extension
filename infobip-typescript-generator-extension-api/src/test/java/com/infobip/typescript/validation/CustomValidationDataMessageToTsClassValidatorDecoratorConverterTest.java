@@ -8,13 +8,14 @@ import org.junit.jupiter.api.Test;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
 class CustomValidationMessageToTsClassValidatorDecoratorConverterTest extends TestBase {
 
     public CustomValidationMessageToTsClassValidatorDecoratorConverterTest() {
-        super(new ClassValidatorDecoratorExtension("validations"),
+        super(new ClassValidatorDecoratorExtension("validations", Collections.emptyList()),
               Arrays.asList("import { CommonValidationMessages } from 'infobip-typescript-generator-common'",
                             "import { validations } from './i18n'",
                             "import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator'"));

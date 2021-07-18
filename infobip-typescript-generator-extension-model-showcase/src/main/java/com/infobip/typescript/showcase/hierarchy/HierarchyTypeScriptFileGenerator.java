@@ -4,14 +4,10 @@ import com.infobip.typescript.CustomValidationSettings;
 import com.infobip.typescript.TypeScriptFileGenerator;
 import cz.habarta.typescript.generator.Input;
 import cz.habarta.typescript.generator.Settings;
-import io.github.classgraph.ClassGraph;
-import io.github.classgraph.ScanResult;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.annotation.Annotation;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.*;
 
 public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
@@ -24,7 +20,7 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
     public Input getInput() {
         Input.Parameters parameters = new Input.Parameters();
         parameters.classNamePatterns = Collections.singletonList(
-                "com.infobip.typescript.showcase.hierarchy.message.**");
+                "com.infobip.typescript.showcase.custom.validation.**");
         return Input.from(parameters);
     }
 
@@ -32,6 +28,8 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
     public Settings customizeSettings(Settings settings) {
         settings.setExcludeFilter(Collections.emptyList(),
                                   Arrays.asList("com.infobip.jackson.**",
+                                                "**Validation",
+                                                "**Validator",
                                                 "**Resolver",
                                                 "**Visitor",
                                                 "**JsonDeserializer"));
@@ -57,6 +55,10 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
                 "com.infobip.typescript.showcase.custom.validation.**");
         List<String> customValidationPackages = Collections.singletonList(
                 "com.infobip.typescript.showcase.custom.validation");
-        return new CustomValidationSettings(customValidationNamePatterns, customValidationPackages);
+        // TODO this needs to exist on classpath as well
+        List<Path> customValidatorsPaths = Collections.singletonList(Paths.get("C:\\Users\\msertic\\IdeaProjects\\infobip-typescript-generator-extension\\infobip-typescript-generator-extension-model-showcase\\dist\\validators"));
+        return new CustomValidationSettings(customValidationNamePatterns,
+                                            customValidationPackages,
+                                            customValidatorsPaths);
     }
 }

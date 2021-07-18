@@ -11,6 +11,10 @@ public @interface SimpleCustomValidation {
 
     String message() default "must be valid element";
 
+    String field();
+
+    int number();
+
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};

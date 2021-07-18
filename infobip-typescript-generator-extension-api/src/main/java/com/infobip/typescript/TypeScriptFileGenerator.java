@@ -32,7 +32,6 @@ public abstract class TypeScriptFileGenerator {
 
     public void generate() {
         List<EmitterExtension> extensions = createExtensions();
-        annotationExtractor.extract();
         OrderedTypescriptGenerator generator = createGenerator(extensions);
         String code = generateTypeScript(generator, extensions);
         Path filePath = createFilePath();
@@ -49,6 +48,7 @@ public abstract class TypeScriptFileGenerator {
 
         writeGeneratedTypeScriptFile(code, filePath);
         writeCommonValidationMessagesTypeScriptFile(code, filePath);
+        writeCustomValidators(filePath);
     }
 
     protected void writeGeneratedTypeScriptFile(String code, Path filePath) {
@@ -59,6 +59,27 @@ public abstract class TypeScriptFileGenerator {
         if (code.contains(COMMON_VALIDATION_MESSAGES_CLASS_NAME)) {
             write(filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
                   COMMON_VALIDATION_MESSAGES_SOURCE_CODE);
+        }
+    }
+
+    protected void writeCustomValidators(Path filePath) {
+        // TODO cover case when everything already exists
+        //TODO fix copy problem
+        try {
+            Path basePath = Files.createDirectory(filePath.getParent().resolve("validators"));
+            for (Path source : getCustomValidationSettings().getCustomValidatorsPaths()) {
+                Files.walk(source).forEach(file -> copy(file, basePath.resolve(file.getFileName())));
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+    }
+
+    protected void copy(Path source, Path destination) {
+        try {
+            Files.copy(source, destination);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -98,7 +119,7 @@ public abstract class TypeScriptFileGenerator {
     protected List<EmitterExtension> createExtensions() {
         return Stream.of(new JsonTypeExtension(),
                          new ClassTransformerDecoratorExtension(),
-                         new ClassValidatorDecoratorExtension("validations"))
+                         new ClassValidatorDecoratorExtension("validations", annotationExtractor.extract()))
                      .collect(Collectors.toList());
     }
 

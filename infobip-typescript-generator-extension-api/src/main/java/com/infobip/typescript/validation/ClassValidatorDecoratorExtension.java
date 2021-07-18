@@ -1,6 +1,7 @@
 package com.infobip.typescript.validation;
 
 import com.infobip.typescript.TypeScriptImportResolver;
+import com.infobip.typescript.custom.validation.CustomValidationData;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
 import cz.habarta.typescript.generator.compiler.ModelTransformer;
@@ -31,15 +32,22 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
                                     .collect(Collectors.toSet());
     }
 
-    private final CompositeBeanValidationToTsDecoratorConverter converter;
+    private final ValidationToTsDecoratorConverterResolver resolver;
 
     public ClassValidatorDecoratorExtension() {
-        this(null);
+        this(null, new CustomValidationData(Collections.emptyMap(), Collections.emptyList()));
     }
 
-    public ClassValidatorDecoratorExtension(String customMessageSource) {
-        this.converter = new CompositeBeanValidationToTsDecoratorConverter(
-                new ValidationMessageReferenceResolver(customMessageSource));
+    public ClassValidatorDecoratorExtension(String customMessageSource, CustomValidationData customValidationData) {
+        //TODO extract this into resolver
+        ValidationMessageReferenceResolver validationMessageReferenceResolver = new ValidationMessageReferenceResolver(
+                customMessageSource);
+        CompositeBeanValidationToTsDecoratorConverter converter = new CompositeBeanValidationToTsDecoratorConverter(
+                validationMessageReferenceResolver);
+        CustomValidationToTsDecoratorConverter customValidationToTsDecoratorConverter = new CustomValidationToTsDecoratorConverter(
+                customValidationData, converter, validationMessageReferenceResolver);
+        this.resolver = new ValidationToTsDecoratorConverterResolver(converter,
+                                                                     customValidationToTsDecoratorConverter);
     }
 
     @Override
@@ -101,7 +109,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
 
     private List<TsDecorator> getDecorators(TsPropertyModel model, Field field) {
         Stream<TsDecorator> newDecorators = Arrays.stream(field.getAnnotations())
-                                                  .flatMap(annotation -> converter.convert(field, annotation));
+                                                  .flatMap(annotation -> resolver.getDecorators(annotation, field));
         return Stream.concat(model.getDecorators().stream(), newDecorators).collect(Collectors.toList());
     }
 

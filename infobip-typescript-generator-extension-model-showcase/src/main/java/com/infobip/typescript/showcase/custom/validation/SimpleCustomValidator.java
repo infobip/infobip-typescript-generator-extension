@@ -6,6 +6,15 @@ import java.util.Optional;
 
 public class SimpleCustomValidator implements SimpleConstraintValidator<SimpleCustomValidation, String> {
 
+    private String field;
+    private Integer number;
+
+    @Override
+    public void initialize(SimpleCustomValidation constraintAnnotation) {
+        this.field = constraintAnnotation.field();
+        this.number = constraintAnnotation.number();
+    }
+
     @Override
     public boolean isValid(String value) {
         return Optional.ofNullable(value)

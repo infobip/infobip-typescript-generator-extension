@@ -2,23 +2,24 @@ package com.infobip.typescript.custom.validation;
 
 import java.lang.annotation.Annotation;
 import java.util.List;
+import java.util.Map;
 
-public class CustomValidation {
+public class CustomValidationData {
 
-    private final Class<? extends Annotation> annotation;
-    private final List<Annotation> additionalAnnotations;
+    private final Map<Class<? extends Annotation>, CustomValidationAnnotation> customValidationAnnotations;
+    private final List<String> validatorsNames;
 
-    public CustomValidation(Class<? extends Annotation> annotation,
-                            List<Annotation> additionalAnnotations) {
-        this.annotation = annotation;
-        this.additionalAnnotations = additionalAnnotations;
+    public CustomValidationData(Map<Class<? extends Annotation>, CustomValidationAnnotation> customValidationAnnotations,
+                                List<String> validatorsNames) {
+        this.customValidationAnnotations = customValidationAnnotations;
+        this.validatorsNames = validatorsNames;
     }
 
-    public Class<? extends Annotation> getAnnotation() {
-        return annotation;
+    public Map<Class<? extends Annotation>, CustomValidationAnnotation> getCustomValidationAnnotations() {
+        return customValidationAnnotations;
     }
 
-    public List<Annotation> getAdditionalAnnotations() {
-        return additionalAnnotations;
+    public List<String> getValidatorsNames() {
+        return validatorsNames;
     }
 }

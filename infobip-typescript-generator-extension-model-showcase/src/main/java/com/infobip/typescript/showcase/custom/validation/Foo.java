@@ -9,7 +9,7 @@ import javax.validation.constraints.*;
 public class Foo {
 
     @Size(min = 1, max = 2)
-    @SimpleCustomValidation
+    @SimpleCustomValidation(field = "bla", number = 3)
     @NotEmpty
     @NotNull
     @Valid

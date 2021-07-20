@@ -12,11 +12,11 @@ public class AnnotationExtractor {
 
     private final ClassGraph classGraph;
 
-    public AnnotationExtractor(String... rootPackages) {
+    public AnnotationExtractor(String rootPackage) {
         this.classGraph = new ClassGraph().enableClassInfo()
                                           .enableAnnotationInfo()
                                           .enableMethodInfo()
-                                          .acceptPackages(rootPackages);
+                                          .acceptPackages(rootPackage);
     }
 
     public List<Class<? extends Annotation>> extract() {

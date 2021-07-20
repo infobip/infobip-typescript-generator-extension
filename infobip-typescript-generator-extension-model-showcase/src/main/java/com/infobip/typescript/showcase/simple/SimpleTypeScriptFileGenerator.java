@@ -9,7 +9,6 @@ import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
 
 public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
@@ -37,11 +36,6 @@ public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
-        return null;
-    }
-
-    @Override
-    protected List<String> getAnnotationPackages() {
-        return Collections.emptyList();
+        return new CustomValidationSettings("com.infobip.typescript.showcase.simple", Collections.emptyList());
     }
 }

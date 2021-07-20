@@ -5,24 +5,17 @@ import java.util.List;
 
 public class CustomValidationSettings {
 
-    private final List<String> customValidationNamePatterns;
-    private final List<String> customValidationNamePackages;
+    private final String rootPackage;
     private final List<Path> customValidatorsPaths;
 
-    public CustomValidationSettings(List<String> customValidationNamePatterns,
-                                    List<String> customValidationNamePackages,
+    public CustomValidationSettings(String rootPackage,
                                     List<Path> customValidatorsPaths) {
-        this.customValidationNamePatterns = customValidationNamePatterns;
-        this.customValidationNamePackages = customValidationNamePackages;
+        this.rootPackage = rootPackage;
         this.customValidatorsPaths = customValidatorsPaths;
     }
 
-    public List<String> getCustomValidationNamePatterns() {
-        return customValidationNamePatterns;
-    }
-
-    public List<String> getCustomValidationNamePackages() {
-        return customValidationNamePackages;
+    public String getRootPackage() {
+        return rootPackage;
     }
 
     public List<Path> getCustomValidatorsPaths() {

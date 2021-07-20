@@ -1,9 +1,9 @@
 import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
 
-export function SimpleCustomValidation(property: string, validationOptions?: ValidationOptions) {
+export function NestedValidation(property: string, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
         registerDecorator({
-            name: 'simpleCustomValidator',
+            name: 'nestedValidator',
             target: object.constructor,
             propertyName: propertyName,
             constraints: [property],

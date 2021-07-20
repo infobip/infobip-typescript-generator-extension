@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_FILE_NAME;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_SOURCE_CODE;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public abstract class TypeScriptFileGenerator {
 
@@ -63,23 +64,26 @@ public abstract class TypeScriptFileGenerator {
     }
 
     protected void writeCustomValidators(Path filePath) {
-        // TODO cover case when everything already exists
-        //TODO fix copy problem
         try {
-            Path basePath = Files.createDirectory(filePath.getParent().resolve("validators"));
-            for (Path source : getCustomValidationSettings().getCustomValidatorsPaths()) {
-                Files.walk(source).forEach(file -> copy(file, basePath.resolve(file.getFileName())));
+            Path destinationBasePath = Files.createDirectory(filePath.getParent().resolve("validators"));
+            for (Path sourcePath : getCustomValidationSettings().getCustomValidatorsPaths()) {
+                Files.walk(sourcePath).forEach(file -> copy(file, destinationBasePath, sourcePath));
             }
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    protected void copy(Path source, Path destination) {
-        try {
-            Files.copy(source, destination);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+    protected void copy(Path filePath, Path destinationBasePath, Path sourcePath) {
+        if (Files.isRegularFile(filePath)) {
+            Path difference = filePath.subpath(sourcePath.getNameCount(), filePath.getNameCount());
+            Path destination = destinationBasePath.resolve(difference);
+            try {
+                Files.createDirectories(destination.getParent());
+                Files.copy(filePath, destination, REPLACE_EXISTING);
+            } catch (IOException e) {
+                throw new UncheckedIOException(e);
+            }
         }
     }
 

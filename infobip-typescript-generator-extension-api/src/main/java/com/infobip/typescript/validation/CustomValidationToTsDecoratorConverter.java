@@ -50,7 +50,7 @@ public class CustomValidationToTsDecoratorConverter {
 
     private void validate(Annotation annotation) {
         String annotationName = annotation.annotationType().getName();
-        if (!customValidationData.getValidatorsNames().contains(annotationName)) {
+        if (!customValidationData.getTsCustomDecorators().contains(annotationName)) {
             throw new TSValidatorDoesNotExist(annotation);
         }
     }

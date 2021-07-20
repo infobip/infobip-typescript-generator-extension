@@ -9,6 +9,10 @@ public class SimpleCustomValidator implements SimpleConstraintValidator<SimpleCu
     private String field;
     private Integer number;
 
+    public SimpleCustomValidator(String string, Integer number) {
+
+    }
+
     @Override
     public void initialize(SimpleCustomValidation constraintAnnotation) {
         this.field = constraintAnnotation.field();

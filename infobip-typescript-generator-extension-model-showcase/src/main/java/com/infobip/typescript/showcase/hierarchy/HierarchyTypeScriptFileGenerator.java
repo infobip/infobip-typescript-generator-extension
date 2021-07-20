@@ -28,6 +28,7 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
     public Settings customizeSettings(Settings settings) {
         settings.setExcludeFilter(Collections.emptyList(),
                                   Arrays.asList("com.infobip.jackson.**",
+                                                "**ParameterListExtractorImpl",
                                                 "**Validation",
                                                 "**Validator",
                                                 "**Resolver",

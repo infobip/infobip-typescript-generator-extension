@@ -4,19 +4,19 @@ import com.google.auto.service.AutoService;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.*;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @AutoService(Processor.class)
 public class TypescriptAnnotationProcessor extends AbstractProcessor {
@@ -33,14 +33,26 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        List<Class<? extends Annotation>> customValidations = getCustomValidations(roundEnv);
+        generateTypescript(roundEnv, customValidations);
+        return true;
+    }
 
+    private List<Class<? extends Annotation>> getCustomValidations(RoundEnvironment roundEnv) {
+        return roundEnv.getElementsAnnotatedWith(CustomTSDecorator.class)
+                .stream()
+                .filter(element -> element.getKind().equals(ElementKind.ANNOTATION_TYPE))
+                .map(element -> getCustomValidationClass(element.asType()))
+                .collect(Collectors.toList());
+
+    }
+
+    private void generateTypescript(RoundEnvironment roundEnv, List<Class<? extends Annotation>> customAnnotations) {
         roundEnv.getElementsAnnotatedWith(GenerateTypescript.class)
                 .stream()
                 .filter(element -> element.getKind().equals(ElementKind.CLASS))
                 .map(element -> (TypeElement) element)
                 .forEach(this::generateTypeScript);
-
-        return true;
     }
 
     private void generateTypeScript(TypeElement element) {
@@ -76,6 +88,18 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
             Class<?> aClass = getClass().getClassLoader()
                                         .loadClass(typeMirror.toString());
             return (Class<? extends TypeScriptFileGenerator>) aClass;
+        } catch (ClassNotFoundException classNotFoundException) {
+            throw new IllegalStateException(classNotFoundException);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Class<? extends Annotation> getCustomValidationClass(TypeMirror typeMirror) {
+
+        try {
+            Class<?> aClass = getClass().getClassLoader()
+                                        .loadClass(typeMirror.toString());
+            return (Class<? extends Annotation>) aClass;
         } catch (ClassNotFoundException classNotFoundException) {
             throw new IllegalStateException(classNotFoundException);
         }

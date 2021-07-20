@@ -2,6 +2,7 @@ package com.infobip.typescript.validation;
 
 import com.infobip.typescript.TypeScriptImportResolver;
 import com.infobip.typescript.custom.validation.CustomValidationData;
+import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
 import cz.habarta.typescript.generator.compiler.ModelTransformer;
@@ -9,6 +10,7 @@ import cz.habarta.typescript.generator.emitter.*;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +35,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     }
 
     private final ValidationToTsDecoratorConverterResolver resolver;
+    private final CustomValidationData customValidationData;
 
     public ClassValidatorDecoratorExtension() {
         this(null, new CustomValidationData(Collections.emptyMap(), Collections.emptyList()));
@@ -48,6 +51,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
                 customValidationData, converter, validationMessageReferenceResolver);
         this.resolver = new ValidationToTsDecoratorConverterResolver(converter,
                                                                      customValidationToTsDecoratorConverter);
+        this.customValidationData = customValidationData;
     }
 
     @Override
@@ -71,27 +75,52 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
 
     @Override
     public List<String> resolve(String typeScript) {
+        //TODO refactor
+        Stream<String> resolvedValidations = Stream.of();
+        Stream<String> resolvedCustomValidations = Stream.of();
         String usedValidations = DEFAULT_VALIDATIONS.stream()
                                                     .filter(typeScript::contains)
                                                     .map(validation -> validation.substring(1, validation.length() - 1))
                                                     .collect(Collectors.joining(", "));
+        List<TSCustomDecorator> usedCustomValidations = customValidationData.getTsCustomDecorators().stream()
+                                                                            .filter(decorator -> typeScript.contains(
+                                                                                    "@" + decorator.getName() + "("))
+                                                                            .collect(Collectors.toList());
+
         if (!usedValidations.isEmpty()) {
-            return resolve(typeScript, usedValidations);
+            resolvedValidations = resolve(typeScript, usedValidations);
         }
 
-        return Collections.emptyList();
+        if (!usedCustomValidations.isEmpty()) {
+            resolvedCustomValidations = resolve(usedCustomValidations);
+        }
+
+        return Stream.concat(resolvedValidations, resolvedCustomValidations).collect(Collectors.toList());
     }
 
     @NotNull
-    private List<String> resolve(String typeScript, String usedValidations) {
+    private Stream<String> resolve(String typeScript, String usedValidations) {
         String validationImport = "import { " + usedValidations + " } from 'class-validator';";
 
         if (typeScript.contains(COMMON_VALIDATION_MESSAGES_CLASS_NAME)) {
             String commonValidationMessagesImport = "import { CommonValidationMessages } from './CommonValidationMessages';";
-            return Arrays.asList(validationImport, commonValidationMessagesImport);
+            return Arrays.asList(validationImport, commonValidationMessagesImport).stream();
         }
 
-        return Collections.singletonList(validationImport);
+        return Collections.singletonList(validationImport).stream();
+    }
+
+    @NotNull
+    private Stream<String> resolve(List<TSCustomDecorator> tsCustomDecorators) {
+        return tsCustomDecorators.stream()
+                                 .map(decorator -> "import { " + decorator.getName() + " } from '" + convert(
+                                         decorator.getTsPath()) + "';");
+    }
+
+    private String convert(Path tsPath) {
+        return tsPath
+                .toString()
+                .replace("\\", "/");
     }
 
     private TsBeanModel decorateClass(TsBeanModel bean) {

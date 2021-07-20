@@ -2,6 +2,7 @@
 /* eslint-disable */
 import { IsDefined, IsNotEmpty, MinLength, ValidateNested, MaxLength } from 'class-validator';
 import { CommonValidationMessages } from './CommonValidationMessages';
+import { SimpleCustomValidation } from './validators/SimpleCustomValidation';
 
 export class Foo {
     @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })

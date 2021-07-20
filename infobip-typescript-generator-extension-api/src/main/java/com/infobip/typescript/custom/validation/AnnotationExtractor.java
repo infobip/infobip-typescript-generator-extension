@@ -1,13 +1,12 @@
 package com.infobip.typescript.custom.validation;
 
 import com.infobip.typescript.CustomValidationSettings;
-import com.infobip.typescript.custom.validation.extractor.ValidatorsNameExtractor;
+import com.infobip.typescript.custom.validation.extractor.TSCustomDecoratorsExtractor;
 import cz.habarta.typescript.generator.util.Utils;
 import io.github.classgraph.*;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,12 +21,12 @@ public class AnnotationExtractor {
 
     private final List<Pattern> customValidationNameRegexPatterns;
     private final ClassGraph classGraph;
-    private final ValidatorsNameExtractor validatorsNameExtractor;
+    private final TSCustomDecoratorsExtractor TSCustomDecoratorsExtractor;
 
     public AnnotationExtractor(CustomValidationSettings customValidationSettings) {
         this.customValidationNameRegexPatterns = Utils.globsToRegexps(
                 customValidationSettings.getCustomValidationNamePatterns());
-        this.validatorsNameExtractor = new ValidatorsNameExtractor(customValidationSettings.getCustomValidatorsPaths());
+        this.TSCustomDecoratorsExtractor = new TSCustomDecoratorsExtractor(customValidationSettings.getCustomValidatorsPaths());
         this.classGraph = new ClassGraph().enableClassInfo()
                                           .enableAnnotationInfo()
                                           .enableMethodInfo()
@@ -38,7 +37,7 @@ public class AnnotationExtractor {
     public CustomValidationData extract() {
         ScanResult scanResult = classGraph.scan();
         Map<Class<? extends Annotation>, CustomValidationAnnotation> customValidationAnnotations = getCustomValidationAnnotations(scanResult);
-        return new CustomValidationData(customValidationAnnotations, validatorsNameExtractor.extract());
+        return new CustomValidationData(customValidationAnnotations, TSCustomDecoratorsExtractor.extract());
     }
 
     private boolean filterClassNames(String className) {

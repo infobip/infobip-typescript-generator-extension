@@ -4,12 +4,11 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.*;
 import java.util.List;
-import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ValidatorsNameExtractor {
+public class TSCustomDecoratorsExtractor {
 
     private static final String DESTINATION_BASE_PATH = "validators";
     private static final String SUPPORTED_EXTENSIONS_REGEX = ".ts$|.tsx$";
@@ -17,11 +16,11 @@ public class ValidatorsNameExtractor {
 
     private final List<Path> validatorPaths;
 
-    public ValidatorsNameExtractor(List<Path> validatorPaths) {
+    public TSCustomDecoratorsExtractor(List<Path> validatorPaths) {
         this.validatorPaths = validatorPaths;
     }
 
-    public List<ValidatorName> extract() {
+    public List<TSCustomDecorator> extract() {
         return validatorPaths.stream()
                              .flatMap(this::walk)
                              .filter(path -> SUPPORTED_EXTENSIONS_PATTERN.matcher(path.getFileName().toString()).find())
@@ -44,8 +43,9 @@ public class ValidatorsNameExtractor {
         }
     }
 
-    private ValidatorName convert(Path path) {
-        String name = path.toFile().getName().replace(SUPPORTED_EXTENSIONS_REGEX, "");
-        return new ValidatorName(name, path);
+    private TSCustomDecorator convert(Path path) {
+        String name = path.toFile().getName().replaceAll(SUPPORTED_EXTENSIONS_REGEX, "");
+        Path tsPath = Paths.get(path.toString().replaceAll(SUPPORTED_EXTENSIONS_REGEX, ""));
+        return new TSCustomDecorator(name, path, tsPath);
     }
 }

@@ -1,6 +1,8 @@
 package com.infobip.typescript;
 
 import com.infobip.typescript.custom.validation.AnnotationExtractor;
+import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
+import com.infobip.typescript.custom.validation.extractor.TSCustomDecoratorsExtractor;
 import com.infobip.typescript.transformer.ClassTransformerDecoratorExtension;
 import com.infobip.typescript.type.JsonTypeExtension;
 import com.infobip.typescript.validation.ClassValidatorDecoratorExtension;
@@ -25,10 +27,13 @@ public abstract class TypeScriptFileGenerator {
 
     private final Path basePath;
     private final AnnotationExtractor annotationExtractor;
+    private final List<TSCustomDecorator> tsCustomDecorators;
 
     protected TypeScriptFileGenerator(Path basePath) {
         this.basePath = basePath;
-        this.annotationExtractor = new AnnotationExtractor(getCustomValidationSettings());
+        this.annotationExtractor = new AnnotationExtractor(getAnnotationPackages().toArray(new String[0]));
+        this.tsCustomDecorators = new TSCustomDecoratorsExtractor(
+                getCustomValidationSettings().getCustomValidatorsPaths()).extract();
     }
 
     public void generate() {
@@ -45,11 +50,12 @@ public abstract class TypeScriptFileGenerator {
         }
     }
 
-    protected void writeFiles(String code, Path filePath) throws IOException {
+    protected void writeFiles(String code, Path filePath) throws
+            IOException {
 
         writeGeneratedTypeScriptFile(code, filePath);
         writeCommonValidationMessagesTypeScriptFile(code, filePath);
-        writeCustomValidators(filePath);
+        writeCustomValidators(filePath.getParent());
     }
 
     protected void writeGeneratedTypeScriptFile(String code, Path filePath) {
@@ -63,27 +69,19 @@ public abstract class TypeScriptFileGenerator {
         }
     }
 
-    protected void writeCustomValidators(Path filePath) {
-        try {
-            Path destinationBasePath = Files.createDirectory(filePath.getParent().resolve("validators"));
-            for (Path sourcePath : getCustomValidationSettings().getCustomValidatorsPaths()) {
-                Files.walk(sourcePath).forEach(file -> copy(file, destinationBasePath, sourcePath));
-            }
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
-        }
+    protected void writeCustomValidators(Path basePath) {
+        tsCustomDecorators.forEach(decorator -> {
+            Path destination = basePath.resolve(decorator.getDestinationPath());
+            copy(decorator.getSourcePath(), destination);
+        });
     }
 
-    protected void copy(Path filePath, Path destinationBasePath, Path sourcePath) {
-        if (Files.isRegularFile(filePath)) {
-            Path difference = filePath.subpath(sourcePath.getNameCount(), filePath.getNameCount());
-            Path destination = destinationBasePath.resolve(difference);
-            try {
-                Files.createDirectories(destination.getParent());
-                Files.copy(filePath, destination, REPLACE_EXISTING);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
+    protected void copy(Path source, Path destination) {
+        try {
+            Files.createDirectories(destination.getParent());
+            Files.copy(source, destination, REPLACE_EXISTING);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -123,7 +121,8 @@ public abstract class TypeScriptFileGenerator {
     protected List<EmitterExtension> createExtensions() {
         return Stream.of(new JsonTypeExtension(),
                          new ClassTransformerDecoratorExtension(),
-                         new ClassValidatorDecoratorExtension("validations", annotationExtractor.extract()))
+                         new ClassValidatorDecoratorExtension("validations", tsCustomDecorators,
+                                                              annotationExtractor.extract()))
                      .collect(Collectors.toList());
     }
 
@@ -156,4 +155,6 @@ public abstract class TypeScriptFileGenerator {
     protected abstract Path outputFilePath(Path basePath);
 
     protected abstract CustomValidationSettings getCustomValidationSettings();
+
+    protected abstract List<String> getAnnotationPackages();
 }

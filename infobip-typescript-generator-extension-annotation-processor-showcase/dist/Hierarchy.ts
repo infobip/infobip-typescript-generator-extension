@@ -7,7 +7,7 @@ import { SimpleCustomValidation } from './validators/SimpleCustomValidation';
 export class Foo {
     @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
     @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
-    @SimpleCustomValidation('bla', 3, { message: CommonValidationMessages.SimpleCustomValidation() })
+    @SimpleCustomValidation({ message: CommonValidationMessages.SimpleCustomValidation() })
     @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
     @IsDefined({ message: CommonValidationMessages.IsDefined })
     @ValidateNested()

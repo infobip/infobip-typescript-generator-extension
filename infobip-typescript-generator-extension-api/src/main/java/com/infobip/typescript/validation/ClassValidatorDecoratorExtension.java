@@ -1,7 +1,6 @@
 package com.infobip.typescript.validation;
 
 import com.infobip.typescript.TypeScriptImportResolver;
-import com.infobip.typescript.custom.validation.CustomValidationData;
 import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
@@ -9,6 +8,7 @@ import cz.habarta.typescript.generator.compiler.ModelTransformer;
 import cz.habarta.typescript.generator.emitter.*;
 import org.jetbrains.annotations.NotNull;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
@@ -35,23 +35,20 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     }
 
     private final ValidationToTsDecoratorConverterResolver resolver;
-    private final CustomValidationData customValidationData;
+    private final List<TSCustomDecorator> tsCustomDecorators;
 
     public ClassValidatorDecoratorExtension() {
-        this(null, new CustomValidationData(Collections.emptyMap(), Collections.emptyList()));
+        this(null, Collections.emptyList(), Collections.emptyList());
     }
 
-    public ClassValidatorDecoratorExtension(String customMessageSource, CustomValidationData customValidationData) {
-        //TODO extract this into resolver
-        ValidationMessageReferenceResolver validationMessageReferenceResolver = new ValidationMessageReferenceResolver(
-                customMessageSource);
-        CompositeBeanValidationToTsDecoratorConverter converter = new CompositeBeanValidationToTsDecoratorConverter(
-                validationMessageReferenceResolver);
-        CustomValidationToTsDecoratorConverter customValidationToTsDecoratorConverter = new CustomValidationToTsDecoratorConverter(
-                customValidationData, converter, validationMessageReferenceResolver);
-        this.resolver = new ValidationToTsDecoratorConverterResolver(converter,
-                                                                     customValidationToTsDecoratorConverter);
-        this.customValidationData = customValidationData;
+    public ClassValidatorDecoratorExtension(String customMessageSource,
+                                            List<TSCustomDecorator> tsCustomDecorators,
+                                            List<Class<? extends Annotation>> customAnnotations) {
+
+        this.resolver = new ValidationToTsDecoratorConverterResolver(customMessageSource,
+                                                                     tsCustomDecorators,
+                                                                     customAnnotations);
+        this.tsCustomDecorators = tsCustomDecorators;
     }
 
     @Override
@@ -75,17 +72,10 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
 
     @Override
     public List<String> resolve(String typeScript) {
-        //TODO refactor
         Stream<String> resolvedValidations = Stream.of();
         Stream<String> resolvedCustomValidations = Stream.of();
-        String usedValidations = DEFAULT_VALIDATIONS.stream()
-                                                    .filter(typeScript::contains)
-                                                    .map(validation -> validation.substring(1, validation.length() - 1))
-                                                    .collect(Collectors.joining(", "));
-        List<TSCustomDecorator> usedCustomValidations = customValidationData.getTsCustomDecorators().stream()
-                                                                            .filter(decorator -> typeScript.contains(
-                                                                                    "@" + decorator.getName() + "("))
-                                                                            .collect(Collectors.toList());
+        String usedValidations = getUsedValidations(typeScript);
+        List<TSCustomDecorator> usedCustomValidations = getUsedCustomDecorators(typeScript);
 
         if (!usedValidations.isEmpty()) {
             resolvedValidations = resolve(typeScript, usedValidations);
@@ -96,6 +86,20 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
         }
 
         return Stream.concat(resolvedValidations, resolvedCustomValidations).collect(Collectors.toList());
+    }
+
+    private String getUsedValidations(String typeScript) {
+        return DEFAULT_VALIDATIONS.stream()
+                           .filter(typeScript::contains)
+                           .map(validation -> validation.substring(1, validation.length() - 1))
+                           .collect(Collectors.joining(", "));
+    }
+
+    private List<TSCustomDecorator> getUsedCustomDecorators(String typeScript) {
+        return tsCustomDecorators.stream()
+                          .filter(decorator -> typeScript.contains(
+                                  "@" + decorator.getName() + "("))
+                          .collect(Collectors.toList());
     }
 
     @NotNull

@@ -6,7 +6,6 @@ import cz.habarta.typescript.generator.Input;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -39,5 +38,10 @@ public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
         return null;
+    }
+
+    @Override
+    protected List<String> getAnnotationPackages() {
+        return Collections.emptyList();
     }
 }

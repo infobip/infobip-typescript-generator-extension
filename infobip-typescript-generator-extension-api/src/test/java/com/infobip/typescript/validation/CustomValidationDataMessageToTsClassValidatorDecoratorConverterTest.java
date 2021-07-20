@@ -1,7 +1,6 @@
 package com.infobip.typescript.validation;
 
 import com.infobip.typescript.TestBase;
-import com.infobip.typescript.custom.validation.CustomValidationData;
 import cz.habarta.typescript.generator.Input;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
@@ -16,8 +15,7 @@ import static org.assertj.core.api.BDDAssertions.then;
 class CustomValidationDataMessageToTsClassValidatorDecoratorConverterTest extends TestBase {
 
     public CustomValidationDataMessageToTsClassValidatorDecoratorConverterTest() {
-        super(new ClassValidatorDecoratorExtension("validations", new CustomValidationData(Collections.emptyMap(),
-                                                                                           Collections.emptyList())),
+        super(new ClassValidatorDecoratorExtension("validations", Collections.emptyList(), Collections.emptyList()),
               Arrays.asList("import { CommonValidationMessages } from 'infobip-typescript-generator-common'",
                             "import { validations } from './i18n'",
                             "import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator'"));

@@ -23,29 +23,58 @@ public class TSCustomDecoratorsExtractor {
     public List<TSCustomDecorator> extract() {
         return validatorPaths.stream()
                              .flatMap(this::walk)
-                             .filter(path -> SUPPORTED_EXTENSIONS_PATTERN.matcher(path.getFileName().toString()).find())
+                             .filter(decorator -> SUPPORTED_EXTENSIONS_PATTERN.matcher(
+                                     decorator.getSource().getFileName().toString()).find())
                              .map(this::convert)
                              .collect(Collectors.toList());
     }
 
-    private Stream<Path> walk(Path path) {
+    private Stream<TSDecoratorPath> walk(Path path) {
+        //TODO refactor this
         try {
             if (Files.isRegularFile(path)) {
-                Stream.of(Paths.get(".", DESTINATION_BASE_PATH, path.getFileName().toString()));
+                Path destination = getDestinationPath(path.getFileName());
+                return Stream.of(new TSDecoratorPath(path, destination));
             }
 
             return Files.walk(path)
                         .filter(Files::isRegularFile)
-                        .map(filePath -> Paths.get(".", DESTINATION_BASE_PATH)
-                                              .resolve(filePath.subpath(path.getNameCount(), filePath.getNameCount())));
+                        .map(filePath -> {
+                            Path subPath = filePath.subpath(path.getNameCount(), filePath.getNameCount());
+                            Path destination = getDestinationPath(subPath);
+
+                            return new TSDecoratorPath(filePath, destination);
+                        });
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
     }
 
-    private TSCustomDecorator convert(Path path) {
-        String name = path.toFile().getName().replaceAll(SUPPORTED_EXTENSIONS_REGEX, "");
-        Path tsPath = Paths.get(path.toString().replaceAll(SUPPORTED_EXTENSIONS_REGEX, ""));
-        return new TSCustomDecorator(name, path, tsPath);
+    private Path getDestinationPath(Path path) {
+        return Paths.get(".", DESTINATION_BASE_PATH).resolve(path);
+    }
+
+    private TSCustomDecorator convert(TSDecoratorPath decoratorPath) {
+        String name = decoratorPath.getSource().toFile().getName().replaceAll(SUPPORTED_EXTENSIONS_REGEX, "");
+        Path tsPath = Paths.get(decoratorPath.getDestination().toString().replaceAll(SUPPORTED_EXTENSIONS_REGEX, ""));
+        return new TSCustomDecorator(name, decoratorPath.getSource(), decoratorPath.getDestination(), tsPath);
+    }
+
+    public static class TSDecoratorPath {
+        private final Path source;
+        private final Path destination;
+
+        public TSDecoratorPath(Path source, Path destination) {
+            this.source = source;
+            this.destination = destination;
+        }
+
+        public Path getSource() {
+            return source;
+        }
+
+        public Path getDestination() {
+            return destination;
+        }
     }
 }

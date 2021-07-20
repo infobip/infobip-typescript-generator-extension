@@ -62,4 +62,9 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
                                             customValidationPackages,
                                             customValidatorsPaths);
     }
+
+    @Override
+    protected List<String> getAnnotationPackages() {
+        return Collections.singletonList("com.infobip.typescript.showcase.custom.validation");
+    }
 }

@@ -1,8 +1,5 @@
 package com.infobip.typescript.validation;
 
-import com.infobip.typescript.custom.validation.CustomValidationAnnotation;
-import com.infobip.typescript.custom.validation.CustomValidationData;
-import com.infobip.typescript.validation.exception.TSValidatorDoesNotExist;
 import cz.habarta.typescript.generator.emitter.TsDecorator;
 
 import java.lang.annotation.Annotation;
@@ -14,31 +11,21 @@ import java.util.stream.Stream;
 
 public class CustomValidationToTsDecoratorConverter {
 
-    private final CustomValidationData customValidationData;
     private final CompositeBeanValidationToTsDecoratorConverter compositeBeanValidationToTsDecoratorConverter;
     private final CustomAnnotationToTsDecoratorConverter customAnnotationToTsDecoratorConverter;
 
-    public CustomValidationToTsDecoratorConverter(CustomValidationData customValidationData,
-                                                  CompositeBeanValidationToTsDecoratorConverter compositeBeanValidationToTsDecoratorConverter,
+    public CustomValidationToTsDecoratorConverter(CompositeBeanValidationToTsDecoratorConverter compositeBeanValidationToTsDecoratorConverter,
                                                   ValidationMessageReferenceResolver validationMessageReferenceResolver) {
-        this.customValidationData = customValidationData;
         this.compositeBeanValidationToTsDecoratorConverter = compositeBeanValidationToTsDecoratorConverter;
         this.customAnnotationToTsDecoratorConverter = new CustomAnnotationToTsDecoratorConverter(
                 validationMessageReferenceResolver);
     }
 
-    //TODO tu trebaju doći već custom annotacije
     public Stream<TsDecorator> convert(Field field, Annotation annotation) {
-        Stream<TsDecorator> customDecorators = Stream.empty();
         Stream<TsDecorator> beanDecorators = Stream.empty();
         List<Annotation> beanAnnotations = extractBeanAnnotations(annotation);
 
-        if (isCustomAnnotation(annotation) && !beanAnnotations.isEmpty()) {
-            validate(annotation);
-        }
-        CustomValidationAnnotation customValidationAnnotation = customValidationData.getCustomValidationAnnotations()
-                                                                                    .get(annotation.annotationType());
-        customDecorators = customAnnotationToTsDecoratorConverter.convert(annotation, customValidationAnnotation);
+        Stream<TsDecorator> customDecorators = customAnnotationToTsDecoratorConverter.convert(annotation);
 
         if (!beanAnnotations.isEmpty()) {
             beanDecorators = beanAnnotations.stream()
@@ -46,18 +33,6 @@ public class CustomValidationToTsDecoratorConverter {
         }
 
         return Stream.concat(beanDecorators, customDecorators);
-    }
-
-    private void validate(Annotation annotation) {
-        String annotationName = annotation.annotationType().getName();
-        if (!customValidationData.getTsCustomDecorators().contains(annotationName)) {
-            throw new TSValidatorDoesNotExist(annotation);
-        }
-    }
-
-    private Boolean isCustomAnnotation(Annotation annotation) {
-        return customValidationData.getCustomValidationAnnotations().keySet().stream()
-                                   .anyMatch(annotationType -> annotationType.equals(annotation.annotationType()));
     }
 
     private List<Annotation> extractBeanAnnotations(Annotation customAnnotation) {

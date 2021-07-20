@@ -5,12 +5,14 @@ import java.nio.file.Path;
 public class TSCustomDecorator {
 
     private final String name;
-    private final Path path;
+    private final Path sourcePath;
+    private final Path destinationPath;
     private final Path tsPath;
 
-    public TSCustomDecorator(String name, Path path, Path tsPath) {
+    public TSCustomDecorator(String name,Path sourcePath, Path destinationPath, Path tsPath) {
         this.name = name;
-        this.path = path;
+        this.sourcePath = sourcePath;
+        this.destinationPath = destinationPath;
         this.tsPath = tsPath;
     }
 
@@ -18,8 +20,12 @@ public class TSCustomDecorator {
         return name;
     }
 
-    public Path getPath() {
-        return path;
+    public Path getSourcePath() {
+        return sourcePath;
+    }
+
+    public Path getDestinationPath() {
+        return destinationPath;
     }
 
     public Path getTsPath() {

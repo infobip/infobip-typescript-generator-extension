@@ -31,7 +31,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
                                                 NestedHierarchyLeaf.class));
 
         // then
-        then(actual).isEqualTo(
+        then(actual.replace("\r\n", "\n")).isEqualTo(
                 "\n" +
                 "import { Type } from 'class-transformer';\n" +
                 "\n" +

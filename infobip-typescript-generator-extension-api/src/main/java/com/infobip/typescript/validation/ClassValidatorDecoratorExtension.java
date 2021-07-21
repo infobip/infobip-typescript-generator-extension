@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
+import static com.infobip.typescript.validation.Localization.LOCALIZATION_METHOD;
 
 public class ClassValidatorDecoratorExtension extends Extension implements TypeScriptImportResolver {
 
@@ -74,6 +75,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     public List<String> resolve(String typeScript) {
         Stream<String> resolvedValidations = Stream.of();
         Stream<String> resolvedCustomValidations = Stream.of();
+        Stream<String> localization = Stream.of();
         String usedValidations = getUsedValidations(typeScript);
         List<TSCustomDecorator> usedCustomValidations = getUsedCustomDecorators(typeScript);
 
@@ -85,21 +87,26 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
             resolvedCustomValidations = resolve(usedCustomValidations);
         }
 
-        return Stream.concat(resolvedValidations, resolvedCustomValidations).collect(Collectors.toList());
+        if (typeScript.contains("{ message: " + LOCALIZATION_METHOD + "(")) {
+            localization = Stream.of("import { localize } from './Localization';");
+        }
+
+        return Stream.concat(Stream.concat(resolvedValidations, resolvedCustomValidations), localization)
+                     .collect(Collectors.toList());
     }
 
     private String getUsedValidations(String typeScript) {
         return DEFAULT_VALIDATIONS.stream()
-                           .filter(typeScript::contains)
-                           .map(validation -> validation.substring(1, validation.length() - 1))
-                           .collect(Collectors.joining(", "));
+                                  .filter(typeScript::contains)
+                                  .map(validation -> validation.substring(1, validation.length() - 1))
+                                  .collect(Collectors.joining(", "));
     }
 
     private List<TSCustomDecorator> getUsedCustomDecorators(String typeScript) {
         return tsCustomDecorators.stream()
-                          .filter(decorator -> typeScript.contains(
-                                  "@" + decorator.getName() + "("))
-                          .collect(Collectors.toList());
+                                 .filter(decorator -> typeScript.contains(
+                                         "@" + decorator.getName() + "("))
+                                 .collect(Collectors.toList());
     }
 
     @NotNull

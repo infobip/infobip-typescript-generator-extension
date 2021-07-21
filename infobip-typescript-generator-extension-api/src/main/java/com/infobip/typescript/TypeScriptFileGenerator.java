@@ -21,6 +21,9 @@ import java.util.stream.Stream;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_FILE_NAME;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_SOURCE_CODE;
+import static com.infobip.typescript.validation.Localization.LOCALIZATION_CLASS_NAME;
+import static com.infobip.typescript.validation.Localization.LOCALIZATION_FILE_NAME;
+import static com.infobip.typescript.validation.Localization.LOCALIZATION_SOURCE_CODE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public abstract class TypeScriptFileGenerator {
@@ -56,6 +59,7 @@ public abstract class TypeScriptFileGenerator {
 
         writeGeneratedTypeScriptFile(code, filePath);
         writeCommonValidationMessagesTypeScriptFile(code, filePath);
+        writeLocalization(code, filePath);
         writeCustomValidators(filePath.getParent());
     }
 
@@ -67,6 +71,12 @@ public abstract class TypeScriptFileGenerator {
         if (code.contains(COMMON_VALIDATION_MESSAGES_CLASS_NAME)) {
             write(filePath.getParent().resolve(COMMON_VALIDATION_MESSAGES_FILE_NAME),
                   COMMON_VALIDATION_MESSAGES_SOURCE_CODE);
+        }
+    }
+
+    protected void writeLocalization(String code, Path filePath) {
+        if (code.contains(LOCALIZATION_CLASS_NAME)) {
+            write(filePath.getParent().resolve(LOCALIZATION_FILE_NAME), LOCALIZATION_SOURCE_CODE);
         }
     }
 

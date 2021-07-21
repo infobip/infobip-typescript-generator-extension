@@ -30,13 +30,15 @@ public class TSCustomDecoratorsExtractor {
     }
 
     private Stream<TSDecoratorPath> walk(Path path) {
-        //TODO refactor this
-        try {
-            if (Files.isRegularFile(path)) {
-                Path destination = getDestinationPath(path.getFileName());
-                return Stream.of(new TSDecoratorPath(path, destination));
-            }
+        if (Files.isRegularFile(path)) {
+            Path destination = getDestinationPath(path.getFileName());
+            return Stream.of(new TSDecoratorPath(path, destination));
+        }
+        return walkDirectory(path);
+    }
 
+    private Stream<TSDecoratorPath> walkDirectory(Path path) {
+        try {
             return Files.walk(path)
                         .filter(Files::isRegularFile)
                         .map(filePath -> {

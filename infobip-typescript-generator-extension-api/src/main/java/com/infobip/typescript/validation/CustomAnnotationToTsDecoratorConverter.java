@@ -83,11 +83,13 @@ class CustomAnnotationToTsDecoratorConverter {
     }
 
     private Stream<TsExpression> internationalization(Annotation annotation, String annotationName, String message) {
-        String validationsReference = validationMessageReferenceResolver.getMessageReference(() -> message,
-                                                                                             annotationName);
+        String validationsReference = validationMessageReferenceResolver.getMessageReferenceForCustomValidation(
+                () -> message,
+                annotationName);
         return Stream.of(new TsObjectLiteral(
                 new TsPropertyDefinition(MESSAGE_METHOD,
-                                         new TsCallExpression(new TsIdentifierReference(validationsReference)))));
+                                         new TsCallExpression(new TsIdentifierReference(validationsReference),
+                                                              new TsStringLiteral(message)))));
     }
 
     private Object invoke(Annotation annotation, Method method, Object... args) {

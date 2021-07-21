@@ -21,6 +21,16 @@ class ValidationMessageReferenceResolver {
         return "CommonValidationMessages." + identifier;
     }
 
+    String getMessageReferenceForCustomValidation(Supplier<String> messageProvider, String identifier) {
+        String message = messageProvider.get();
+
+        if (message.startsWith("{") && !message.startsWith("{javax")) {
+            return handleCustomMessage(message);
+        }
+
+        return "localize";
+    }
+
     private String handleCustomMessage(String message) {
         if (Objects.isNull(customMessageSource)) {
             throw new IllegalStateException(

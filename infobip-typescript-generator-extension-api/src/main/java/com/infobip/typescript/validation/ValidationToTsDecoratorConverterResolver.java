@@ -29,7 +29,6 @@ public class ValidationToTsDecoratorConverterResolver {
         this.customAnnotations = customAnnotations;
         this.compositeBeanValidationToTsDecoratorConverter = converter;
         this.customValidationToTsDecoratorConverter = new CustomValidationToTsDecoratorConverter( converter, validationMessageReferenceResolver);
-        ;
     }
 
     public Stream<TsDecorator> getDecorators(Annotation annotation, Field field) {

@@ -1,5 +1,6 @@
-package com.infobip.typescript.showcase.custom.validation;
+package com.infobip.typescript.showcase.custom.complex.validation;
 
+import com.infobip.typescript.showcase.custom.simple.validation.SimpleCustomValidation;
 import lombok.Value;
 
 import javax.validation.Valid;
@@ -9,7 +10,7 @@ import javax.validation.constraints.*;
 public class Foo {
 
     @Size(min = 1, max = 2)
-    @SimpleCustomValidation(field = "bla", number = 3)
+    @ComplexCustomValidation(length = 100)
     @NotEmpty
     @NotNull
     @Valid

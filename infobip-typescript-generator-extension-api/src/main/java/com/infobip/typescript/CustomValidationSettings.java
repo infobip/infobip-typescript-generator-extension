@@ -10,6 +10,10 @@ public class CustomValidationSettings {
 
     public CustomValidationSettings(String rootPackage,
                                     List<Path> customValidatorsPaths) {
+        if (rootPackage == null || rootPackage.isEmpty()) {
+            throw new IllegalArgumentException("rootPackage parameter cannot be null");
+        }
+
         this.rootPackage = rootPackage;
         this.customValidatorsPaths = customValidatorsPaths;
     }

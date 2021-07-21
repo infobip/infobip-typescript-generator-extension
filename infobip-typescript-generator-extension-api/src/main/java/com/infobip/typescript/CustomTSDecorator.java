@@ -9,7 +9,7 @@ public @interface CustomTSDecorator {
 
     String typeScriptDecorator() default "";
 
-    Class<? extends DecoratorParameterListExtractor> decoratorParameterListExtractor();
+    Class<? extends DecoratorParameterListExtractor> decoratorParameterListExtractor() default NoParametersDecorator.class;
 
     Class<? extends Annotation> type();
 }

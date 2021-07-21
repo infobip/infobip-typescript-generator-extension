@@ -22,7 +22,7 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
     public Input getInput() {
         Input.Parameters parameters = new Input.Parameters();
         parameters.classNamePatterns = Collections.singletonList(
-                "com.infobip.typescript.showcase.custom.validation.**");
+                "com.infobip.typescript.showcase.hierarchy.message.**");
         return Input.from(parameters);
     }
 
@@ -30,9 +30,6 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
     public Settings customizeSettings(Settings settings) {
         settings.setExcludeFilter(Collections.emptyList(),
                                   Arrays.asList("com.infobip.jackson.**",
-                                                "**ParameterListExtractorImpl",
-                                                "**Validation",
-                                                "**Validator",
                                                 "**Resolver",
                                                 "**Visitor",
                                                 "**JsonDeserializer"));
@@ -54,13 +51,6 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
-        try {
-            String rootPackage = "com.infobip.typescript";
-            Path validatorsPath = Paths.get(this.getClass().getClassLoader().getResource("validators").toURI());
-            List<Path> customValidatorsPaths = Collections.singletonList(validatorsPath);
-            return new CustomValidationSettings(rootPackage, customValidatorsPaths);
-        } catch (URISyntaxException e) {
-            throw new UncheckedURISyntaxException(e);
-        }
+        return new CustomValidationSettings("com.infobip.typescript.showcase.hierarchy", Collections.emptyList());
     }
 }

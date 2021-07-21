@@ -1,9 +1,9 @@
 import { registerDecorator, ValidationOptions, ValidationArguments } from 'class-validator';
 
-export function SimpleValidation(validationOptions?: ValidationOptions) {
+export function SimpleCustomValidation(validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
         registerDecorator({
-            name: 'simpleValidation',
+            name: 'simpleCustomValidator',
             target: object.constructor,
             propertyName: propertyName,
             constraints: [],

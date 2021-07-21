@@ -5,13 +5,13 @@ import com.infobip.typescript.TypeScriptFileGenerator;
 import com.infobip.typescript.showcase.custom.complex.validation.Foo;
 import com.infobip.typescript.showcase.hierarchy.exception.UncheckedURISyntaxException;
 import cz.habarta.typescript.generator.Input;
-import cz.habarta.typescript.generator.Settings;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.nio.file.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
 
 public class ComplexValidationTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
@@ -39,11 +39,21 @@ public class ComplexValidationTypeScriptFileGenerator extends TypeScriptFileGene
 
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
+        String rootPackage = "com.infobip.typescript";
+        List<Path> customValidatorsPaths = Collections.singletonList(validatorsPath());
+        return new CustomValidationSettings(rootPackage, customValidatorsPaths);
+
+    }
+
+    private Path validatorsPath() {
         try {
-            String rootPackage = "com.infobip.typescript";
-            Path validatorsPath = Paths.get(this.getClass().getClassLoader().getResource("validators").toURI());
-            List<Path> customValidatorsPaths = Collections.singletonList(validatorsPath);
-            return new CustomValidationSettings(rootPackage, customValidatorsPaths);
+            Path sourcePath = Paths.get(ComplexValidationTypeScriptFileGenerator.class.getProtectionDomain()
+                                                                                      .getCodeSource()
+                                                                                      .getLocation()
+                                                                                      .toURI());
+            return Files.isRegularFile(sourcePath)
+                    ? sourcePath.getParent().resolve("classes/validators")
+                    : sourcePath.resolve("validators");
         } catch (URISyntaxException e) {
             throw new UncheckedURISyntaxException(e);
         }

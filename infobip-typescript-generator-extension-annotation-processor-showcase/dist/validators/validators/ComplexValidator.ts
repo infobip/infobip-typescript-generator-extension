@@ -1,9 +1,9 @@
 import {registerDecorator, ValidationArguments, ValidationOptions} from 'class-validator';
 
-export function ComplexValidation(property: number, validationOptions?: ValidationOptions) {
+export function ComplexValidator(property: number, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
         registerDecorator({
-            name: 'complexValidation',
+            name: 'complexValidator',
             target: object.constructor,
             propertyName: propertyName,
             constraints: [property],

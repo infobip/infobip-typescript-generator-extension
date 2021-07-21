@@ -2,6 +2,7 @@ package com.infobip.typescript.showcase.custom.simple;
 
 import com.infobip.typescript.CustomValidationSettings;
 import com.infobip.typescript.TypeScriptFileGenerator;
+import com.infobip.typescript.showcase.custom.complex.ComplexValidationTypeScriptFileGenerator;
 import com.infobip.typescript.showcase.custom.simple.validation.Foo;
 import com.infobip.typescript.showcase.hierarchy.exception.UncheckedURISyntaxException;
 import cz.habarta.typescript.generator.Input;
@@ -39,11 +40,21 @@ public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGener
 
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
+        String rootPackage = "com.infobip.typescript";
+        List<Path> customValidatorsPaths = Collections.singletonList(validatorsPath());
+        return new CustomValidationSettings(rootPackage, customValidatorsPaths);
+
+    }
+
+    private Path validatorsPath() {
         try {
-            String rootPackage = "com.infobip.typescript";
-            Path validatorsPath = Paths.get(this.getClass().getClassLoader().getResource("validators").toURI());
-            List<Path> customValidatorsPaths = Collections.singletonList(validatorsPath);
-            return new CustomValidationSettings(rootPackage, customValidatorsPaths);
+            Path sourcePath = Paths.get(ComplexValidationTypeScriptFileGenerator.class.getProtectionDomain()
+                                                                                      .getCodeSource()
+                                                                                      .getLocation()
+                                                                                      .toURI());
+            return Files.isRegularFile(sourcePath)
+                    ? sourcePath.getParent().resolve("classes/validators")
+                    : sourcePath.resolve("validators");
         } catch (URISyntaxException e) {
             throw new UncheckedURISyntaxException(e);
         }

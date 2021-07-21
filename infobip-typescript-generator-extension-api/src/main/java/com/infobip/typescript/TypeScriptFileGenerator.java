@@ -88,7 +88,7 @@ public abstract class TypeScriptFileGenerator {
 
     protected void write(Path path, String code) {
         try {
-            Files.write(path, code.getBytes(StandardCharsets.UTF_8));
+            Files.write(path, code.trim().getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }

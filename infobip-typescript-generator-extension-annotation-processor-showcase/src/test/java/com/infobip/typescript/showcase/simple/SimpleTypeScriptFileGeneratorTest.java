@@ -18,7 +18,7 @@ class SimpleTypeScriptFileGeneratorTest {
                              .collect(Collectors.joining(System.lineSeparator()));
 
         // then
-        then(actual).isEqualTo("/* tslint:disable */\n" +
+        then(actual.replace("\r\n","\n")).isEqualTo("/* tslint:disable */\n" +
                                "/* eslint-disable */\n" +
                                "import { IsDefined, IsNotEmpty, MinLength, ValidateNested, MaxLength } from 'class-validator';\n" +
                                "import { CommonValidationMessages } from './CommonValidationMessages';\n" +

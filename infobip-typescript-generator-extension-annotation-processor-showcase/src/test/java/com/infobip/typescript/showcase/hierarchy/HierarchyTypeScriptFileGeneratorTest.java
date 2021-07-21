@@ -18,7 +18,7 @@ class HierarchyTypeScriptFileGeneratorTest {
                              .collect(Collectors.joining(System.lineSeparator()));
 
         // then
-        then(actual).startsWith("/* tslint:disable */\n" +
+        then(actual.replace("\r\n","\n")).startsWith("/* tslint:disable */\n" +
                                 "/* eslint-disable */\n" +
                                 "import 'reflect-metadata';\n" +
                                 "import { Type } from 'class-transformer';\n" +

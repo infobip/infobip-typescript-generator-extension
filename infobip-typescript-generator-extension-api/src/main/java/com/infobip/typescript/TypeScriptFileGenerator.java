@@ -30,10 +30,11 @@ public abstract class TypeScriptFileGenerator {
     private final List<TSCustomDecorator> tsCustomDecorators;
 
     protected TypeScriptFileGenerator(Path basePath) {
+        CustomValidationSettings customValidationSettings = getCustomValidationSettings();
         this.basePath = basePath;
-        this.annotationExtractor = new AnnotationExtractor(getCustomValidationSettings().getRootPackage());
+        this.annotationExtractor = new AnnotationExtractor(customValidationSettings.getRootPackage());
         this.tsCustomDecorators = new TSCustomDecoratorsExtractor(
-                getCustomValidationSettings().getCustomValidatorsPaths()).extract();
+                customValidationSettings.getCustomValidatorsPaths()).extract();
     }
 
     public void generate() {
@@ -146,7 +147,9 @@ public abstract class TypeScriptFileGenerator {
         return settings;
     }
 
-    protected Path createFilePath() { return outputFilePath(basePath); }
+    protected Path createFilePath() {
+        return outputFilePath(basePath);
+    }
 
     protected abstract Input getInput();
 

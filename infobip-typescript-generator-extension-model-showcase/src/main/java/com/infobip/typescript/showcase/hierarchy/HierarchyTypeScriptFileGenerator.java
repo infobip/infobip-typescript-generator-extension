@@ -2,20 +2,20 @@ package com.infobip.typescript.showcase.hierarchy;
 
 import com.infobip.typescript.CustomValidationSettings;
 import com.infobip.typescript.TypeScriptFileGenerator;
-import com.infobip.typescript.showcase.hierarchy.exception.UncheckedURISyntaxException;
 import cz.habarta.typescript.generator.Input;
 import cz.habarta.typescript.generator.Settings;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URISyntaxException;
-import java.nio.file.*;
-import java.util.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
-    public HierarchyTypeScriptFileGenerator(Path basePath) {
-        super(basePath);
+    public HierarchyTypeScriptFileGenerator(Path basePath, Path decoratorsBasePath) {
+        super(basePath, decoratorsBasePath);
     }
 
     @Override
@@ -51,6 +51,6 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
-        return new CustomValidationSettings("com.infobip.typescript.showcase.hierarchy", Collections.emptyList());
+        return new CustomValidationSettings("com.infobip.typescript.showcase.hierarchy");
     }
 }

@@ -4,7 +4,8 @@ import com.google.auto.service.AutoService;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
-import javax.lang.model.element.*;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypeException;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.FileObject;
@@ -40,10 +41,10 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
 
     private List<Class<? extends Annotation>> getCustomValidations(RoundEnvironment roundEnv) {
         return roundEnv.getElementsAnnotatedWith(CustomTSDecorator.class)
-                .stream()
-                .filter(element -> element.getKind().equals(ElementKind.ANNOTATION_TYPE))
-                .map(element -> getCustomValidationClass(element.asType()))
-                .collect(Collectors.toList());
+                       .stream()
+                       .filter(element -> element.getKind().equals(ElementKind.ANNOTATION_TYPE))
+                       .map(element -> getCustomValidationClass(element.asType()))
+                       .collect(Collectors.toList());
 
     }
 
@@ -64,9 +65,11 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
     private TypeScriptFileGenerator createTypeScriptFileGenerator(TypeElement element,
                                                                   GenerateTypescript generateTypescript) {
         Path basePath = getBasePath(element);
+        Path decoratorsBasePath = basePath.getParent().getParent().resolve("src/main/typescript/decorators");
         Class<? extends TypeScriptFileGenerator> typeScriptGeneratorFactory = getGeneratorClass(generateTypescript);
         try {
-            return typeScriptGeneratorFactory.getDeclaredConstructor(Path.class).newInstance(basePath);
+            return typeScriptGeneratorFactory.getDeclaredConstructor(Path.class, Path.class)
+                                             .newInstance(basePath, decoratorsBasePath);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new IllegalArgumentException("Failed to create new instance of " + typeScriptGeneratorFactory, e);
         }

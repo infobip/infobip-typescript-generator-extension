@@ -16,8 +16,8 @@ import java.util.List;
 
 public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
-    public SimpleValidationTypeScriptFileGenerator(Path basePath) {
-        super(basePath);
+    public SimpleValidationTypeScriptFileGenerator(Path basePath, Path decoratorsBasePath) {
+        super(basePath, decoratorsBasePath);
     }
 
     @Override
@@ -41,22 +41,7 @@ public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGener
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
         String rootPackage = "com.infobip.typescript";
-        List<Path> customValidatorsPaths = Collections.singletonList(validatorsPath());
-        return new CustomValidationSettings(rootPackage, customValidatorsPaths);
+        return new CustomValidationSettings(rootPackage);
 
-    }
-
-    private Path validatorsPath() {
-        try {
-            Path sourcePath = Paths.get(ComplexValidationTypeScriptFileGenerator.class.getProtectionDomain()
-                                                                                      .getCodeSource()
-                                                                                      .getLocation()
-                                                                                      .toURI());
-            return Files.isRegularFile(sourcePath)
-                    ? sourcePath.getParent().resolve("classes/validators")
-                    : sourcePath.resolve("validators");
-        } catch (URISyntaxException e) {
-            throw new UncheckedURISyntaxException(e);
-        }
     }
 }

@@ -65,11 +65,9 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
     private TypeScriptFileGenerator createTypeScriptFileGenerator(TypeElement element,
                                                                   GenerateTypescript generateTypescript) {
         Path basePath = getBasePath(element);
-        Path decoratorsBasePath = basePath.getParent().getParent().resolve("src/main/typescript/decorators");
         Class<? extends TypeScriptFileGenerator> typeScriptGeneratorFactory = getGeneratorClass(generateTypescript);
         try {
-            return typeScriptGeneratorFactory.getDeclaredConstructor(Path.class, Path.class)
-                                             .newInstance(basePath, decoratorsBasePath);
+            return typeScriptGeneratorFactory.getDeclaredConstructor(Path.class).newInstance(basePath);
         } catch (NoSuchMethodException | InvocationTargetException | InstantiationException | IllegalAccessException e) {
             throw new IllegalArgumentException("Failed to create new instance of " + typeScriptGeneratorFactory, e);
         }

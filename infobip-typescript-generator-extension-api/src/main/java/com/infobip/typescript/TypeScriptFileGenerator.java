@@ -12,8 +12,7 @@ import cz.habarta.typescript.generator.emitter.EmitterExtension;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,12 +31,12 @@ public abstract class TypeScriptFileGenerator {
     private final AnnotationExtractor annotationExtractor;
     private final List<TSCustomDecorator> tsCustomDecorators;
 
-    protected TypeScriptFileGenerator(Path basePath, Path decoratorsBasePath) {
+    protected TypeScriptFileGenerator(Path basePath) {
         CustomValidationSettings customValidationSettings = getCustomValidationSettings();
         this.basePath = basePath;
         this.annotationExtractor = new AnnotationExtractor(customValidationSettings.getRootPackage());
         this.tsCustomDecorators = new TSCustomDecoratorsExtractor(
-                Collections.singletonList(decoratorsBasePath)).extract();
+                Collections.singletonList(getDecoratorBasePath())).extract();
     }
 
     public void generate() {
@@ -160,6 +159,10 @@ public abstract class TypeScriptFileGenerator {
     protected Path createFilePath() {
         return outputFilePath(basePath);
     }
+
+    protected Path getBasePath() {return basePath;};
+
+    protected abstract Path getDecoratorBasePath();
 
     protected abstract Input getInput();
 

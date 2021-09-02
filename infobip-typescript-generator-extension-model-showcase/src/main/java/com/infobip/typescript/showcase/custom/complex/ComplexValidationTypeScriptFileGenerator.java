@@ -12,8 +12,8 @@ import java.nio.file.Path;
 
 public class ComplexValidationTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
-    public ComplexValidationTypeScriptFileGenerator(Path basePath, Path decoratorsBasePath) {
-        super(basePath, decoratorsBasePath);
+    public ComplexValidationTypeScriptFileGenerator(Path basePath) {
+        super(basePath);
     }
 
     @Override
@@ -39,5 +39,10 @@ public class ComplexValidationTypeScriptFileGenerator extends TypeScriptFileGene
         String rootPackage = "com.infobip.typescript";
         return new CustomValidationSettings(rootPackage);
 
+    }
+
+    @Override
+    protected Path getDecoratorBasePath() {
+        return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
     }
 }

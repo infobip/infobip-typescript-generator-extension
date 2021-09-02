@@ -24,12 +24,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/decorators</directory>
-            </resource>
-        </resources>
-    </build>
-
 </project>

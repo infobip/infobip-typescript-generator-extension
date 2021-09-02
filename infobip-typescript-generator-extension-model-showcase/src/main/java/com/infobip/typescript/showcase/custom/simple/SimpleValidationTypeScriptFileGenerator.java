@@ -16,8 +16,8 @@ import java.util.List;
 
 public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
-    public SimpleValidationTypeScriptFileGenerator(Path basePath, Path decoratorsBasePath) {
-        super(basePath, decoratorsBasePath);
+    public SimpleValidationTypeScriptFileGenerator(Path basePath) {
+        super(basePath);
     }
 
     @Override
@@ -43,5 +43,10 @@ public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGener
         String rootPackage = "com.infobip.typescript";
         return new CustomValidationSettings(rootPackage);
 
+    }
+
+    @Override
+    protected Path getDecoratorBasePath() {
+        return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
     }
 }

@@ -14,8 +14,8 @@ import java.util.Collections;
 
 public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
-    public HierarchyTypeScriptFileGenerator(Path basePath, Path decoratorsBasePath) {
-        super(basePath, decoratorsBasePath);
+    public HierarchyTypeScriptFileGenerator(Path basePath) {
+        super(basePath);
     }
 
     @Override
@@ -52,5 +52,10 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
         return new CustomValidationSettings("com.infobip.typescript.showcase.hierarchy");
+    }
+
+    @Override
+    protected Path getDecoratorBasePath() {
+        return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
     }
 }

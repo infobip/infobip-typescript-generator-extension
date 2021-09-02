@@ -12,8 +12,8 @@ import java.util.Collections;
 
 public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
-    public SimpleTypeScriptFileGenerator(Path basePath, Path decoratorsBasePath) {
-        super(basePath, decoratorsBasePath);
+    public SimpleTypeScriptFileGenerator(Path basePath) {
+        super(basePath);
     }
 
     @Override
@@ -37,5 +37,10 @@ public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
     @Override
     protected CustomValidationSettings getCustomValidationSettings() {
         return new CustomValidationSettings("com.infobip.typescript.showcase.simple");
+    }
+
+    @Override
+    protected Path getDecoratorBasePath() {
+        return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
     }
 }

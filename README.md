@@ -14,6 +14,7 @@ to TypeScript decorators translation.
 1. [Bean Validation to class-validator translation](#BeanValidationToClassValidatorTranslation)
     * [Simple Object](#SimpleObject)
     * [Hierarchy](#Hierarchy)
+1. [Custom Validation to class-vlidator translation](#CustomValidationToClassValidatorTranslation)
 1. [Annotation processor](#AnnotationProcessor)
 1. [Contributing](#Contributing)
 1. [License](#License)
@@ -241,6 +242,32 @@ export class OutboundSmsMessage implements OutboundMessage {
 }
 ```
 
+### <a name="CustomValidationToClassValidatorTranslation"></a> Custom Validation to class-vlidator translation
+
+Input:
+
+```java
+@Value
+public class Foo {
+    
+   @ComplexCustomValidation(length = 100)
+   private final String bar;
+}
+```
+
+Result:
+```typescript
+/* tslint:disable */
+/* eslint-disable */
+import { CommonValidationMessages } from './CommonValidationMessages';
+import { localize } from './Localization';
+
+export class Foo {
+   @ComplexValidator(100, { message: localize('must be valid element') })
+   bar: string;
+}
+```
+
 ## <a name="AnnotationProcessor"></a> Annotation processor
 
 Disclaimer: in order for annotation processor to work model classes and generator configuration have to be compiled
@@ -260,7 +287,7 @@ Setup:
       <version>${infobip-typescript-generator-extension.version}</version>
    </dependency>
    ```
-1. Configure the generator by extending TypeScriptFileGenerator:
+2. Configure the generator by extending TypeScriptFileGenerator:
 
    ```java
    public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
@@ -286,10 +313,27 @@ Setup:
    
            return lib.resolve("Simple.ts");
        }
+   
+       @Override
+        protected Path getDecoratorBasePath() {
+            return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
+        }
    }
    ```
+3. Custom java validation annotations must be marked with **@CustomTSDecorator** annotation. If a custom validation annotation name
+is not the same as a decorator name, you can specify decorator by using **typeScriptDecorator** annotation property. 
+
+4. Project only supports class-validator custom decorators [custom decorators](https://github.com/typestack/class-validator#custom-validation-decorators)
+
+5. By overriding **getDecoratorBasePath()** you are specifying path to typescript decorators which relates to custom java validations:
+   ```java
+        @Override
+        protected Path getDecoratorBasePath() {
+            return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
+        }
+   ```
    
-1. Define a separate module where annotation processing will occur (this module depends on model module) 
+6. Define a separate module where annotation processing will occur (this module depends on model module) 
    with following dependency:
    ```xml
    <dependency>
@@ -298,7 +342,7 @@ Setup:
       <version>${infobip-typescript-generator-extension.version}</version>
    </dependency>
    ```
-1. Add the annotation configuration class (this is only used to trigger the annotation processing with annotation):
+7. Add the annotation configuration class (this is only used to trigger the annotation processing with annotation):
    ```java
    @GenerateTypescript(generator = SimpleTypeScriptFileGenerator.class)
    public class SimpleTypeScriptFileGeneratorConfiguration {

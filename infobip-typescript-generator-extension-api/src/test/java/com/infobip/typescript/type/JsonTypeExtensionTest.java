@@ -1,7 +1,6 @@
 package com.infobip.typescript.type;
 
-import com.infobip.jackson.SimpleJsonHierarchy;
-import com.infobip.jackson.TypeProvider;
+import com.infobip.jackson.*;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
@@ -9,7 +8,6 @@ import lombok.Getter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
-import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -48,6 +46,28 @@ class JsonTypeExtensionTest extends TestBase {
                 "}\n");
     }
 
+    @Test
+    void shouldAllowPresentPropertyHierarchies() {
+
+        // when
+        String actual = whenGenerate(Input.from(PresentPropertyHierarchyRoot.class,
+                                             One.class,
+                                             Two.class));
+
+        // then
+        then(actual).isEqualTo(
+                "\n" +
+                "export interface PresentPropertyHierarchyRoot {\n" +
+                "}\n" +
+                "\n" +
+                "export class One implements PresentPropertyHierarchyRoot {\n" +
+                "}\n" +
+                "\n" +
+                "export class Two implements PresentPropertyHierarchyRoot {\n" +
+                "}\n");
+}
+
+
     @Getter
     @AllArgsConstructor
     enum HierarchyType implements TypeProvider {
@@ -73,5 +93,26 @@ class JsonTypeExtensionTest extends TestBase {
         public HierarchyType getType() {
             return HierarchyType.SECOND_LEAF;
         }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    enum PresentPropertyHierarchyType implements TypeProvider {
+        ONE(One.class),
+        TWO(Two.class);
+
+        private final Class<? extends PresentPropertyHierarchyRoot> type;
+    }
+
+    interface PresentPropertyHierarchyRoot extends PresentPropertyJsonHierarchy<PresentPropertyHierarchyType> {
+
+    }
+
+    static class One implements PresentPropertyHierarchyRoot {
+
+    }
+
+    static class Two implements PresentPropertyHierarchyRoot {
+
     }
 }

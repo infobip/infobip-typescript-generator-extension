@@ -32,9 +32,9 @@ class CustomAnnotationToTsDecoratorConverter {
         String annotationName = getAnnotationName(annotation, customTSDecorator);
         Optional<String> message = extractMessage(annotation);
         Stream<TsExpression> referenceStream = getReferences(annotation, customTSDecorator);
-        return message.isPresent()
-                ? convert(annotation, annotationName, message.get(), referenceStream)
-                : convert(annotationName, referenceStream);
+        return message
+                .map(msg -> convert(annotation, annotationName, msg, referenceStream))
+                .orElseGet(() -> convert(annotationName, referenceStream));
     }
 
     private CustomTSDecorator getCustomTSDecorator(Annotation annotation) {

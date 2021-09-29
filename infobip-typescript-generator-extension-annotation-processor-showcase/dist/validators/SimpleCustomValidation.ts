@@ -9,7 +9,7 @@ export function SimpleCustomValidation(validationOptions?: ValidationOptions) {
             constraints: [],
             options: validationOptions,
             validator: {
-                validate(value: any, args: ValidationArguments) {;
+                validate(value: any, args: ValidationArguments) {
                     return typeof value === 'string' && value.length > 100;
                 },
             },

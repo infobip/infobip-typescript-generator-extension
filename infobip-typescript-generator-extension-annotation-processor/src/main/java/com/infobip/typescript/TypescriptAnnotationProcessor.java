@@ -34,21 +34,11 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        List<Class<? extends Annotation>> customValidations = getCustomValidations(roundEnv);
-        generateTypescript(roundEnv, customValidations);
+        generateTypescript(roundEnv);
         return true;
     }
 
-    private List<Class<? extends Annotation>> getCustomValidations(RoundEnvironment roundEnv) {
-        return roundEnv.getElementsAnnotatedWith(CustomTSDecorator.class)
-                       .stream()
-                       .filter(element -> element.getKind().equals(ElementKind.ANNOTATION_TYPE))
-                       .map(element -> getCustomValidationClass(element.asType()))
-                       .collect(Collectors.toList());
-
-    }
-
-    private void generateTypescript(RoundEnvironment roundEnv, List<Class<? extends Annotation>> customAnnotations) {
+    private void generateTypescript(RoundEnvironment roundEnv) {
         roundEnv.getElementsAnnotatedWith(GenerateTypescript.class)
                 .stream()
                 .filter(element -> element.getKind().equals(ElementKind.CLASS))

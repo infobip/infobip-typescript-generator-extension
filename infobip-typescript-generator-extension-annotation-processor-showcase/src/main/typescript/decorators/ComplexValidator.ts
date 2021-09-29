@@ -1,4 +1,4 @@
-import {registerDecorator, ValidationArguments, ValidationOptions} from 'class-validator';
+import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
 
 export function ComplexValidator(property: number, validationOptions?: ValidationOptions) {
     return function (object: Object, propertyName: string) {
@@ -13,8 +13,8 @@ export function ComplexValidator(property: number, validationOptions?: Validatio
                     const [relatedPropertyName] = args.constraints;
                     const relatedValue = (args.object as any)[relatedPropertyName];
                     return typeof value === 'string' && value.length > relatedValue;
-                },
-            },
+                }
+            }
         });
     };
 }

@@ -1,4 +1,4 @@
-export function localize(message, object: object = {}) {format(message, object)};
+export function localize(message, object: object = {}) { return format(message, object)};
 
 function format(string: string, arg: object = {}) {
     return Object

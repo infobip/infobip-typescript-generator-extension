@@ -46,7 +46,6 @@ public class CustomValidationToTSClassValidatorDecoratorConverterTest extends Cl
 
     @Test
     void shouldThrowExceptionWhenDecoratorIsMissing() {
-
         // when
         Throwable actual = catchThrowable(
                 () -> whenGenerate(Input.from(CustomValidationToTSClassValidatorDecoratorConverterTest.Foo2.class)));

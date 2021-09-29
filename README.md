@@ -14,7 +14,7 @@ to TypeScript decorators translation.
 1. [Bean Validation to class-validator translation](#BeanValidationToClassValidatorTranslation)
     * [Simple Object](#SimpleObject)
     * [Hierarchy](#Hierarchy)
-1. [Custom Validation to class-vlidator translation](#CustomValidationToClassValidatorTranslation)
+1. [Custom Validation to class-validator translation](#CustomValidationToClassValidatorTranslation)
 1. [Annotation processor](#AnnotationProcessor)
 1. [Contributing](#Contributing)
 1. [License](#License)
@@ -242,7 +242,7 @@ export class OutboundSmsMessage implements OutboundMessage {
 }
 ```
 
-### <a name="CustomValidationToClassValidatorTranslation"></a> Custom Validation to class-vlidator translation
+### <a name="CustomValidationToClassValidatorTranslation"></a> Custom Validation to class-validator translation
 
 Input:
 

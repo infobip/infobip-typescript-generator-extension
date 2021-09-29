@@ -5,7 +5,7 @@ public class Localization {
     public static final String LOCALIZATION_METHOD = "localize";
     public static final String LOCALIZATION_FILE_NAME = LOCALIZATION_CLASS_NAME + ".ts";
     public static final String LOCALIZATION_SOURCE_CODE =
-            "export function localize(message, object: object = {}) {format(message, object)};\n" +
+            "export function localize(message, object: object = {}) { return format(message, object)};\n" +
                     "\n" +
                     "function format(string: string, arg: object = {}) {\n" +
                     "    return Object\n" +

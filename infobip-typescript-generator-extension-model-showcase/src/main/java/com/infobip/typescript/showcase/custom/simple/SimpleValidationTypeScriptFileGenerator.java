@@ -2,17 +2,13 @@ package com.infobip.typescript.showcase.custom.simple;
 
 import com.infobip.typescript.CustomValidationSettings;
 import com.infobip.typescript.TypeScriptFileGenerator;
-import com.infobip.typescript.showcase.custom.complex.ComplexValidationTypeScriptFileGenerator;
 import com.infobip.typescript.showcase.custom.simple.validation.Foo;
-import com.infobip.typescript.showcase.hierarchy.exception.UncheckedURISyntaxException;
 import cz.habarta.typescript.generator.Input;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
-import java.net.URISyntaxException;
-import java.nio.file.*;
-import java.util.Collections;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
@@ -27,15 +23,13 @@ public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGener
 
     @Override
     public Path outputFilePath(Path basePath) {
-        Path lib = basePath.getParent().getParent().resolve("dist");
-
         try {
+            Path lib = basePath.getParent().getParent().resolve("dist");
             Files.createDirectories(lib);
+            return lib.resolve("SimpleValidation.ts");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-
-        return lib.resolve("SimpleValidation.ts");
     }
 
     @Override

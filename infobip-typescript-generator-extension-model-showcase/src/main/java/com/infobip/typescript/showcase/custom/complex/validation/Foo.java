@@ -1,6 +1,5 @@
 package com.infobip.typescript.showcase.custom.complex.validation;
 
-import com.infobip.typescript.showcase.custom.simple.validation.SimpleCustomValidation;
 import lombok.Value;
 
 import javax.validation.Valid;
@@ -15,4 +14,5 @@ public class Foo {
     @NotNull
     @Valid
     private final String bar;
+
 }

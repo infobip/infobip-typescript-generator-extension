@@ -84,18 +84,6 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private Class<? extends Annotation> getCustomValidationClass(TypeMirror typeMirror) {
-
-        try {
-            Class<?> aClass = getClass().getClassLoader()
-                                        .loadClass(typeMirror.toString());
-            return (Class<? extends Annotation>) aClass;
-        } catch (ClassNotFoundException classNotFoundException) {
-            throw new IllegalStateException(classNotFoundException);
-        }
-    }
-
     private Path getBasePath(TypeElement element) {
         return Paths.get(getResource(element).toUri()).getParent();
     }

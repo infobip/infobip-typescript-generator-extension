@@ -10,8 +10,8 @@ public class Localization {
                     "function format(string: string, arg: object = {}) {\n" +
                     "    return Object\n" +
                     "        .keys(arg)\n" +
-                    "        .reduce((first: string, second: string) => {\n" +
-                    "            return first.replace('{' + second + '}', (arg as any)[second]);\n" +
+                    "        .reduce((result: string, current: string) => {\n" +
+                    "            return result.replace('{' + current + '}', (arg as any)[current]);\n" +
                     "        }, string);\n" +
                     "}\n";
 }

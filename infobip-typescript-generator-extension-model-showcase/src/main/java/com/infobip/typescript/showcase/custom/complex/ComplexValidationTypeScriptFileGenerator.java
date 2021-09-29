@@ -23,15 +23,13 @@ public class ComplexValidationTypeScriptFileGenerator extends TypeScriptFileGene
 
     @Override
     public Path outputFilePath(Path basePath) {
-        Path lib = basePath.getParent().getParent().resolve("dist");
-
         try {
+            Path lib = basePath.getParent().getParent().resolve("dist");
             Files.createDirectories(lib);
+            return lib.resolve("ComplexValidation.ts");
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
-
-        return lib.resolve("ComplexValidation.ts");
     }
 
     @Override

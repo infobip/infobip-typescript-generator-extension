@@ -7,11 +7,11 @@ public class Localization {
     public static final String LOCALIZATION_SOURCE_CODE =
             "export function localize(message, object: object = {}) { return format(message, object)};\n" +
                     "\n" +
-                    "function format(string: string, arg: object = {}) {\n" +
+                    "function format(text: string, arg: object = {}) {\n" +
                     "    return Object\n" +
                     "        .keys(arg)\n" +
                     "        .reduce((result: string, current: string) => {\n" +
                     "            return result.replace('{' + current + '}', (arg as any)[current]);\n" +
-                    "        }, string);\n" +
+                    "        }, text);\n" +
                     "}\n";
 }

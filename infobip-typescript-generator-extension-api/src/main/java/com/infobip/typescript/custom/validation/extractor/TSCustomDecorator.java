@@ -9,7 +9,7 @@ public class TSCustomDecorator {
     private final Path destinationPath;
     private final Path tsPath;
 
-    public TSCustomDecorator(String name,Path sourcePath, Path destinationPath, Path tsPath) {
+    public TSCustomDecorator(String name, Path sourcePath, Path destinationPath, Path tsPath) {
         this.name = name;
         this.sourcePath = sourcePath;
         this.destinationPath = destinationPath;

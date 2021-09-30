@@ -48,14 +48,4 @@ public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
         return lib.resolve("Hierarchy.ts");
     }
-
-    @Override
-    protected CustomValidationSettings getCustomValidationSettings() {
-        return new CustomValidationSettings("com.infobip.typescript.showcase.hierarchy");
-    }
-
-    @Override
-    protected Path getDecoratorBasePath() {
-        return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
-    }
 }

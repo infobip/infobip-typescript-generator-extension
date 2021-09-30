@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Optional;
 
 public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
@@ -33,14 +34,14 @@ public class SimpleValidationTypeScriptFileGenerator extends TypeScriptFileGener
     }
 
     @Override
-    protected CustomValidationSettings getCustomValidationSettings() {
+    protected Optional<CustomValidationSettings> getCustomValidationSettings() {
         String rootPackage = "com.infobip.typescript";
-        return new CustomValidationSettings(rootPackage);
+        return Optional.of(new CustomValidationSettings(rootPackage));
 
     }
 
     @Override
-    protected Path getDecoratorBasePath() {
-        return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
+    protected Optional<Path> getDecoratorBasePath() {
+        return Optional.of(getBasePath().getParent().getParent().resolve("src/main/typescript/decorators"));
     }
 }

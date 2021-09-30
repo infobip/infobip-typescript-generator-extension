@@ -33,14 +33,4 @@ public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
 
         return lib.resolve("Simple.ts");
     }
-
-    @Override
-    protected CustomValidationSettings getCustomValidationSettings() {
-        return new CustomValidationSettings("com.infobip.typescript.showcase.simple");
-    }
-
-    @Override
-    protected Path getDecoratorBasePath() {
-        return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
-    }
 }

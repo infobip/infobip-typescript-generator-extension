@@ -28,15 +28,14 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 public abstract class TypeScriptFileGenerator {
 
     private final Path basePath;
-    private final AnnotationExtractor annotationExtractor;
+    private final Optional<AnnotationExtractor> annotationExtractor;
     private final List<TSCustomDecorator> tsCustomDecorators;
 
     protected TypeScriptFileGenerator(Path basePath) {
-        CustomValidationSettings customValidationSettings = getCustomValidationSettings();
         this.basePath = basePath;
-        this.annotationExtractor = new AnnotationExtractor(customValidationSettings.getRootPackage());
-        this.tsCustomDecorators = new TSCustomDecoratorsExtractor(
-                Collections.singletonList(getDecoratorBasePath())).extract();
+        this.annotationExtractor = getCustomValidationSettings().map(settings -> new AnnotationExtractor(settings.getRootPackage()));
+        this.tsCustomDecorators = new TSCustomDecoratorsExtractor(getDecoratorBasePath().map(path -> Collections.singletonList(path))
+                                                                                        .orElse(Collections.emptyList())).extract();
     }
 
     public void generate() {
@@ -54,7 +53,7 @@ public abstract class TypeScriptFileGenerator {
     }
 
     protected void writeFiles(String code, Path filePath) throws
-            IOException {
+        IOException {
 
         writeGeneratedTypeScriptFile(code, filePath);
         writeCommonValidationMessagesTypeScriptFile(code, filePath);
@@ -132,7 +131,7 @@ public abstract class TypeScriptFileGenerator {
         return Stream.of(new JsonTypeExtension(),
                          new ClassTransformerDecoratorExtension(),
                          new ClassValidatorDecoratorExtension("validations", tsCustomDecorators,
-                                                              annotationExtractor.extract()))
+                                                              annotationExtractor.map(AnnotationExtractor::extract).orElse(Collections.emptyList())))
                      .collect(Collectors.toList());
     }
 
@@ -160,13 +159,14 @@ public abstract class TypeScriptFileGenerator {
         return outputFilePath(basePath);
     }
 
-    protected Path getBasePath() {return basePath;};
+    protected Path getBasePath() { return basePath; }
 
-    protected abstract Path getDecoratorBasePath();
+    protected Optional<Path> getDecoratorBasePath() { return Optional.empty(); }
 
     protected abstract Input getInput();
 
     protected abstract Path outputFilePath(Path basePath);
 
-    protected abstract CustomValidationSettings getCustomValidationSettings();
+    protected Optional<CustomValidationSettings> getCustomValidationSettings() { return Optional.empty(); };
+
 }

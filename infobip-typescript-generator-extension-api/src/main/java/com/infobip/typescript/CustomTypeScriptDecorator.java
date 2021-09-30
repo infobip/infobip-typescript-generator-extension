@@ -5,7 +5,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 @Documented
-public @interface CustomTSDecorator {
+public @interface CustomTypeScriptDecorator {
 
     String typeScriptDecorator() default "";
 

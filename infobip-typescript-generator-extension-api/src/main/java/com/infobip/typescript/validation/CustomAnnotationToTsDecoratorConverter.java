@@ -1,6 +1,6 @@
 package com.infobip.typescript.validation;
 
-import com.infobip.typescript.CustomTSDecorator;
+import com.infobip.typescript.CustomTypeScriptDecorator;
 import com.infobip.typescript.DecoratorParameterListExtractor;
 import com.infobip.typescript.validation.converter.ObjectToTSLiteralConverter;
 import com.infobip.typescript.validation.exception.CanNotResolveMethod;
@@ -28,28 +28,28 @@ class CustomAnnotationToTsDecoratorConverter {
     }
 
     public Stream<TsDecorator> convert(Annotation annotation) {
-        CustomTSDecorator customTSDecorator = getCustomTSDecorator(annotation);
-        String annotationName = getAnnotationName(annotation, customTSDecorator);
+        CustomTypeScriptDecorator customTypeScriptDecorator = getCustomTSDecorator(annotation);
+        String annotationName = getAnnotationName(annotation, customTypeScriptDecorator);
         Optional<String> message = extractMessage(annotation);
-        Stream<TsExpression> referenceStream = getReferences(annotation, customTSDecorator);
+        Stream<TsExpression> referenceStream = getReferences(annotation, customTypeScriptDecorator);
         return message
                 .map(msg -> convert(annotation, annotationName, msg, referenceStream))
                 .orElseGet(() -> convert(annotationName, referenceStream));
     }
 
-    private CustomTSDecorator getCustomTSDecorator(Annotation annotation) {
-        return annotation.annotationType().getAnnotation(CustomTSDecorator.class);
+    private CustomTypeScriptDecorator getCustomTSDecorator(Annotation annotation) {
+        return annotation.annotationType().getAnnotation(CustomTypeScriptDecorator.class);
     }
 
-    private String getAnnotationName(Annotation annotation, CustomTSDecorator customTSDecorator) {
-        return customTSDecorator.typeScriptDecorator().isEmpty()
+    private String getAnnotationName(Annotation annotation, CustomTypeScriptDecorator customTypeScriptDecorator) {
+        return customTypeScriptDecorator.typeScriptDecorator().isEmpty()
                 ? annotation.annotationType().getSimpleName()
-                : customTSDecorator.typeScriptDecorator();
+                : customTypeScriptDecorator.typeScriptDecorator();
     }
 
-    private Stream<TsExpression> getReferences(Annotation annotation, CustomTSDecorator customTSDecorator) {
+    private Stream<TsExpression> getReferences(Annotation annotation, CustomTypeScriptDecorator customTypeScriptDecorator) {
         try {
-            DecoratorParameterListExtractor decoratorParameterListExtractor = customTSDecorator.decoratorParameterListExtractor()
+            DecoratorParameterListExtractor decoratorParameterListExtractor = customTypeScriptDecorator.decoratorParameterListExtractor()
                                                                                                .newInstance();
             return decoratorParameterListExtractor.extract(annotation).stream()
                                                   .map(objectToTSLiteralConverter::convert);

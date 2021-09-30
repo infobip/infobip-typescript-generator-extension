@@ -1,13 +1,13 @@
 package com.infobip.typescript.validation.custom;
 
-import com.infobip.typescript.CustomTSDecorator;
+import com.infobip.typescript.CustomTypeScriptDecorator;
 import com.infobip.typescript.validation.custom.validators.SimpleTestValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@CustomTSDecorator(type = SimpleValidation.class)
+@CustomTypeScriptDecorator(type = SimpleValidation.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = SimpleTestValidator.class)

@@ -1,6 +1,6 @@
 package com.infobip.typescript.validation;
 
-import com.infobip.typescript.CustomTSDecorator;
+import com.infobip.typescript.CustomTypeScriptDecorator;
 import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
 import com.infobip.typescript.validation.exception.TSValidatorDoesNotExist;
 import cz.habarta.typescript.generator.emitter.TsDecorator;
@@ -51,16 +51,16 @@ public class ValidationToTsDecoratorConverterResolver {
     }
 
     private void validateCustomAnnotation(Annotation annotation) {
-        CustomTSDecorator customTSDecorator = getCustomTSDecoratorAnnotation(annotation);
-        String annotationName = customTSDecorator.typeScriptDecorator().isEmpty()
+        CustomTypeScriptDecorator customTypeScriptDecorator = getCustomTSDecoratorAnnotation(annotation);
+        String annotationName = customTypeScriptDecorator.typeScriptDecorator().isEmpty()
                 ? annotation.annotationType().getSimpleName()
-                : customTSDecorator.typeScriptDecorator();
+                : customTypeScriptDecorator.typeScriptDecorator();
         if (!decoratorNames.contains(annotationName)) {
             throw new TSValidatorDoesNotExist(annotation);
         }
     }
 
-    private CustomTSDecorator getCustomTSDecoratorAnnotation(Annotation annotation) {
-        return annotation.annotationType().getAnnotation(CustomTSDecorator.class);
+    private CustomTypeScriptDecorator getCustomTSDecoratorAnnotation(Annotation annotation) {
+        return annotation.annotationType().getAnnotation(CustomTypeScriptDecorator.class);
     }
 }

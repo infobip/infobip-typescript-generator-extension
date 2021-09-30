@@ -1,12 +1,12 @@
 package com.infobip.typescript.showcase.custom.complex.validation;
 
-import com.infobip.typescript.CustomTSDecorator;
+import com.infobip.typescript.CustomTypeScriptDecorator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@CustomTSDecorator(
+@CustomTypeScriptDecorator(
         typeScriptDecorator = "ComplexValidator",
         decoratorParameterListExtractor = DecoratorParameterListExtractorImpl.class,
         type = ComplexCustomValidation.class)

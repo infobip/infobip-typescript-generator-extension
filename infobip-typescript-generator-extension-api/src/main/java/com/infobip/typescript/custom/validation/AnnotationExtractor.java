@@ -1,6 +1,6 @@
 package com.infobip.typescript.custom.validation;
 
-import com.infobip.typescript.CustomTSDecorator;
+import com.infobip.typescript.CustomTypeScriptDecorator;
 import io.github.classgraph.ClassGraph;
 
 import java.lang.annotation.Annotation;
@@ -24,7 +24,7 @@ public class AnnotationExtractor {
                          .getAllAnnotations()
                          .stream()
                          .map(annotation -> (Class<? extends Annotation>) annotation.loadClass())
-                         .filter(annotation -> Optional.ofNullable(annotation.getAnnotation(CustomTSDecorator.class))
+                         .filter(annotation -> Optional.ofNullable(annotation.getAnnotation(CustomTypeScriptDecorator.class))
                                                        .isPresent())
                          .collect(Collectors.toList());
 

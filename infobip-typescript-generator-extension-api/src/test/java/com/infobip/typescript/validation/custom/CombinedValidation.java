@@ -1,6 +1,6 @@
 package com.infobip.typescript.validation.custom;
 
-import com.infobip.typescript.CustomTSDecorator;
+import com.infobip.typescript.CustomTypeScriptDecorator;
 import com.infobip.typescript.validation.custom.validators.CombinedTestValidator;
 
 import javax.validation.Constraint;
@@ -8,7 +8,7 @@ import javax.validation.Payload;
 import javax.validation.constraints.NotEmpty;
 import java.lang.annotation.*;
 
-@CustomTSDecorator(typeScriptDecorator = "SimpleValidation", type = CombinedValidation.class)
+@CustomTypeScriptDecorator(typeScriptDecorator = "SimpleValidation", type = CombinedValidation.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @NotEmpty

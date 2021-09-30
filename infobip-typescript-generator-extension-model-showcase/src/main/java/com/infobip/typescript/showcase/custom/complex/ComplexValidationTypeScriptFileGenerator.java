@@ -34,14 +34,14 @@ public class ComplexValidationTypeScriptFileGenerator extends TypeScriptFileGene
     }
 
     @Override
-    protected Optional<CustomValidationSettings> getCustomValidationSettings() {
+    protected Optional<CustomValidationSettings> getCustomValidationAnnotationSettings() {
         String rootPackage = "com.infobip.typescript";
         return Optional.of(new CustomValidationSettings(rootPackage));
 
     }
 
     @Override
-    protected Optional<Path> getDecoratorBasePath() {
+    protected Optional<Path> getCustomDecoratorBasePath() {
         return Optional.of(getBasePath().getParent().getParent().resolve("src/main/typescript/decorators"));
     }
 }

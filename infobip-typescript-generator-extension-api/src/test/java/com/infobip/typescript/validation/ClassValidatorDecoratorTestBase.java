@@ -1,11 +1,11 @@
 package com.infobip.typescript.validation;
 
-import com.infobip.typescript.TestBase;
-import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
-
 import java.lang.annotation.Annotation;
 import java.util.Arrays;
 import java.util.List;
+
+import com.infobip.typescript.TestBase;
+import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
 
 abstract class ClassValidatorDecoratorTestBase extends TestBase {
 
@@ -16,11 +16,8 @@ abstract class ClassValidatorDecoratorTestBase extends TestBase {
     }
 
     ClassValidatorDecoratorTestBase(List<TSCustomDecorator> tsCustomDecorators,
-                                    List<Class<? extends Annotation>> customAnnotations) {
-        super(new ClassValidatorDecoratorExtension(null, tsCustomDecorators, customAnnotations),
-              Arrays.asList("import { CommonValidationMessages } from 'infobip-typescript-generator-common'",
-                            "import { ComplexValidation } from './validators/ComplexValidation'",
-                            "import { SimpleValidation } from './validators/SimpleValidation'",
-                            "import { localize } from './Localization'"));
+                                    List<Class<? extends Annotation>> customAnnotations,
+                                    List<String> imports) {
+        super(new ClassValidatorDecoratorExtension(null, tsCustomDecorators, customAnnotations), imports);
     }
 }

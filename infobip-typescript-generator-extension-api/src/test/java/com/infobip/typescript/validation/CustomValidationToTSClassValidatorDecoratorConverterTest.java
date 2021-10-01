@@ -1,21 +1,26 @@
 package com.infobip.typescript.validation;
 
-import com.infobip.typescript.validation.custom.*;
-import com.infobip.typescript.validation.exception.TSValidatorDoesNotExist;
-import cz.habarta.typescript.generator.Input;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
-
 import static com.infobip.typescript.validation.helpers.AnnotationHelper.getSupportedAnnotations;
+import static com.infobip.typescript.validation.helpers.ImportDeclarationHelper.getImportsWithoutLocalization;
 import static com.infobip.typescript.validation.helpers.TsCustomDecoratorHelper.getDecorators;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
 
+import com.infobip.typescript.validation.custom.CombinedValidation;
+import com.infobip.typescript.validation.custom.ComplexValidation;
+import com.infobip.typescript.validation.custom.NonExistingTSDecorator;
+import com.infobip.typescript.validation.custom.SimpleNoMessageValidation;
+import com.infobip.typescript.validation.custom.SimpleValidation;
+import com.infobip.typescript.validation.exception.TSValidatorDoesNotExist;
+import cz.habarta.typescript.generator.Input;
+import lombok.Value;
+import org.junit.jupiter.api.Test;
+
 public class CustomValidationToTSClassValidatorDecoratorConverterTest extends ClassValidatorDecoratorTestBase {
 
     public CustomValidationToTSClassValidatorDecoratorConverterTest() {
-        super(getDecorators(), getSupportedAnnotations());
+        super(getDecorators(), getSupportedAnnotations(), getImportsWithoutLocalization());
     }
 
     @Test
@@ -29,17 +34,16 @@ public class CustomValidationToTSClassValidatorDecoratorConverterTest extends Cl
                                        "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
                                        "import { ComplexValidation } from './validators/ComplexValidation';\n" +
                                        "import { SimpleValidation } from './validators/SimpleValidation';\n" +
-                                       "import { localize } from './Localization';\n" +
                                        "\n" +
                                        "export class Foo1 {\n" +
-                                       "    @SimpleValidation({ message: localize(\"must be valid element\") })\n" +
+                                       "    @SimpleValidation({ message: \"must be valid element\" })\n" +
                                        "    bar1: string;\n" +
                                        "    @SimpleValidation()\n" +
                                        "    bar2: string;\n" +
-                                       "    @ComplexValidation(100, { message: localize(\"must be valid element\") })\n" +
+                                       "    @ComplexValidation(100, { message: \"must be valid element\" })\n" +
                                        "    bar3: string;\n" +
                                        "    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })\n" +
-                                       "    @SimpleValidation({ message: localize(\"must be valid element\") })\n" +
+                                       "    @SimpleValidation({ message: \"must be valid element\" })\n" +
                                        "    bar4: string;\n" +
                                        "}\n");
     }

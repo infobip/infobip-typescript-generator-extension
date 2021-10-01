@@ -4,10 +4,10 @@ import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.List;
 
-public class NoParametersDecorator implements DecoratorParameterListExtractor{
+public class NoParametersDecorator implements DecoratorParameterListExtractor<Annotation> {
 
     @Override
-    public List<Object> extract(Annotation annotation) {
+    public List<DecoratorParameter> extract(Annotation annotation) {
         return Collections.emptyList();
     }
 }

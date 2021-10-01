@@ -5,5 +5,5 @@ import java.util.List;
 
 public interface DecoratorParameterListExtractor<T extends Annotation> {
 
-    List<Object> extract(T annotation);
+    List<DecoratorParameter> extract(T annotation);
 }

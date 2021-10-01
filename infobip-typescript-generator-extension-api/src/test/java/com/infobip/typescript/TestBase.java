@@ -1,9 +1,18 @@
 package com.infobip.typescript;
 
-import cz.habarta.typescript.generator.*;
-import cz.habarta.typescript.generator.emitter.EmitterExtension;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
-import java.util.*;
+import cz.habarta.typescript.generator.ClassMapping;
+import cz.habarta.typescript.generator.EnumMapping;
+import cz.habarta.typescript.generator.Input;
+import cz.habarta.typescript.generator.JsonLibrary;
+import cz.habarta.typescript.generator.Settings;
+import cz.habarta.typescript.generator.TypeScriptFileType;
+import cz.habarta.typescript.generator.TypeScriptGenerator;
+import cz.habarta.typescript.generator.TypeScriptOutputKind;
+import cz.habarta.typescript.generator.emitter.EmitterExtension;
 
 public abstract class TestBase {
 
@@ -32,4 +41,5 @@ public abstract class TestBase {
     protected String whenGenerate(Input input) {
         return generator.generateTypeScript(input);
     }
+
 }

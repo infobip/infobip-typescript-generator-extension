@@ -8,7 +8,7 @@ import javax.validation.Payload;
 import javax.validation.constraints.NotEmpty;
 import java.lang.annotation.*;
 
-@CustomTypeScriptDecorator(typeScriptDecorator = "SimpleValidation", type = CombinedValidation.class)
+@CustomTypeScriptDecorator(typeScriptDecorator = "SimpleValidation")
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @NotEmpty

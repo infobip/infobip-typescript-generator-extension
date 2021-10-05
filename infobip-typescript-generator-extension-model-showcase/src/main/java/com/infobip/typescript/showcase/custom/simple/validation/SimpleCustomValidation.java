@@ -6,7 +6,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@CustomTypeScriptDecorator(type = SimpleCustomValidation.class)
+@CustomTypeScriptDecorator()
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = SimpleCustomValidator.class)
@@ -17,4 +17,5 @@ public @interface SimpleCustomValidation {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
 }

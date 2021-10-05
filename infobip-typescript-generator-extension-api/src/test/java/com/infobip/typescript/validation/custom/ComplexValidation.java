@@ -7,7 +7,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@CustomTypeScriptDecorator(decoratorParameterListExtractor = DecoratorParameterExtractorImpl.class, type = ComplexValidation.class)
+@CustomTypeScriptDecorator(decoratorParameterListExtractor = DecoratorParameterExtractorImpl.class)
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ComplexTestValidator.class)
@@ -20,4 +20,5 @@ public @interface ComplexValidation {
     Class<?>[] groups() default {};
 
     Class<? extends Payload>[] payload() default {};
+
 }

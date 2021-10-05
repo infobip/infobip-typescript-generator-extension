@@ -3,7 +3,7 @@ package com.infobip.typescript;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
+@Target({ ElementType.TYPE })
 @Documented
 public @interface CustomTypeScriptDecorator {
 
@@ -11,5 +11,4 @@ public @interface CustomTypeScriptDecorator {
 
     Class<? extends DecoratorParameterListExtractor> decoratorParameterListExtractor() default NoParametersDecorator.class;
 
-    Class<? extends Annotation> type();
 }

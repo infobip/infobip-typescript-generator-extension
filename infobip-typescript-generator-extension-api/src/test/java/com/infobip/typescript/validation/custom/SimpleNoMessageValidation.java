@@ -7,7 +7,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@CustomTypeScriptDecorator(typeScriptDecorator = "SimpleValidation", type = SimpleNoMessageValidation.class)
+@CustomTypeScriptDecorator(typeScriptDecorator = "SimpleValidation")
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = SimpleNoMessageTestValidator.class)

@@ -7,7 +7,7 @@ import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.*;
 
-@CustomTypeScriptDecorator(type = SimpleValidation.class)
+@CustomTypeScriptDecorator()
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = SimpleTestValidator.class)

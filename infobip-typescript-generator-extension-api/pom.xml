@@ -21,6 +21,12 @@
             <groupId>cz.habarta.typescript-generator</groupId>
             <artifactId>typescript-generator-core</artifactId>
             <version>${typescript-generator-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.codehaus.jackson</groupId>
+                    <artifactId>jackson-mapper-asl</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

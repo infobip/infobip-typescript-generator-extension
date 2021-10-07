@@ -5,7 +5,6 @@ import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
 import cz.habarta.typescript.generator.compiler.ModelTransformer;
 import cz.habarta.typescript.generator.emitter.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -74,7 +73,6 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
         return Collections.emptyList();
     }
 
-    @NotNull
     private List<String> resolve(String typeScript, String usedValidations) {
         String validationImport = "import { " + usedValidations + " } from 'class-validator';";
 

@@ -6,7 +6,6 @@ import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
 import cz.habarta.typescript.generator.compiler.ModelTransformer;
 import cz.habarta.typescript.generator.emitter.*;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -109,7 +108,6 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
                                  .collect(Collectors.toList());
     }
 
-    @NotNull
     private Stream<String> resolve(String typeScript, String usedValidations) {
         String validationImport = "import { " + usedValidations + " } from 'class-validator';";
 
@@ -121,7 +119,6 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
         return Collections.singletonList(validationImport).stream();
     }
 
-    @NotNull
     private Stream<String> resolve(List<TSCustomDecorator> tsCustomDecorators) {
         return tsCustomDecorators.stream()
                                  .map(decorator -> "import { " + decorator.getName() + " } from '" + convert(

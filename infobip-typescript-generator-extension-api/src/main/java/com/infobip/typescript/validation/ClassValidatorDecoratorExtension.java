@@ -61,13 +61,13 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     @Override
     public List<TransformerDefinition> getTransformers() {
         return Collections.singletonList(
-                new TransformerDefinition(ModelCompiler.TransformationPhase.BeforeEnums,
-                                          (ModelTransformer) (symbolTable, model) ->
-                                                  model.withBeans(model.getBeans().stream()
-                                                                       .map(this::decorateClass)
-                                                                       .collect(Collectors.toList())
-                                                  ))
-        );
+            new TransformerDefinition(ModelCompiler.TransformationPhase.BeforeEnums,
+                                      (ModelTransformer) (symbolTable, model) ->
+                                          model.withBeans(model.getBeans().stream()
+                                                               .map(this::decorateClass)
+                                                               .collect(Collectors.toList())
+                                                         ))
+                                        );
     }
 
     @Override
@@ -104,7 +104,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     private List<TSCustomDecorator> getUsedCustomDecorators(String typeScript) {
         return tsCustomDecorators.stream()
                                  .filter(decorator -> typeScript.contains(
-                                         "@" + decorator.getName() + "("))
+                                     "@" + decorator.getName() + "("))
                                  .collect(Collectors.toList());
     }
 
@@ -122,13 +122,13 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     private Stream<String> resolve(List<TSCustomDecorator> tsCustomDecorators) {
         return tsCustomDecorators.stream()
                                  .map(decorator -> "import { " + decorator.getName() + " } from '" + convert(
-                                         decorator.getTsPath()) + "';");
+                                     decorator.getTsPath()) + "';");
     }
 
     private String convert(Path tsPath) {
         return tsPath
-                .toString()
-                .replace("\\", "/");
+            .toString()
+            .replace("\\", "/");
     }
 
     private TsBeanModel decorateClass(TsBeanModel bean) {
@@ -136,7 +136,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
                                        .stream()
                                        .map(model -> getDecorators(bean, model))
                                        .collect(Collectors.toList())
-        );
+                                  );
     }
 
     private TsPropertyModel getDecorators(TsBeanModel bean, TsPropertyModel model) {
@@ -157,4 +157,5 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
             return Optional.empty();
         }
     }
+
 }

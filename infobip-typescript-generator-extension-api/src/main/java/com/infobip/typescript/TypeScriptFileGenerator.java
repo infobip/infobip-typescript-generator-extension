@@ -1,22 +1,5 @@
 package com.infobip.typescript;
 
-import com.infobip.typescript.custom.validation.AnnotationExtractor;
-import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
-import com.infobip.typescript.custom.validation.extractor.TSCustomDecoratorsExtractor;
-import com.infobip.typescript.transformer.ClassTransformerDecoratorExtension;
-import com.infobip.typescript.type.JsonTypeExtension;
-import com.infobip.typescript.validation.ClassValidatorDecoratorExtension;
-import cz.habarta.typescript.generator.*;
-import cz.habarta.typescript.generator.emitter.EmitterExtension;
-
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.*;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_FILE_NAME;
 import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_SOURCE_CODE;
@@ -25,15 +8,44 @@ import static com.infobip.typescript.validation.Localization.LOCALIZATION_FILE_N
 import static com.infobip.typescript.validation.Localization.LOCALIZATION_SOURCE_CODE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.lang.annotation.Annotation;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import com.infobip.typescript.custom.validation.AnnotationExtractor;
+import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
+import com.infobip.typescript.custom.validation.extractor.TSCustomDecoratorsExtractor;
+import com.infobip.typescript.transformer.ClassTransformerDecoratorExtension;
+import com.infobip.typescript.type.JsonTypeExtension;
+import com.infobip.typescript.validation.ClassValidatorDecoratorExtension;
+import cz.habarta.typescript.generator.ClassMapping;
+import cz.habarta.typescript.generator.EnumMapping;
+import cz.habarta.typescript.generator.Input;
+import cz.habarta.typescript.generator.JsonLibrary;
+import cz.habarta.typescript.generator.Settings;
+import cz.habarta.typescript.generator.StringQuotes;
+import cz.habarta.typescript.generator.TypeScriptFileType;
+import cz.habarta.typescript.generator.TypeScriptGenerator;
+import cz.habarta.typescript.generator.TypeScriptOutputKind;
+import cz.habarta.typescript.generator.emitter.EmitterExtension;
+
 public abstract class TypeScriptFileGenerator {
 
     private final Path basePath;
-    private final Optional<AnnotationExtractor> annotationExtractor;
     private final List<TSCustomDecorator> tsCustomDecorators;
 
     protected TypeScriptFileGenerator(Path basePath) {
         this.basePath = basePath;
-        this.annotationExtractor = getCustomValidationAnnotationSettings().map(settings -> new AnnotationExtractor(settings.getRootPackage()));
         this.tsCustomDecorators = new TSCustomDecoratorsExtractor(getCustomDecoratorBasePath().map(path -> Collections.singletonList(path))
                                                                                               .orElse(Collections.emptyList())).extract();
     }
@@ -130,8 +142,7 @@ public abstract class TypeScriptFileGenerator {
     protected List<EmitterExtension> createExtensions() {
         return Stream.of(new JsonTypeExtension(),
                          new ClassTransformerDecoratorExtension(),
-                         new ClassValidatorDecoratorExtension("validations", tsCustomDecorators,
-                                                              annotationExtractor.map(AnnotationExtractor::extract).orElse(Collections.emptyList())))
+                         new ClassValidatorDecoratorExtension("validations", tsCustomDecorators, getCustomAnnotations()))
                      .collect(Collectors.toList());
     }
 
@@ -159,14 +170,28 @@ public abstract class TypeScriptFileGenerator {
         return outputFilePath(basePath);
     }
 
-    protected Path getBasePath() { return basePath; }
+    protected Path getBasePath() {
+        return basePath;
+    }
 
-    protected Optional<Path> getCustomDecoratorBasePath() { return Optional.empty(); }
+    protected Optional<Path> getCustomDecoratorBasePath() {
+        return Optional.empty();
+    }
 
     protected abstract Input getInput();
 
     protected abstract Path outputFilePath(Path basePath);
 
-    protected Optional<CustomValidationSettings> getCustomValidationAnnotationSettings() { return Optional.empty(); };
+    protected Optional<CustomValidationSettings> getCustomValidationAnnotationSettings() {
+        return Optional.empty();
+    }
+
+    private List<Class<? extends Annotation>> getCustomAnnotations() {
+        return getCustomValidationAnnotationSettings().map(this::getCustomAnnotations).orElse(Collections.emptyList());
+    }
+
+    private List<Class<? extends Annotation>> getCustomAnnotations(CustomValidationSettings customValidationSettings) {
+        return new AnnotationExtractor(customValidationSettings.getRootPackage()).extract();
+    }
 
 }

@@ -5,18 +5,22 @@
 [![Coverage Status](https://coveralls.io/repos/github/infobip/infobip-typescript-generator-extension/badge.svg?branch=main)](https://coveralls.io/github/infobip/infobip-typescript-generator-extension?branch=main)
 [![Known Vulnerabilities](https://snyk.io/test/github/infobip/infobip-typescript-generator-extension/badge.svg)](https://snyk.io/test/github/infobip/infobip-typescript-generator-extension)
 
-Library which provides new features on top of [TypeScript Generator](https://github.com/vojtechhabarta/typescript-generator): 
-annotation processor support (which eliminates the requirement for a maven plugin) and bean validation Java annotations 
-to TypeScript decorators translation. 
+Library which provides new features on top of [TypeScript Generator](https://github.com/vojtechhabarta/typescript-generator):
+annotation processor support (which eliminates the requirement for a maven plugin) and bean validation Java annotations to TypeScript decorators translation.
 
 ## Contents
 
 1. [Bean Validation to class-validator translation](#BeanValidationToClassValidatorTranslation)
     * [Simple Object](#SimpleObject)
     * [Hierarchy](#Hierarchy)
-1. [Annotation processor](#AnnotationProcessor)
-1. [Contributing](#Contributing)
-1. [License](#License)
+2. [Custom Validation to class-validator translation](#CustomValidationToClassValidatorTranslation)
+    * [@CustomTypeScriptDecorator](#CustomTypeScriptDecoratorAnnotation)
+    * [Limitations](#CustomValidationLimitations)
+    * [Example](#CustomValidationExample)
+3. [Localization.ts & CommonValidationMessages.ts](#Localization&CommonValidationMessages)
+4. [Annotation processor](#AnnotationProcessor)
+5. [Contributing](#Contributing)
+6. [License](#License)
 
 ## <a name="BeanValidationToClassValidatorTranslation"></a> Bean Validation to class-validator translation
 
@@ -25,6 +29,7 @@ to TypeScript decorators translation.
 Input:
 
 ```java
+
 @Value
 public class Foo {
 
@@ -38,6 +43,7 @@ public class Foo {
 ```
 
 Result:
+
 ```typescript
 /* tslint:disable */
 /* eslint-disable */
@@ -45,24 +51,26 @@ import { IsDefined, IsNotEmpty, MinLength, ValidateNested, MaxLength } from 'cla
 import { CommonValidationMessages } from './CommonValidationMessages';
 
 export class Foo {
-   @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
-   @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
-   @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
-   @IsDefined({ message: CommonValidationMessages.IsDefined })
-   @ValidateNested()
-   bar: string;
+    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
+    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
+    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
+    @IsDefined({ message: CommonValidationMessages.IsDefined })
+    @ValidateNested()
+    bar: string;
 }
 ```
 
 ### <a name="Hierarchy"></a> Hierarchy
 
-[class-transformer](https://github.com/typestack/class-transformer) together with [Infobip Jackson Extension](https://github.com/infobip/infobip-jackson-extension) is used to handle hierarchies.
+[class-transformer](https://github.com/typestack/class-transformer) together
+with [Infobip Jackson Extension](https://github.com/infobip/infobip-jackson-extension) is used to handle hierarchies.
 
 Example for a hierarchy is a multi level hierarchy for inbound and outbound messages.
 
 Input:
 
 ```java
+
 @Getter
 @AllArgsConstructor
 enum Channel {
@@ -92,73 +100,82 @@ public enum CommonContentType implements TypeProvider, ContentType {
 @JsonTypeResolveWith(InboundMessageJsonTypeResolver.class)
 interface InboundMessage extends Message {
 
-   @Override
-   default Direction getDirection() {
-      return Direction.INBOUND;
-   }
+    @Override
+    default Direction getDirection() {
+        return Direction.INBOUND;
+    }
+
 }
 
 @JsonTypeResolveWith(MessageJsonTypeResolver.class)
 interface Message {
 
-   Direction getDirection();
+    Direction getDirection();
 
-   Channel getChannel();
+    Channel getChannel();
+
 }
 
 @JsonTypeResolveWith(OutboundMessageJsonTypeResolver.class)
 interface OutboundMessage extends Message {
 
-   @Override
-   default Direction getDirection() {
-      return Direction.OUTBOUND;
-   }
+    @Override
+    default Direction getDirection() {
+        return Direction.OUTBOUND;
+    }
+
 }
 
 public interface CommonContent extends SimpleJsonHierarchy<CommonContentType>, Content<CommonContentType> {
+
 }
 
 public interface Content<T extends ContentType> {
 
-   T getType();
+    T getType();
+
 }
 
 public interface ContentType {
+
 }
 
 @Value
 class TextContent implements CommonContent {
 
-   @NotNull
-   @NotEmpty
-   private final String text;
+    @NotNull
+    @NotEmpty
+    private final String text;
 
-   @Override
-   public CommonContentType getType() {
-      return CommonContentType.TEXT;
-   }
+    @Override
+    public CommonContentType getType() {
+        return CommonContentType.TEXT;
+    }
+
 }
 
 @Value
 class InboundSmsMessage implements InboundMessage {
 
-   private final CommonContent content;
+    private final CommonContent content;
 
-   @Override
-   public Channel getChannel() {
-      return Channel.SMS;
-   }
+    @Override
+    public Channel getChannel() {
+        return Channel.SMS;
+    }
+
 }
 
 @Value
 class OutboundSmsMessage implements OutboundMessage {
 
-   private final CommonContent content;
+    private final CommonContent content;
 
-   @Override
-   public Channel getChannel() {
-      return Channel.SMS;
-   }
+    @Override
+    public Channel getChannel() {
+        return Channel.SMS;
+    }
+
 }
 ```
 
@@ -173,7 +190,7 @@ import { IsDefined, IsNotEmpty } from 'class-validator';
 import { CommonValidationMessages } from './CommonValidationMessages';
 
 export enum Channel {
-   SMS = 'SMS',
+    SMS = 'SMS',
 }
 
 export enum Direction {
@@ -197,7 +214,7 @@ export interface OutboundMessage extends Message {
 }
 
 export interface CommonContent extends Content<CommonContentType> {
-   type: CommonContentType;
+    type: CommonContentType;
 }
 
 export interface Content<T> {
@@ -241,10 +258,128 @@ export class OutboundSmsMessage implements OutboundMessage {
 }
 ```
 
+### <a name="CustomValidationToClassValidatorTranslation"></a> Custom Validation to class-validator translation
+
+#### <a name="CustomTypeScriptDecoratorAnnotation"></a> @CustomTypeScriptDecorator
+
+In order to link custom java validation annotation with appropriate decorator, java validation annotation must be marked **@CustomTypeScriptDecorator**
+annotation.
+
++ **@CustomTypeScriptDecorator** has:
+    * **typeScriptDecorator** optional parameter:
+        * if a provided annotation is going to be linked to a decorator with a specified name
+        * else it is going to be linked to a decorator with the same name as an annotation
+    * **decoratorParameterListExtractor** optional parameter:
+        * provides an implementation of a class which extracts annotation parameters
+        * provided class must implement **DecoratorParameterListExtractor** interface
+
+Also in class which extends from **TypeScriptFileGenerator** two methods must be overridden:
+
+* **getCustomValidationAnnotationSettings**:
+    * Which will provide settings needed for locating custom java annotations. Setting will provide name of java package from where annotation scanning will
+      begin.
+* **getCustomDecoratorBasePath**:
+    * Which will provide base path to TypeScript decorators
+
+After providing the above information, **TypeScriptFileGenerator** will take a scan project for custom annotations and will perform logic to link annotations wit
+appropriate TypeScript decorators.
+
+#### <a name="CustomValidationLimitations"></a> Limitations
+
+1. From class-validation only [Custom Validation Decorators](https://github.com/typestack/class-validator#custom-validation-decorators) are supported, reason
+   behind supporting only [Custom Validation Decorators](https://github.com/typestack/class-validator#custom-validation-decorators) and not
+   supporting [Custom Validation Classes]([Custom Validation Decorators](https://github.com/typestack/class-validator#custom-validation-decorators)) as well, is
+   that in first approach we are able to link custom java annotation with TypescriptDecorator by just looking at decorator's file name, while in second approach
+   we would need to parse a whole file in order to find where is a decorator defined.
+2. TypeScript decorator file name and decorator must be the same, reason behind this is similar to previous point, if we decide to not follow given convention we
+   would need to parse the whole Typescript file in order to find a given decorator. This would introduce additional complexity. This also means that one decorator is
+   located in one TypeScript file.
+3. All decorators will be copied in **dist** location under **validation** folder.
+4. **getCustomValidationAnnotationSettings** must be overridden in class which extends from **TypeScriptFileGenerator**. This is done to restrict scope of **
+   ClassGraph** annotation scanning. By default, **ClassGraph** will scan all classes in the class path and will try to extract annotations from them, if
+   restriction is not performed given operation could result in **OutOfMemoryError**.
+
+#### <a name="CustomValidationExample"></a> Example
+
+Annotation implementation:
+
+```java
+
+@CustomTypeScriptDecorator(
+    typeScriptDecorator = "ComplexValidator",
+    decoratorParameterListExtractor = DecoratorParameterListExtractorImpl.class,
+    type = ComplexCustomValidation.class)
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+@Constraint(validatedBy = ComplexCustomValidator.class)
+public @interface ComplexCustomValidation {
+
+    String message() default "must be valid element";
+
+    int length();
+
+    Class<?>[] groups() default {};
+
+    Class<? extends Payload>[] payload() default {};
+
+}
+```
+
+Input:
+
+```java
+
+@Value
+public class Foo {
+
+    @ComplexCustomValidation(length = 100)
+    private final String bar;
+
+}
+```
+
+Result:
+
+```typescript
+/* tslint:disable */
+/* eslint-disable */
+import { CommonValidationMessages } from './CommonValidationMessages';
+import { localize } from './Localization';
+
+export class Foo {
+    @ComplexValidator(100, { message: localize('must be valid element') })
+    bar: string;
+}
+```
+
+### <a name="Localization&CommonValidationMessages"></a> Localization.ts & CommonValidationMessages.ts
+
+Running **TypeScript Generator Extension** will result in two additional files:
+
+* **Localization.ts**
+    * Blueprint for Localization functionality
+* **CommonValidationMessages.ts**
+    * Blueprint for common validation messages
+
+After initial generation, this two files can be changed in order to adjust custom validation messages, or to implement a way how localization is supported.
+After manually making changes, you can tell **TypeScript Generator Extension** not to generate this files and more in the future. You can achieve this by
+overriding:
+
+* **writeCommonValidationMessagesTypeScriptFile** for **CommonValidationMessages.ts**:
+  * ```java
+    @Override
+    protected void writeCommonValidationMessagesTypeScriptFile(String code, Path filePath) {}
+    ```
+* **writeLocalization** **Localization.ts**:
+  * ```java
+    @Override
+    protected void writeLocalization(String code, Path filePath) {}
+    ```
+
 ## <a name="AnnotationProcessor"></a> Annotation processor
 
-Disclaimer: in order for annotation processor to work model classes and generator configuration have to be compiled
-before annotation processor is run. In practice this means that they have to be in separate modules.
+Disclaimer: in order for annotation processor to work model classes and generator configuration have to be compiled before annotation processor is run. In
+practice this means that they have to be in separate modules.
 
 Main advantage of this approach: easier extension, reusability and no requirement to run Maven to generate TypeScript!
 
@@ -260,7 +395,7 @@ Setup:
       <version>${infobip-typescript-generator-extension.version}</version>
    </dependency>
    ```
-1. Configure the generator by extending TypeScriptFileGenerator:
+2. Configure the generator by extending TypeScriptFileGenerator:
 
    ```java
    public class SimpleTypeScriptFileGenerator extends TypeScriptFileGenerator {
@@ -286,10 +421,27 @@ Setup:
    
            return lib.resolve("Simple.ts");
        }
+   
+       @Override
+        protected Path getDecoratorBasePath() {
+            return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
+        }
    }
    ```
-   
-1. Define a separate module where annotation processing will occur (this module depends on model module) 
+3. Custom java validation annotations must be marked with **@CustomTSDecorator** annotation. If a custom validation annotation name is not the same as a
+   decorator name, you can specify decorator by using **typeScriptDecorator** annotation property.
+
+4. Project only supports class-validator custom decorators [custom decorators](https://github.com/typestack/class-validator#custom-validation-decorators)
+
+5. By overriding **getDecoratorBasePath()** you are specifying path to typescript decorators which relates to custom java validations:
+   ```java
+        @Override
+        protected Path getDecoratorBasePath() {
+            return getBasePath().getParent().getParent().resolve("src/main/typescript/decorators");
+        }
+   ```
+
+6. Define a separate module where annotation processing will occur (this module depends on model module)
    with following dependency:
    ```xml
    <dependency>
@@ -298,19 +450,19 @@ Setup:
       <version>${infobip-typescript-generator-extension.version}</version>
    </dependency>
    ```
-1. Add the annotation configuration class (this is only used to trigger the annotation processing with annotation):
+7. Add the annotation configuration class (this is only used to trigger the annotation processing with annotation):
    ```java
    @GenerateTypescript(generator = SimpleTypeScriptFileGenerator.class)
    public class SimpleTypeScriptFileGeneratorConfiguration {
    }
    ```
-   
-For more complex examples look at 
+
+For more complex examples look at
 [infobip-typescript-generator-extension-model-showcase](infobip-typescript-generator-extension-model-showcase) and at
 [infobip-typescript-generator-extension-annotation-processor-showcase](infobip-typescript-generator-extension-annotation-processor-showcase).
 
-Generated typescript can be seen in [dist folder](infobip-typescript-generator-extension-annotation-processor-showcase/dist).
-In production you'd probably add dist to .gitignore, here it's not mainly to be used a an showcase of how the end result looks like.
+Generated typescript can be seen in [dist folder](infobip-typescript-generator-extension-annotation-processor-showcase/dist). In production you'd probably add
+dist to .gitignore, here it's not mainly to be used a an showcase of how the end result looks like.
 
 Since there's no maven plugin it's possible to run TypeScript Generator with multiple different configurations in same project!
 Aforementioned showcase folders use this to test and showcase different parts of functionality.

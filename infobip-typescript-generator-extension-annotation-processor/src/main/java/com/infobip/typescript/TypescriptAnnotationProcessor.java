@@ -12,11 +12,12 @@ import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @AutoService(Processor.class)
 public class TypescriptAnnotationProcessor extends AbstractProcessor {
@@ -33,14 +34,16 @@ public class TypescriptAnnotationProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        generateTypescript(roundEnv);
+        return true;
+    }
 
+    private void generateTypescript(RoundEnvironment roundEnv) {
         roundEnv.getElementsAnnotatedWith(GenerateTypescript.class)
                 .stream()
                 .filter(element -> element.getKind().equals(ElementKind.CLASS))
                 .map(element -> (TypeElement) element)
                 .forEach(this::generateTypeScript);
-
-        return true;
     }
 
     private void generateTypeScript(TypeElement element) {

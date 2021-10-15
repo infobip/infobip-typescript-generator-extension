@@ -6,8 +6,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,9 +18,12 @@ class CompositeBeanValidationToTsDecoratorConverter extends BeanValidationToTsDe
         super(resolver);
         this.annotationToHandler =
                 Stream.of(entry(Valid.class, new ValidToTsDecoratorConverter(resolver)),
-                          entry(NotNull.class, new SimpleTsDecoratorConverter<>(resolver, "IsDefined", NotNull::message)),
-                          entry(NotBlank.class, new SimpleTsDecoratorConverter<>(resolver, "IsNotEmpty", NotBlank::message)),
-                          entry(NotEmpty.class, new SimpleTsDecoratorConverter<>(resolver, "IsNotEmpty", NotEmpty::message)),
+                          entry(NotNull.class,
+                                new SimpleTsDecoratorConverter<>(resolver, "IsDefined", NotNull::message)),
+                          entry(NotBlank.class,
+                                new SimpleTsDecoratorConverter<>(resolver, "IsNotEmpty", NotBlank::message)),
+                          entry(NotEmpty.class,
+                                new SimpleTsDecoratorConverter<>(resolver, "IsNotEmpty", NotEmpty::message)),
                           entry(Size.class, new SizeToTsDecoratorConverter(resolver)),
                           entry(Min.class, new MinToTsDecoratorConverter(resolver)),
                           entry(Max.class, new MaxToTsDecoratorConverter(resolver)))
@@ -49,6 +51,10 @@ class CompositeBeanValidationToTsDecoratorConverter extends BeanValidationToTsDe
         }
 
         return converter.extractMessage(annotation);
+    }
+
+    public Set<Class<? extends Annotation>> getBeanValidationAnnotations() {
+        return this.annotationToHandler.keySet();
     }
 
     private <T extends Annotation> MapEntry<Class<T>, BeanValidationToTsDecoratorConverter<T>> entry(Class<T> type,

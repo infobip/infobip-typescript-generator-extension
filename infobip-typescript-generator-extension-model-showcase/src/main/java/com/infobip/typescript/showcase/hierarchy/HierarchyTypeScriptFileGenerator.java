@@ -1,15 +1,15 @@
 package com.infobip.typescript.showcase.hierarchy;
 
-import com.infobip.typescript.TypeScriptFileGenerator;
-import cz.habarta.typescript.generator.Input;
-import cz.habarta.typescript.generator.Settings;
-
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
+
+import com.infobip.typescript.TypeScriptFileGenerator;
+import cz.habarta.typescript.generator.Input;
+import cz.habarta.typescript.generator.Settings;
 
 public class HierarchyTypeScriptFileGenerator extends TypeScriptFileGenerator {
 

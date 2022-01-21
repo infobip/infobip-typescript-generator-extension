@@ -23,8 +23,8 @@ class TsArrayLiteral extends TsExpression {
         if (props.isEmpty()) {
             return "[]";
         } else {
-            return "[" + System.lineSeparator() + "                " + String.join(
-                    "," + System.lineSeparator() + "                ", props) + System.lineSeparator() + "            ]";
+            return "[" + settings.newline + "                " + String.join(
+                    "," + settings.newline + "                ", props) + settings.newline + "            ]";
         }
     }
 }

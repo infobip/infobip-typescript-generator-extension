@@ -25,8 +25,8 @@ class DiscriminatorTsObjectLiteral extends TsObjectLiteral {
         if (props.isEmpty()) {
             return "{}";
         } else {
-            return "{" + System.lineSeparator() + "        " + String.join(", ",
-                                                                           props) + System.lineSeparator() + "    }";
+            return "{" + settings.newline + "        " + String.join(", ",
+                                                                           props) + settings.newline + "    }";
         }
     }
 }

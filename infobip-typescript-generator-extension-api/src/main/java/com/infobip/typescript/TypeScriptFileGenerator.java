@@ -52,8 +52,9 @@ public abstract class TypeScriptFileGenerator {
 
     public void generate() {
         List<EmitterExtension> extensions = createExtensions();
-        OrderedTypescriptGenerator generator = createGenerator(extensions);
-        String code = generateTypeScript(generator, extensions);
+        Settings settings = createSettings(extensions);
+        OrderedTypescriptGenerator generator = createGenerator(settings);
+        String code = generateTypeScript(generator, extensions, settings);
         Path filePath = createFilePath();
 
         try {
@@ -115,25 +116,27 @@ public abstract class TypeScriptFileGenerator {
     }
 
     protected String generateTypeScript(OrderedTypescriptGenerator generator,
-                                        List<EmitterExtension> extensions) {
+                                        List<EmitterExtension> extensions,
+                                        Settings settings) {
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         String generatedCode = generator.generateTypeScript(getInput());
-        return addMissingImports(generatedCode, extensions);
+        return addMissingImports(generatedCode, extensions, settings);
     }
 
     protected String addMissingImports(String generatedCode,
-                                       List<EmitterExtension> extensions) {
+                                       List<EmitterExtension> extensions,
+                                       Settings settings) {
 
         String imports = extensions.stream()
                                    .filter(extension -> extension instanceof TypeScriptImportResolver)
                                    .map(extension -> (TypeScriptImportResolver) extension)
                                    .flatMap(resolver -> resolver.resolve(generatedCode).stream())
-                                   .collect(Collectors.joining(System.lineSeparator()));
+                                   .collect(Collectors.joining(settings.newline));
 
         if (!imports.isEmpty()) {
-            List<String> codeLines = new ArrayList<>(Arrays.asList(generatedCode.split(System.lineSeparator())));
+            List<String> codeLines = new ArrayList<>(Arrays.asList(generatedCode.split(settings.newline)));
             codeLines.add(2, imports);
-            return codeLines.stream().collect(Collectors.joining(System.lineSeparator()));
+            return codeLines.stream().collect(Collectors.joining(settings.newline));
         }
 
         return generatedCode;
@@ -146,7 +149,7 @@ public abstract class TypeScriptFileGenerator {
                      .collect(Collectors.toList());
     }
 
-    protected OrderedTypescriptGenerator createGenerator(List<EmitterExtension> extensions) {
+    protected Settings createSettings(List<EmitterExtension> extensions) {
         Settings settings = new Settings();
         settings.outputKind = TypeScriptOutputKind.module;
         settings.jsonLibrary = JsonLibrary.jackson2;
@@ -157,8 +160,11 @@ public abstract class TypeScriptFileGenerator {
         settings.outputFileType = TypeScriptFileType.implementationFile;
         settings.noFileComment = true;
         settings.setStringQuotes(StringQuotes.singleQuotes);
-        Settings customizedSettings = customizeSettings(settings);
-        TypeScriptGenerator generator = new TypeScriptGenerator(customizedSettings);
+        return customizeSettings(settings);
+    }
+
+    protected OrderedTypescriptGenerator createGenerator(Settings settings) {
+        TypeScriptGenerator generator = new TypeScriptGenerator(settings);
         return new OrderedTypescriptGenerator(generator);
     }
 

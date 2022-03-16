@@ -124,7 +124,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private boolean isBuiltIn(Class<?> type) {
-        return "java.lang".equals(type.getPackage().getName());
+        return "java.lang".equals(Optional.ofNullable(type.getPackage()).map(Package::getName).orElse(""));
     }
 
     private void appendToParentToChildren(Class<?> key, Stream<? extends Class<?>> value) {

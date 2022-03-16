@@ -9,7 +9,6 @@ import cz.habarta.typescript.generator.compiler.*;
 import cz.habarta.typescript.generator.emitter.*;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -60,8 +59,6 @@ public class ClassTransformerDecoratorExtension extends Extension {
 
     private TsPropertyModel getDecorators(SymbolTable symbolTable, TsBeanModel model, TsPropertyModel tsPropertyModel) {
         return getField(model, tsPropertyModel).map(Field::getType)
-                                               .filter(type -> Modifier.isAbstract(
-                                                       type.getModifiers()) || type.isInterface())
                                                .map(type -> tsPropertyModel.withDecorators(
                                                        getDecorators(symbolTable, model, tsPropertyModel, type)))
                                                .orElse(tsPropertyModel);
@@ -75,7 +72,17 @@ public class ClassTransformerDecoratorExtension extends Extension {
                       .filter(resolver -> resolver instanceof CompositeJsonTypeResolver<?>)
                       .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
                       .map(resolver -> getDecorators(symbolTable, model, tsPropertyModel, resolver))
-                      .orElse(tsPropertyModel.getDecorators());
+                      .orElseGet(() -> getNonHierarchyDecorators(tsPropertyModel, type));
+    }
+
+    private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,
+                                                        Class<?> type) {
+        TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
+                new TsType.ReferenceType(new Symbol(type.getSimpleName()))));
+
+        return Stream.concat(tsPropertyModel.getDecorators().stream(),
+                             Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName))))
+                     .collect(Collectors.toList());
     }
 
     private List<TsDecorator> getDecorators(SymbolTable symbolTable,

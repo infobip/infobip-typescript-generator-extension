@@ -24,6 +24,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     static {
         DEFAULT_VALIDATIONS = Stream.of("@ValidateNested(",
                                         "@IsDefined(",
+                                        "@IsOptional(",
                                         "@IsNotEmpty(",
                                         "@MaxLength(",
                                         "@MinLength(",
@@ -113,10 +114,10 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
 
         if (typeScript.contains(COMMON_VALIDATION_MESSAGES_CLASS_NAME)) {
             String commonValidationMessagesImport = "import { CommonValidationMessages } from './CommonValidationMessages';";
-            return Arrays.asList(validationImport, commonValidationMessagesImport).stream();
+            return Stream.of(validationImport, commonValidationMessagesImport);
         }
 
-        return Collections.singletonList(validationImport).stream();
+        return Stream.of(validationImport);
     }
 
     private Stream<String> resolve(List<TSCustomDecorator> tsCustomDecorators) {

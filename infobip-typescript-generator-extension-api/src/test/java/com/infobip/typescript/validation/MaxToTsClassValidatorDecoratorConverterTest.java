@@ -17,10 +17,7 @@ class MaxToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorato
         String actual = whenGenerate(Input.from(Foo.class));
 
         // then
-        then(actual).isEqualTo("\n" +
-                               "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                               "import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
-                               "\n" +
+        then(actual).isEqualTo("\n" + IMPORTS + "\n" +
                                "export class Foo {\n" +
                                "    @Max(1, { message: CommonValidationMessages.Max(1) })\n" +
                                "    bar: any;\n" +
@@ -31,6 +28,6 @@ class MaxToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorato
     static class Foo {
 
         @Max(value = 1)
-        private final Object bar;
+        Object bar;
     }
 }

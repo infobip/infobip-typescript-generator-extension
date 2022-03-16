@@ -18,10 +18,7 @@ class ValidToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecora
 
         // then
         then(actual).isEqualTo(
-                "\n" +
-                "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                "import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
-                "\n" +
+                "\n" + IMPORTS + "\n" +
                 "export class Foo {\n" +
                 "    @ValidateNested()\n" +
                 "    bar: any;\n" +
@@ -32,6 +29,6 @@ class ValidToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecora
     static class Foo {
 
         @Valid
-        private final Object bar;
+        Object bar;
     }
 }

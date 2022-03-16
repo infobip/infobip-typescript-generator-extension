@@ -18,10 +18,7 @@ class NotBlankToTsClassValidatorDecoratorConverterTest extends ClassValidatorDec
 
         // then
         then(actual).isEqualTo(
-                "\n" +
-                "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                "import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
-                "\n" +
+                "\n" + IMPORTS + "\n" +
                 "export class Foo {\n" +
                 "    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })\n" +
                 "    bar: string;\n" +
@@ -32,6 +29,6 @@ class NotBlankToTsClassValidatorDecoratorConverterTest extends ClassValidatorDec
     static class Foo {
 
         @NotBlank
-        private final String bar;
+        String bar;
     }
 }

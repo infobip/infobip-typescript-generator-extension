@@ -18,10 +18,7 @@ class NotNullToTsClassValidatorDecoratorConverterTest extends ClassValidatorDeco
 
         // then
         then(actual).isEqualTo(
-                "\n" +
-                "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                "import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
-                "\n" +
+                "\n" + IMPORTS + "\n" +
                 "export class Foo {\n" +
                 "    @IsDefined({ message: CommonValidationMessages.IsDefined })\n" +
                 "    bar: string;\n" +
@@ -32,6 +29,6 @@ class NotNullToTsClassValidatorDecoratorConverterTest extends ClassValidatorDeco
     static class Foo {
 
         @NotNull
-        private final String bar;
+        String bar;
     }
 }

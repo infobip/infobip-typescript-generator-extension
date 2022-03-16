@@ -75,16 +75,6 @@ public class ClassTransformerDecoratorExtension extends Extension {
                       .orElseGet(() -> getNonHierarchyDecorators(tsPropertyModel, type));
     }
 
-    private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,
-                                                        Class<?> type) {
-        TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
-                new TsType.ReferenceType(new Symbol(type.getSimpleName()))));
-
-        return Stream.concat(tsPropertyModel.getDecorators().stream(),
-                             Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName))))
-                     .collect(Collectors.toList());
-    }
-
     private List<TsDecorator> getDecorators(SymbolTable symbolTable,
                                             TsBeanModel model,
                                             TsPropertyModel tsPropertyModel,
@@ -105,6 +95,18 @@ public class ClassTransformerDecoratorExtension extends Extension {
                      .collect(Collectors.toList());
     }
 
+    private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,
+                                                        Class<?> type) {
+        TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
+                new TsType.ReferenceType(new Symbol(type.getSimpleName()))));
+
+        final Stream<TsDecorator> typeDecoratorStream = isBuiltIn(type) ?
+                Stream.empty() :
+                Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName)));
+
+        return Stream.concat(tsPropertyModel.getDecorators().stream(), typeDecoratorStream).collect(Collectors.toList());
+    }
+
     private List<TsExpression> getSubtypes(SymbolTable symbolTable,
                                            TsBeanModel model,
                                            CompositeJsonTypeResolver<?> resolver) {
@@ -119,6 +121,10 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                                         symbolTable.getSymbol(type.getType())))),
                                new TsPropertyDefinition("name", new TsEnumLiteral(resolver.getType(), type.getName()))))
                        .collect(Collectors.toList());
+    }
+
+    private boolean isBuiltIn(Class<?> type) {
+        return "java.lang".equals(type.getPackage().getName());
     }
 
     private void appendToParentToChildren(Class<?> key, Stream<? extends Class<?>> value) {

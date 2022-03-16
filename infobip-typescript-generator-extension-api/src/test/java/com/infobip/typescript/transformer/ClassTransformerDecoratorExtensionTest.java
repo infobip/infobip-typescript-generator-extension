@@ -32,6 +32,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
                         "export class Root {\n" +
                         "    @Type(() => Leaf)\n" +
                         "    leaf: Leaf;\n" +
+                        "    leafOfBuiltInType: string;\n" +
                         "}");
 
     }
@@ -39,6 +40,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
     @Value
     static class Root {
         Leaf leaf;
+        String leafOfBuiltInType;
     }
 
     @Value

@@ -180,7 +180,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
         final Type genericType = field.getGenericType();
         if (genericType instanceof ParameterizedType) {
             final Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-            if (actualTypeArguments.length != 0) {
+            if (actualTypeArguments.length != 0 && actualTypeArguments[0] instanceof Class) {
                 return Optional.of((Class<?>) actualTypeArguments[0]);
             }
         }

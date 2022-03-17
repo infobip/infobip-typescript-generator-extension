@@ -44,11 +44,11 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
                         "    enumeration: Enumeration;\n" +
                         "    unsupported: Unsupported;\n" +
                         "}");
-
     }
 
     @Value
     static class Root {
+
         Leaf leaf;
         String leafOfBuiltInType;
         Leaf[] leafArray;
@@ -58,16 +58,20 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
     @Value
     static class Leaf {
+
     }
 
     enum Enumeration {
         VALUE
     }
 
+    interface Unsupported extends PresentPropertyJsonHierarchy<UnsupportedType> {
 
-    interface Unsupported extends PresentPropertyJsonHierarchy<UnsupportedType> { }
+    }
 
-    static class UnsupportedImpl implements Unsupported { }
+    static class UnsupportedImpl implements Unsupported {
+
+    }
 
     @Getter
     @AllArgsConstructor

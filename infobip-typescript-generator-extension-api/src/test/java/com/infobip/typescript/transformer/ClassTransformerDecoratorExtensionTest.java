@@ -1,7 +1,6 @@
 package com.infobip.typescript.transformer;
 
-import com.infobip.jackson.SimpleJsonHierarchy;
-import com.infobip.jackson.TypeProvider;
+import com.infobip.jackson.*;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.*;
@@ -20,19 +19,30 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
     @Test
     void shouldDecorateNonHierarchiesWithType() {
-        String actual = whenGenerate(Input.from(Root.class, Leaf.class));
+        String actual = whenGenerate(Input.from(Root.class, Leaf.class, Unsupported.class));
 
         then(fixNewlines(actual)).isEqualTo(
                 "" +
                         "import { Type } from 'class-transformer';\n" +
                         "\n" +
+                        "export enum Enumeration {\n" +
+                        "    VALUE = \"VALUE\",\n" +
+                        "}\n" +
+                        "\n" +
                         "export class Leaf {\n" +
+                        "}\n" +
+                        "\n" +
+                        "export interface Unsupported {\n" +
                         "}\n" +
                         "\n" +
                         "export class Root {\n" +
                         "    @Type(() => Leaf)\n" +
                         "    leaf: Leaf;\n" +
                         "    leafOfBuiltInType: string;\n" +
+                        "    @Type(() => Leaf)\n" +
+                        "    leafArray: Leaf[];\n" +
+                        "    enumeration: Enumeration;\n" +
+                        "    unsupported: Unsupported;\n" +
                         "}");
 
     }
@@ -41,10 +51,30 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
     static class Root {
         Leaf leaf;
         String leafOfBuiltInType;
+        Leaf[] leafArray;
+        Enumeration enumeration;
+        Unsupported unsupported;
     }
 
     @Value
     static class Leaf {
+    }
+
+    enum Enumeration {
+        VALUE
+    }
+
+
+    interface Unsupported extends PresentPropertyJsonHierarchy<UnsupportedType> { }
+
+    static class UnsupportedImpl implements Unsupported { }
+
+    @Getter
+    @AllArgsConstructor
+    enum UnsupportedType implements TypeProvider {
+        VALUE(UnsupportedImpl.class);
+
+        private final Class<? extends Unsupported> type;
     }
 
     @Test

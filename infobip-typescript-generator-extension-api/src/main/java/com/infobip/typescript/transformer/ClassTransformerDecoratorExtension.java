@@ -1,8 +1,7 @@
 package com.infobip.typescript.transformer;
 
 import com.fasterxml.jackson.databind.jsontype.NamedType;
-import com.infobip.jackson.CompositeJsonTypeResolver;
-import com.infobip.jackson.JsonTypeResolverFactory;
+import com.infobip.jackson.*;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.TsType;
 import cz.habarta.typescript.generator.compiler.*;
@@ -97,10 +96,15 @@ public class ClassTransformerDecoratorExtension extends Extension {
 
     private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,
                                                         Class<?> type) {
+
+        if(type.isArray()) {
+            return getNonHierarchyDecorators(tsPropertyModel, type.getComponentType());
+        }
+
         TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
                 new TsType.ReferenceType(new Symbol(type.getSimpleName()))));
 
-        final Stream<TsDecorator> typeDecoratorStream = isBuiltIn(type) ?
+        final Stream<TsDecorator> typeDecoratorStream = shouldNotBeDecorated(type) ?
                 Stream.empty() :
                 Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName)));
 
@@ -123,8 +127,16 @@ public class ClassTransformerDecoratorExtension extends Extension {
                        .collect(Collectors.toList());
     }
 
+    private boolean shouldNotBeDecorated(Class<?> type) {
+        return isBuiltIn(type) || isTsTypeResolutionUnsupported(type);
+    }
+
+    private boolean isTsTypeResolutionUnsupported(Class<?> type) {
+        return type.isEnum() || PresentPropertyJsonHierarchy.class.isAssignableFrom(type);
+    }
+
     private boolean isBuiltIn(Class<?> type) {
-        return "java.lang".equals(Optional.ofNullable(type.getPackage()).map(Package::getName).orElse(""));
+        return Optional.ofNullable(type.getPackage()).map(Package::getName).orElse("").startsWith("java");
     }
 
     private void appendToParentToChildren(Class<?> key, Stream<? extends Class<?>> value) {

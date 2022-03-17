@@ -7,6 +7,7 @@ import lombok.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 import static org.assertj.core.api.BDDAssertions.then;
 
@@ -43,6 +44,8 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
                         "    leafArray: Leaf[];\n" +
                         "    enumeration: Enumeration;\n" +
                         "    unsupported: Unsupported;\n" +
+                        "    @Type(() => Leaf)\n" +
+                        "    listOfLeaves: Leaf[];\n" +
                         "}");
     }
 
@@ -54,6 +57,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
         Leaf[] leafArray;
         Enumeration enumeration;
         Unsupported unsupported;
+        List<Leaf> listOfLeaves;
     }
 
     @Value

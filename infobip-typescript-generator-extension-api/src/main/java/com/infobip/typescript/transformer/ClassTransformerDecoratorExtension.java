@@ -7,7 +7,7 @@ import cz.habarta.typescript.generator.TsType;
 import cz.habarta.typescript.generator.compiler.*;
 import cz.habarta.typescript.generator.emitter.*;
 
-import java.lang.reflect.Field;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
@@ -57,21 +57,22 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private TsPropertyModel getDecorators(SymbolTable symbolTable, TsBeanModel model, TsPropertyModel tsPropertyModel) {
-        return getField(model, tsPropertyModel).map(Field::getType)
-                                               .map(type -> tsPropertyModel.withDecorators(
-                                                       getDecorators(symbolTable, model, tsPropertyModel, type)))
+        return getField(model, tsPropertyModel).map(this::getGenericTypeInfo)
+                                               .map(genericTypeInfo -> tsPropertyModel.withDecorators(
+                                                       getDecorators(symbolTable, model, tsPropertyModel,
+                                                                     genericTypeInfo)))
                                                .orElse(tsPropertyModel);
     }
 
     private List<TsDecorator> getDecorators(SymbolTable symbolTable,
                                             TsBeanModel model,
                                             TsPropertyModel tsPropertyModel,
-                                            Class<?> type) {
-        return factory.create(type)
+                                            GenericTypeInfo genericTypeInfo) {
+        return factory.create(genericTypeInfo.getType())
                       .filter(resolver -> resolver instanceof CompositeJsonTypeResolver<?>)
                       .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
                       .map(resolver -> getDecorators(symbolTable, model, tsPropertyModel, resolver))
-                      .orElseGet(() -> getNonHierarchyDecorators(tsPropertyModel, type));
+                      .orElseGet(() -> getNonHierarchyDecorators(tsPropertyModel, genericTypeInfo));
     }
 
     private List<TsDecorator> getDecorators(SymbolTable symbolTable,
@@ -95,11 +96,22 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,
-                                                        Class<?> type) {
-
-        if(type.isArray()) {
-            return getNonHierarchyDecorators(tsPropertyModel, type.getComponentType());
+                                                        GenericTypeInfo genericTypeInfo) {
+        Class<?> type = genericTypeInfo.getType();
+        Class<?> typeToDecorate = type;
+        if (type.isArray()) {
+            typeToDecorate = type.getComponentType();
         }
+
+        final Optional<Class<?>> genericType = genericTypeInfo.getGenericType();
+        if (Collection.class.isAssignableFrom(type) && genericType.isPresent()) {
+            typeToDecorate = genericType.get();
+        }
+        return getNonHierarchyDecorators(tsPropertyModel, typeToDecorate);
+    }
+
+    private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,
+                                                        Class<?> type) {
 
         TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
                 new TsType.ReferenceType(new Symbol(type.getSimpleName()))));
@@ -108,7 +120,8 @@ public class ClassTransformerDecoratorExtension extends Extension {
                 Stream.empty() :
                 Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName)));
 
-        return Stream.concat(tsPropertyModel.getDecorators().stream(), typeDecoratorStream).collect(Collectors.toList());
+        return Stream.concat(tsPropertyModel.getDecorators().stream(), typeDecoratorStream)
+                     .collect(Collectors.toList());
     }
 
     private List<TsExpression> getSubtypes(SymbolTable symbolTable,
@@ -156,6 +169,40 @@ public class ClassTransformerDecoratorExtension extends Extension {
             return Optional.of(bean.getOrigin().getDeclaredField(model.getName()));
         } catch (NoSuchFieldException e) {
             return Optional.empty();
+        }
+    }
+
+    private GenericTypeInfo getGenericTypeInfo(Field field) {
+        return new GenericTypeInfo(field.getType(), getGenericType(field));
+    }
+
+    private Optional<Class<?>> getGenericType(Field field) {
+        final Type genericType = field.getGenericType();
+        if (genericType instanceof ParameterizedType) {
+            final Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+            if (actualTypeArguments.length != 0) {
+                return Optional.of((Class<?>) actualTypeArguments[0]);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static class GenericTypeInfo {
+
+        private final Class<?> type;
+        private final Optional<Class<?>> genericType;
+
+        GenericTypeInfo(Class<?> type, Optional<Class<?>> genericType) {
+            this.type = type;
+            this.genericType = genericType;
+        }
+
+        Class<?> getType() {
+            return type;
+        }
+
+        Optional<Class<?>> getGenericType() {
+            return genericType;
         }
     }
 }

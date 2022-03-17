@@ -150,7 +150,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
                         "            ]\n" +
                         "        }\n" +
                         "    })\n" +
-                        "    nested: NestedHierarchyRoot;\n" +
+                        "    nested: NestedHierarchyRoot[];\n" +
                         "}");
     }
 
@@ -208,7 +208,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
     @Value
     static class SecondHierarchyLeaf implements SecondHierarchyRoot {
 
-        NestedHierarchyRoot nested;
+        NestedHierarchyRoot[] nested;
 
         @Override
         public SecondHierarchyType getType() {

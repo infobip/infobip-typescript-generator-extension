@@ -68,17 +68,34 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                             TsBeanModel model,
                                             TsPropertyModel tsPropertyModel,
                                             GenericTypeInfo genericTypeInfo) {
-        return factory.create(genericTypeInfo.getType())
-                      .filter(resolver -> resolver instanceof CompositeJsonTypeResolver<?>)
-                      .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
-                      .map(resolver -> getDecorators(symbolTable, model, tsPropertyModel, resolver))
-                      .orElseGet(() -> getNonHierarchyDecorators(tsPropertyModel, genericTypeInfo));
+        Class<?> type = genericTypeInfo.getType();
+        Class<?> typeToDecorate = type;
+        if (type.isArray()) {
+            typeToDecorate = type.getComponentType();
+        }
+
+        final Optional<Class<?>> genericType = genericTypeInfo.getGenericType();
+        if (Collection.class.isAssignableFrom(type) && genericType.isPresent()) {
+            typeToDecorate = genericType.get();
+        }
+        return getDecorators(symbolTable, model, tsPropertyModel, typeToDecorate);
     }
 
     private List<TsDecorator> getDecorators(SymbolTable symbolTable,
                                             TsBeanModel model,
                                             TsPropertyModel tsPropertyModel,
-                                            CompositeJsonTypeResolver<?> resolver) {
+                                            Class<?> type) {
+        return factory.create(type)
+                      .filter(resolver -> resolver instanceof CompositeJsonTypeResolver<?>)
+                      .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
+                      .map(resolver -> getHierarchyDecorators(symbolTable, model, tsPropertyModel, resolver))
+                      .orElseGet(() -> getNonHierarchyDecorators(tsPropertyModel, type));
+    }
+
+    private List<TsDecorator> getHierarchyDecorators(SymbolTable symbolTable,
+                                                     TsBeanModel model,
+                                                     TsPropertyModel tsPropertyModel,
+                                                     CompositeJsonTypeResolver<?> resolver) {
         TsArrowFunction emptyToObject = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
                 new TsType.ReferenceType(new Symbol("Object"))));
         TsStringLiteral property = new TsStringLiteral(resolver.getTypePropertyName());
@@ -93,21 +110,6 @@ public class ClassTransformerDecoratorExtension extends Extension {
         return Stream.concat(tsPropertyModel.getDecorators().stream(),
                              Stream.of(new TsDecorator(TYPE, arguments)))
                      .collect(Collectors.toList());
-    }
-
-    private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,
-                                                        GenericTypeInfo genericTypeInfo) {
-        Class<?> type = genericTypeInfo.getType();
-        Class<?> typeToDecorate = type;
-        if (type.isArray()) {
-            typeToDecorate = type.getComponentType();
-        }
-
-        final Optional<Class<?>> genericType = genericTypeInfo.getGenericType();
-        if (Collection.class.isAssignableFrom(type) && genericType.isPresent()) {
-            typeToDecorate = genericType.get();
-        }
-        return getNonHierarchyDecorators(tsPropertyModel, typeToDecorate);
     }
 
     private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,

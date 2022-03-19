@@ -57,28 +57,25 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private TsPropertyModel getDecorators(SymbolTable symbolTable, TsBeanModel model, TsPropertyModel tsPropertyModel) {
-        return getField(model, tsPropertyModel).map(this::getGenericTypeInfo)
-                                               .map(genericTypeInfo -> tsPropertyModel.withDecorators(
+        return getField(model, tsPropertyModel).map(this::getParameterizedTypeClasses)
+                                               .map(parameterizedTypeClasses -> tsPropertyModel.withDecorators(
                                                        getDecorators(symbolTable, model, tsPropertyModel,
-                                                                     genericTypeInfo)))
+                                                                     resolveTypeToDecorate(parameterizedTypeClasses))))
                                                .orElse(tsPropertyModel);
     }
 
-    private List<TsDecorator> getDecorators(SymbolTable symbolTable,
-                                            TsBeanModel model,
-                                            TsPropertyModel tsPropertyModel,
-                                            GenericTypeInfo genericTypeInfo) {
-        Class<?> type = genericTypeInfo.getType();
+    private Class<?> resolveTypeToDecorate(ParameterizedTypeClasses parameterizedTypeClasses) {
+        Class<?> type = parameterizedTypeClasses.getType();
         Class<?> typeToDecorate = type;
         if (type.isArray()) {
             typeToDecorate = type.getComponentType();
         }
 
-        final Optional<Class<?>> genericType = genericTypeInfo.getGenericType();
-        if (Collection.class.isAssignableFrom(type) && genericType.isPresent()) {
-            typeToDecorate = genericType.get();
+        final Optional<Class<?>> typeArgument = parameterizedTypeClasses.getTypeArgument();
+        if (Collection.class.isAssignableFrom(type) && typeArgument.isPresent()) {
+            typeToDecorate = typeArgument.get();
         }
-        return getDecorators(symbolTable, model, tsPropertyModel, typeToDecorate);
+        return typeToDecorate;
     }
 
     private List<TsDecorator> getDecorators(SymbolTable symbolTable,
@@ -175,11 +172,11 @@ public class ClassTransformerDecoratorExtension extends Extension {
         }
     }
 
-    private GenericTypeInfo getGenericTypeInfo(Field field) {
-        return new GenericTypeInfo(field.getType(), getGenericType(field));
+    private ParameterizedTypeClasses getParameterizedTypeClasses(Field field) {
+        return new ParameterizedTypeClasses(field.getType(), getTypeArgument(field));
     }
 
-    private Optional<Class<?>> getGenericType(Field field) {
+    private Optional<Class<?>> getTypeArgument(Field field) {
         final Type genericType = field.getGenericType();
         if (genericType instanceof ParameterizedType) {
             final Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
@@ -188,24 +185,5 @@ public class ClassTransformerDecoratorExtension extends Extension {
             }
         }
         return Optional.empty();
-    }
-
-    private static class GenericTypeInfo {
-
-        private final Class<?> type;
-        private final Optional<Class<?>> genericType;
-
-        GenericTypeInfo(Class<?> type, Optional<Class<?>> genericType) {
-            this.type = type;
-            this.genericType = genericType;
-        }
-
-        Class<?> getType() {
-            return type;
-        }
-
-        Optional<Class<?>> getGenericType() {
-            return genericType;
-        }
     }
 }

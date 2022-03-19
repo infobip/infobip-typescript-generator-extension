@@ -85,11 +85,6 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                             TsBeanModel model,
                                             TsPropertyModel tsPropertyModel,
                                             Class<?> type) {
-        // TODO: Fix symbolTable issue for this type
-        if ("ImagemapAction".equals(type.getSimpleName())) {
-            return tsPropertyModel.getDecorators();
-        }
-
         return factory.create(type)
                       .filter(resolver -> resolver instanceof CompositeJsonTypeResolver<?>)
                       .filter(resolver -> !Modifier.isFinal(type.getModifiers()))

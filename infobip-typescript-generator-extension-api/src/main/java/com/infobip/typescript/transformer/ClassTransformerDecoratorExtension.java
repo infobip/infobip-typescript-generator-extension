@@ -148,14 +148,14 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private boolean shouldNotBeDecorated(Class<?> type) {
-        return isBuiltIn(type) || isTsTypeResolutionUnsupported(type);
+        return isBuiltInType(type) || isTsTypeResolutionUnsupported(type);
     }
 
     private boolean isTsTypeResolutionUnsupported(Class<?> type) {
         return type.isEnum() || PresentPropertyJsonHierarchy.class.isAssignableFrom(type);
     }
 
-    private boolean isBuiltIn(Class<?> type) {
+    private boolean isBuiltInType(Class<?> type) {
         return Optional.ofNullable(type.getPackage()).map(Package::getName).orElse("").startsWith("java");
     }
 

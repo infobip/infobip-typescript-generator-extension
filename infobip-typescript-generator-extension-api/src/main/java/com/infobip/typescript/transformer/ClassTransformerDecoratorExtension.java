@@ -83,11 +83,18 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                             TsPropertyModel tsPropertyModel,
                                             Class<?> type) {
         return factory.create(type)
-                      .filter(resolver -> resolver instanceof CompositeJsonTypeResolver<?>)
-                      .filter(resolver -> !Modifier.isFinal(type.getModifiers()))
+                      .filter(resolver -> isHierarchicalDecoratorNeeded(resolver, type))
                       .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
                       .map(resolver -> getHierarchyDecorators(symbolTable, model, tsPropertyModel, resolver))
                       .orElseGet(() -> getNonHierarchyDecorators(tsPropertyModel, type));
+    }
+
+    private boolean isHierarchicalDecoratorNeeded(JsonTypeResolver resolver, Class<?> type) {
+        return resolver instanceof CompositeJsonTypeResolver<?> && !isHierarchyLeaf(type);
+    }
+
+    private boolean isHierarchyLeaf(Class<?> type) {
+        return Modifier.isFinal(type.getModifiers());
     }
 
     private List<TsDecorator> getHierarchyDecorators(SymbolTable symbolTable,

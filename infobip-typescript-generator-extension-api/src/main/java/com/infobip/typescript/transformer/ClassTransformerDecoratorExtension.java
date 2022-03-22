@@ -22,7 +22,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
 
     @Override
     public EmitterExtensionFeatures getFeatures() {
-        final EmitterExtensionFeatures features = new EmitterExtensionFeatures();
+        EmitterExtensionFeatures features = new EmitterExtensionFeatures();
         features.generatesRuntimeCode = true;
         return features;
     }
@@ -71,7 +71,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
             typeToDecorate = type.getComponentType();
         }
 
-        final Optional<Class<?>> typeArgument = parameterizedTypeClasses.getTypeArgument();
+        Optional<Class<?>> typeArgument = parameterizedTypeClasses.getTypeArgument();
         if (Collection.class.isAssignableFrom(type) && typeArgument.isPresent()) {
             typeToDecorate = typeArgument.get();
         }
@@ -123,7 +123,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
         TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
                 new TsType.ReferenceType(new Symbol(type.getSimpleName()))));
 
-        final Stream<TsDecorator> typeDecoratorStream = shouldNotBeDecorated(type) ?
+        Stream<TsDecorator> typeDecoratorStream = shouldNotBeDecorated(type) ?
                 Stream.empty() :
                 Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName)));
 
@@ -184,9 +184,9 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private Optional<Class<?>> getTypeArgument(Field field) {
-        final Type genericType = field.getGenericType();
+        Type genericType = field.getGenericType();
         if (genericType instanceof ParameterizedType) {
-            final Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
+            Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
             if (actualTypeArguments.length != 0 && actualTypeArguments[0] instanceof Class) {
                 return Optional.of((Class<?>) actualTypeArguments[0]);
             }

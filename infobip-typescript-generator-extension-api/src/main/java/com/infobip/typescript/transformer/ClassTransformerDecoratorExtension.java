@@ -90,11 +90,11 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private boolean isHierarchicalDecoratorNeeded(JsonTypeResolver resolver, Class<?> type) {
-        return resolver instanceof CompositeJsonTypeResolver<?> && !isHierarchyLeaf(type);
+        return resolver instanceof CompositeJsonTypeResolver<?> && isHierarchyRoot(type);
     }
 
-    private boolean isHierarchyLeaf(Class<?> type) {
-        return Modifier.isFinal(type.getModifiers());
+    private boolean isHierarchyRoot(Class<?> type) {
+        return Modifier.isAbstract(type.getModifiers()) || type.isInterface();
     }
 
     private List<TsDecorator> getHierarchyDecorators(SymbolTable symbolTable,

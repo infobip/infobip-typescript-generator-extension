@@ -9,13 +9,10 @@ import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
 
 abstract class ClassValidatorDecoratorTestBase extends TestBase {
 
-    private static final String IMPORT_COMMON_VALIDATION_MESSAGES = "import { CommonValidationMessages } from 'infobip-typescript-generator-common'";
-    private static final String IMPORT_CLASS_VALIDATOR = "import { ValidateNested, IsDefined, IsOptional, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator'";
-    protected static final String IMPORTS = IMPORT_COMMON_VALIDATION_MESSAGES + ";\n" + IMPORT_CLASS_VALIDATOR + ";\n";
-
     ClassValidatorDecoratorTestBase() {
         super(new ClassValidatorDecoratorExtension(),
-              Arrays.asList(IMPORT_COMMON_VALIDATION_MESSAGES, IMPORT_CLASS_VALIDATOR));
+              Arrays.asList("import { CommonValidationMessages } from 'infobip-typescript-generator-common'",
+                            "import { ValidateNested, IsOptional, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator'"));
     }
 
     ClassValidatorDecoratorTestBase(List<TSCustomDecorator> tsCustomDecorators,

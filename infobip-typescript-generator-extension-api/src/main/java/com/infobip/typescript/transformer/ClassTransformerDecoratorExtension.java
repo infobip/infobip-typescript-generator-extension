@@ -86,7 +86,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
                       .filter(resolver -> isHierarchicalDecoratorNeeded(resolver, type))
                       .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
                       .map(resolver -> getHierarchyDecorators(symbolTable, model, tsPropertyModel, resolver))
-                      .orElseGet(() -> getNonHierarchyDecorators(tsPropertyModel, type));
+                      .orElseGet(() -> getNonHierarchyDecorators(symbolTable, tsPropertyModel, type));
     }
 
     private boolean isHierarchicalDecoratorNeeded(JsonTypeResolver resolver, Class<?> type) {
@@ -117,11 +117,12 @@ public class ClassTransformerDecoratorExtension extends Extension {
                      .collect(Collectors.toList());
     }
 
-    private List<TsDecorator> getNonHierarchyDecorators(TsPropertyModel tsPropertyModel,
+    private List<TsDecorator> getNonHierarchyDecorators(SymbolTable symbolTable,
+                                                        TsPropertyModel tsPropertyModel,
                                                         Class<?> type) {
 
         TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
-                new TsType.ReferenceType(new Symbol(type.getSimpleName()))));
+                new TsType.ReferenceType(symbolTable.getSymbol(type))));
 
         Stream<TsDecorator> typeDecoratorStream = shouldNotBeDecorated(type) ?
                 Stream.empty() :

@@ -20,7 +20,7 @@ class MinToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorato
         then(actual).isEqualTo(
                 "\n" +
                 "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                "import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
+                "import { ValidateNested, IsOptional, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
                 "\n" +
                 "export class Foo {\n" +
                 "    @Min(1, { message: CommonValidationMessages.Min(1) })\n" +
@@ -32,6 +32,6 @@ class MinToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorato
     static class Foo {
 
         @Min(1)
-        private final Object bar;
+        Object bar;
     }
 }

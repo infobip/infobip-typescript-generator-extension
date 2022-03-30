@@ -10,7 +10,7 @@
     "typescript": "^3.9.9"
   },
   "dependencies": {
-    "class-transformer": "^0.4.0",
+    "class-transformer": "^0.5.1",
     "class-validator": "^0.13.0"
   },
   "scripts": {

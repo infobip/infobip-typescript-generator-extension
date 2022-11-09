@@ -52,7 +52,7 @@
 
 	<properties>
 		<!-- DEPENDENCY VERSIONS -->
-		<spring-boot.version>2.6.3</spring-boot.version>
+		<spring-boot.version>2.7.5</spring-boot.version>
 
 		<!-- PLUGIN VERSIONS -->
 		<maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>

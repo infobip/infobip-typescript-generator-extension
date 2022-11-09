@@ -1,18 +1,27 @@
 package com.infobip.typescript.transformer;
 
-import com.fasterxml.jackson.databind.jsontype.NamedType;
-import com.infobip.jackson.*;
-import cz.habarta.typescript.generator.Extension;
-import cz.habarta.typescript.generator.TsType;
-import cz.habarta.typescript.generator.compiler.*;
-import cz.habarta.typescript.generator.emitter.*;
-
-import java.lang.reflect.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.infobip.jackson.CompositeJsonTypeResolver;
+import com.infobip.jackson.JsonTypeResolver;
+import com.infobip.jackson.JsonTypeResolverFactory;
+import com.infobip.jackson.PresentPropertyJsonHierarchy;
+import cz.habarta.typescript.generator.Extension;
+import cz.habarta.typescript.generator.TsType;
+import cz.habarta.typescript.generator.compiler.ModelCompiler;
+import cz.habarta.typescript.generator.compiler.ModelTransformer;
+import cz.habarta.typescript.generator.compiler.Symbol;
+import cz.habarta.typescript.generator.compiler.SymbolTable;
+import cz.habarta.typescript.generator.emitter.*;
 
 public class ClassTransformerDecoratorExtension extends Extension {
 
@@ -153,7 +162,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private boolean isTsTypeResolutionUnsupported(Class<?> type) {
-        return type.isEnum() || PresentPropertyJsonHierarchy.class.isAssignableFrom(type);
+        return type.isPrimitive() || type.isEnum() || PresentPropertyJsonHierarchy.class.isAssignableFrom(type);
     }
 
     private boolean isBuiltInType(Class<?> type) {

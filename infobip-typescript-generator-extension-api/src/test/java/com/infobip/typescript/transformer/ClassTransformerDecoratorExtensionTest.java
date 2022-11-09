@@ -1,15 +1,20 @@
 package com.infobip.typescript.transformer;
 
-import com.infobip.jackson.*;
-import com.infobip.typescript.TestBase;
-import cz.habarta.typescript.generator.Input;
-import lombok.*;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.jackson.PresentPropertyJsonHierarchy;
+import com.infobip.jackson.SimpleJsonHierarchy;
+import com.infobip.jackson.TypeProvider;
+import com.infobip.typescript.TestBase;
+import cz.habarta.typescript.generator.Input;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.Value;
+import org.junit.jupiter.api.Test;
 
 class ClassTransformerDecoratorExtensionTest extends TestBase {
 
@@ -23,24 +28,25 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
         String actual = whenGenerate(Input.from(Root.class, Leaf.class, Unsupported.class));
 
         then(fixNewlines(actual)).isEqualTo(
-                "" +
-                        "import { Type } from 'class-transformer';\n" +
-                        "\n" +
-                        "export enum Enumeration {\n" +
-                        "    VALUE = \"VALUE\",\n" +
-                        "}\n" +
-                        "\n" +
-                        "export class Leaf {\n" +
-                        "}\n" +
-                        "\n" +
-                        "export interface Unsupported {\n" +
-                        "}\n" +
-                        "\n" +
-                        "export class Root {\n" +
-                        "    @Type(() => Leaf)\n" +
-                        "    leaf: Leaf;\n" +
-                        "    leafOfBuiltInType: string;\n" +
-                        "    @Type(() => Leaf)\n" +
+            "" +
+                "import { Type } from 'class-transformer';\n" +
+                "\n" +
+                "export enum Enumeration {\n" +
+                "    VALUE = \"VALUE\",\n" +
+                "}\n" +
+                "\n" +
+                "export class Leaf {\n" +
+                "    value: number;\n" +
+                "}\n" +
+                "\n" +
+                "export interface Unsupported {\n" +
+                "}\n" +
+                "\n" +
+                "export class Root {\n" +
+                "    @Type(() => Leaf)\n" +
+                "    leaf: Leaf;\n" +
+                "    leafOfBuiltInType: string;\n" +
+                "    @Type(() => Leaf)\n" +
                         "    leafArray: Leaf[];\n" +
                         "    enumeration: Enumeration;\n" +
                         "    unsupported: Unsupported;\n" +
@@ -60,9 +66,10 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
         List<Leaf> listOfLeaves;
     }
 
-    @Value
+    @Data
     static class Leaf {
 
+        int value;
     }
 
     enum Enumeration {

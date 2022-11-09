@@ -11,7 +11,7 @@
     <artifactId>infobip-typescript-generator-extension-model-showcase</artifactId>
 
     <properties>
-        <infobip-bean-validation.version>2.0.5</infobip-bean-validation.version>
+        <infobip-bean-validation.version>2.1.0</infobip-bean-validation.version>
     </properties>
 
     <dependencies>

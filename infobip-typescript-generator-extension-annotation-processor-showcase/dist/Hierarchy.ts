@@ -22,8 +22,8 @@ export interface InboundMessage extends Message {
 }
 
 export interface Message {
-    channel: Channel;
     direction: Direction;
+    channel: Channel;
 }
 
 export interface OutboundMessage extends Message {
@@ -48,8 +48,8 @@ export class TextContent implements CommonContent {
 }
 
 export class InboundSmsMessage implements InboundMessage {
-    readonly channel: Channel = Channel.SMS;
     direction: Direction;
+    readonly channel: Channel = Channel.SMS;
     @Type(() => Object, {
         discriminator: {
             property: 'type', subTypes: [
@@ -61,8 +61,8 @@ export class InboundSmsMessage implements InboundMessage {
 }
 
 export class OutboundSmsMessage implements OutboundMessage {
-    readonly channel: Channel = Channel.SMS;
     direction: Direction;
+    readonly channel: Channel = Channel.SMS;
     @Type(() => Object, {
         discriminator: {
             property: 'type', subTypes: [

@@ -1,18 +1,25 @@
 package com.infobip.typescript.type;
 
-import com.fasterxml.jackson.databind.jsontype.NamedType;
-import com.infobip.jackson.*;
-import com.infobip.typescript.TypeScriptImportResolver;
-import cz.habarta.typescript.generator.Extension;
-import cz.habarta.typescript.generator.TsType;
-import cz.habarta.typescript.generator.compiler.*;
-import cz.habarta.typescript.generator.emitter.*;
-
 import java.lang.reflect.Modifier;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.infobip.jackson.CompositeJsonTypeResolver;
+import com.infobip.jackson.JsonTypeResolverFactory;
+import com.infobip.jackson.PresentPropertyJsonHierarchy;
+import com.infobip.jackson.SimpleJsonHierarchy;
+import com.infobip.typescript.TypeScriptImportResolver;
+import cz.habarta.typescript.generator.Extension;
+import cz.habarta.typescript.generator.TsType;
+import cz.habarta.typescript.generator.compiler.ModelCompiler;
+import cz.habarta.typescript.generator.compiler.TsModelTransformer;
+import cz.habarta.typescript.generator.emitter.EmitterExtensionFeatures;
+import cz.habarta.typescript.generator.emitter.TsBeanModel;
+import cz.habarta.typescript.generator.emitter.TsModel;
+import cz.habarta.typescript.generator.emitter.TsPropertyModel;
 
 public class JsonTypeExtension extends Extension implements TypeScriptImportResolver {
 
@@ -28,7 +35,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
     @Override
     public List<TransformerDefinition> getTransformers() {
         return Collections.singletonList(new TransformerDefinition(ModelCompiler.TransformationPhase.BeforeEnums,
-                                                                   (ModelTransformer) this::addTypeInformationToHierarchy));
+                                                                   (TsModelTransformer) this::addTypeInformationToHierarchy));
     }
 
     @Override
@@ -41,21 +48,21 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
         return Collections.emptyList();
     }
 
-    private TsModel addTypeInformationToHierarchy(SymbolTable symbolTable, TsModel model) {
+    private TsModel addTypeInformationToHierarchy(TsModelTransformer.Context context, TsModel model) {
         List<TsBeanModel> beans = model.getBeans();
 
         for (TsBeanModel bean : beans) {
 
             Class<?> type = bean.getOrigin();
             if (Modifier.isAbstract(type.getModifiers()) || type.isInterface()) {
-                beans = addTypeInformationToHierarchy(symbolTable, beans, type);
+                beans = addTypeInformationToHierarchy(context, beans, type);
             }
         }
 
         return model.withBeans(beans);
     }
 
-    private List<TsBeanModel> addTypeInformationToHierarchy(SymbolTable symbolTable,
+    private List<TsBeanModel> addTypeInformationToHierarchy(TsModelTransformer.Context context,
                                                             List<TsBeanModel> beans,
                                                             Class<?> type) {
 
@@ -66,11 +73,11 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
         return factory.create(type)
                       .filter(resolver -> resolver instanceof CompositeJsonTypeResolver<?>)
                       .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
-                      .map(resolver -> addTypeInformationToHierarchy(symbolTable, beans, resolver))
+                      .map(resolver -> addTypeInformationToHierarchy(context, beans, resolver))
                       .orElse(beans);
     }
 
-    private List<TsBeanModel> addTypeInformationToHierarchy(SymbolTable symbolTable,
+    private List<TsBeanModel> addTypeInformationToHierarchy(TsModelTransformer.Context context,
                                                             List<TsBeanModel> beans,
                                                             CompositeJsonTypeResolver<?> resolver) {
         List<NamedType> subtypes = findSubtypes(resolver);
@@ -78,12 +85,12 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                                            .collect(Collectors.toMap(NamedType::getType,
                                                                                      Function.identity()));
         return beans.stream()
-                    .map(bean -> addTypeInformationToHierarchy(symbolTable, bean, resolver,
+                    .map(bean -> addTypeInformationToHierarchy(context, bean, resolver,
                                                                typeToNamedType.get(bean.getOrigin())))
                     .collect(Collectors.toList());
     }
 
-    private TsBeanModel addTypeInformationToHierarchy(SymbolTable symbolTable,
+    private TsBeanModel addTypeInformationToHierarchy(TsModelTransformer.Context context,
                                                       TsBeanModel tsBeanModel,
                                                       CompositeJsonTypeResolver<?> resolver,
                                                       NamedType namedType) {
@@ -93,7 +100,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
 
         return tsBeanModel.withProperties(tsBeanModel.getProperties()
                                                      .stream()
-                                                     .map(tsPropertyModel -> addTypeInformationToHierarchy(symbolTable,
+                                                     .map(tsPropertyModel -> addTypeInformationToHierarchy(context,
                                                                                                            tsPropertyModel,
                                                                                                            resolver.getType(),
                                                                                                            namedType))
@@ -101,11 +108,11 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
         );
     }
 
-    private <E extends Enum<E>> TsPropertyModel addTypeInformationToHierarchy(SymbolTable symbolTable,
+    private <E extends Enum<E>> TsPropertyModel addTypeInformationToHierarchy(TsModelTransformer.Context context,
                                                                               TsPropertyModel tsPropertyModel,
                                                                               Class<E> type,
                                                                               NamedType namedType) {
-        TsType expected = new TsType.EnumReferenceType(symbolTable.getSymbol(type));
+        TsType expected = new TsType.EnumReferenceType(context.getSymbolTable().getSymbol(type));
 
         if (!tsPropertyModel.getTsType().equals(expected)) {
             return tsPropertyModel;

@@ -18,9 +18,9 @@ import com.infobip.jackson.PresentPropertyJsonHierarchy;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.TsType;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
-import cz.habarta.typescript.generator.compiler.ModelTransformer;
 import cz.habarta.typescript.generator.compiler.Symbol;
 import cz.habarta.typescript.generator.compiler.SymbolTable;
+import cz.habarta.typescript.generator.compiler.TsModelTransformer;
 import cz.habarta.typescript.generator.emitter.*;
 
 public class ClassTransformerDecoratorExtension extends Extension {
@@ -40,13 +40,13 @@ public class ClassTransformerDecoratorExtension extends Extension {
     public List<TransformerDefinition> getTransformers() {
         return Collections.singletonList(
                 new TransformerDefinition(ModelCompiler.TransformationPhase.AfterDeclarationSorting,
-                                          (ModelTransformer) this::decorateClass));
+                                          (TsModelTransformer) this::decorateClass));
     }
 
-    private TsModel decorateClass(SymbolTable symbolTable, TsModel model) {
+    private TsModel decorateClass(TsModelTransformer.Context context, TsModel model) {
         List<TsBeanModel> newBeans = model.getBeans()
                                           .stream()
-                                          .map(bean -> decorateClass(symbolTable, bean))
+                                          .map(bean -> decorateClass(context, bean))
                                           .collect(Collectors.toList());
 
         Map<Class<?>, TsBeanModel> originToModel = newBeans.stream()
@@ -57,18 +57,18 @@ public class ClassTransformerDecoratorExtension extends Extension {
         return model.withBeans(sorted);
     }
 
-    private TsBeanModel decorateClass(SymbolTable symbolTable, TsBeanModel bean) {
+    private TsBeanModel decorateClass(TsModelTransformer.Context context, TsBeanModel bean) {
         return bean.withProperties(bean.getProperties()
                                        .stream()
-                                       .map(model -> getDecorators(symbolTable, bean, model))
+                                       .map(model -> getDecorators(context, bean, model))
                                        .collect(Collectors.toList())
         );
     }
 
-    private TsPropertyModel getDecorators(SymbolTable symbolTable, TsBeanModel model, TsPropertyModel tsPropertyModel) {
+    private TsPropertyModel getDecorators(TsModelTransformer.Context context, TsBeanModel model, TsPropertyModel tsPropertyModel) {
         return getField(model, tsPropertyModel).map(this::getParameterizedTypeClasses)
                                                .map(parameterizedTypeClasses -> tsPropertyModel.withDecorators(
-                                                       getDecorators(symbolTable, model, tsPropertyModel,
+                                                       getDecorators(context, model, tsPropertyModel,
                                                                      resolveTypeToDecorate(parameterizedTypeClasses))))
                                                .orElse(tsPropertyModel);
     }
@@ -87,15 +87,15 @@ public class ClassTransformerDecoratorExtension extends Extension {
         return typeToDecorate;
     }
 
-    private List<TsDecorator> getDecorators(SymbolTable symbolTable,
+    private List<TsDecorator> getDecorators(TsModelTransformer.Context context,
                                             TsBeanModel model,
                                             TsPropertyModel tsPropertyModel,
                                             Class<?> type) {
         return factory.create(type)
                       .filter(resolver -> isHierarchicalDecoratorNeeded(resolver, type))
                       .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
-                      .map(resolver -> getHierarchyDecorators(symbolTable, model, tsPropertyModel, resolver))
-                      .orElseGet(() -> getNonHierarchyDecorators(symbolTable, tsPropertyModel, type));
+                      .map(resolver -> getHierarchyDecorators(context.getSymbolTable(), model, tsPropertyModel, resolver))
+                      .orElseGet(() -> getNonHierarchyDecorators(context.getSymbolTable(), tsPropertyModel, type));
     }
 
     private boolean isHierarchicalDecoratorNeeded(JsonTypeResolver resolver, Class<?> type) {

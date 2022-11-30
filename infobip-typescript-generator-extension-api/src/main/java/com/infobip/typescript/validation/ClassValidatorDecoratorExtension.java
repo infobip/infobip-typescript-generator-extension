@@ -1,11 +1,7 @@
 package com.infobip.typescript.validation;
 
-import com.infobip.typescript.TypeScriptImportResolver;
-import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
-import cz.habarta.typescript.generator.Extension;
-import cz.habarta.typescript.generator.compiler.ModelCompiler;
-import cz.habarta.typescript.generator.compiler.ModelTransformer;
-import cz.habarta.typescript.generator.emitter.*;
+import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
+import static com.infobip.typescript.validation.Localization.LOCALIZATION_METHOD;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -14,8 +10,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
-import static com.infobip.typescript.validation.Localization.LOCALIZATION_METHOD;
+import com.infobip.typescript.TypeScriptImportResolver;
+import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
+import cz.habarta.typescript.generator.Extension;
+import cz.habarta.typescript.generator.compiler.ModelCompiler;
+import cz.habarta.typescript.generator.compiler.TsModelTransformer;
+import cz.habarta.typescript.generator.emitter.EmitterExtensionFeatures;
+import cz.habarta.typescript.generator.emitter.TsBeanModel;
+import cz.habarta.typescript.generator.emitter.TsDecorator;
+import cz.habarta.typescript.generator.emitter.TsPropertyModel;
 
 public class ClassValidatorDecoratorExtension extends Extension implements TypeScriptImportResolver {
 
@@ -63,7 +66,7 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     public List<TransformerDefinition> getTransformers() {
         return Collections.singletonList(
             new TransformerDefinition(ModelCompiler.TransformationPhase.BeforeEnums,
-                                      (ModelTransformer) (symbolTable, model) ->
+                                      (TsModelTransformer) (context, model) ->
                                           model.withBeans(model.getBeans().stream()
                                                                .map(this::decorateClass)
                                                                .collect(Collectors.toList())

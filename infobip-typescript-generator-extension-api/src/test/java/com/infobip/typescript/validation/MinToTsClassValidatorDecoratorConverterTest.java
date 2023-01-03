@@ -1,12 +1,11 @@
 package com.infobip.typescript.validation;
 
+import static org.assertj.core.api.BDDAssertions.then;
+
 import cz.habarta.typescript.generator.Input;
+import jakarta.validation.constraints.Min;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
-
-import javax.validation.constraints.Min;
-
-import static org.assertj.core.api.BDDAssertions.then;
 
 class MinToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecoratorTestBase {
 

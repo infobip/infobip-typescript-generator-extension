@@ -1,16 +1,16 @@
 package com.infobip.typescript.validation;
 
-import com.infobip.typescript.TestBase;
-import cz.habarta.typescript.generator.Input;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.typescript.TestBase;
+import cz.habarta.typescript.generator.Input;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+import lombok.Value;
+import org.junit.jupiter.api.Test;
 
 class CustomValidationDataMessageToTsClassValidatorDecoratorConverterTest extends TestBase {
 

@@ -1,14 +1,14 @@
 package com.infobip.typescript.validation;
 
-import cz.habarta.typescript.generator.Input;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.Size;
 import java.util.List;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import cz.habarta.typescript.generator.Input;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import lombok.Value;
+import org.junit.jupiter.api.Test;
 
 class SizeToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecoratorTestBase {
 

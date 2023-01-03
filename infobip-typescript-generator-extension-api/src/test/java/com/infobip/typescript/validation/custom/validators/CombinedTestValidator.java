@@ -1,9 +1,8 @@
 package com.infobip.typescript.validation.custom.validators;
 
 import com.infobip.typescript.validation.custom.CombinedValidation;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class CombinedTestValidator implements ConstraintValidator<CombinedValidation, String> {
 

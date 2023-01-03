@@ -1,9 +1,10 @@
 package com.infobip.typescript.showcase.custom.complex.validation;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.Value;
-
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 
 @Value
 public class Foo {

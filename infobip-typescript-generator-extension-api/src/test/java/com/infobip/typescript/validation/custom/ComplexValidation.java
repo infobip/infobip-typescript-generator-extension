@@ -1,11 +1,14 @@
 package com.infobip.typescript.validation.custom;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import com.infobip.typescript.CustomTypeScriptDecorator;
 import com.infobip.typescript.validation.custom.validators.ComplexTestValidator;
-
-import javax.validation.Constraint;
-import javax.validation.Payload;
-import java.lang.annotation.*;
+import jakarta.validation.Constraint;
+import jakarta.validation.Payload;
 
 @CustomTypeScriptDecorator(decoratorParameterListExtractor = DecoratorParameterExtractorImpl.class)
 @Target(ElementType.FIELD)

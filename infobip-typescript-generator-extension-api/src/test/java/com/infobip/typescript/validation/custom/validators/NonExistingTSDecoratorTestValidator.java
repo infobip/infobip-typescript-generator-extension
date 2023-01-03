@@ -1,9 +1,8 @@
 package com.infobip.typescript.validation.custom.validators;
 
 import com.infobip.typescript.validation.custom.NonExistingTSDecorator;
-
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 
 public class NonExistingTSDecoratorTestValidator implements ConstraintValidator<NonExistingTSDecorator, String> {
 

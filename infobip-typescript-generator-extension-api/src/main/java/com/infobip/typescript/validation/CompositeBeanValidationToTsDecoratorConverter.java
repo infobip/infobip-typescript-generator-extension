@@ -1,14 +1,16 @@
 package com.infobip.typescript.validation;
 
-import cz.habarta.typescript.generator.emitter.TsDecorator;
-
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import cz.habarta.typescript.generator.emitter.TsDecorator;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 
 class CompositeBeanValidationToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Annotation> {
 

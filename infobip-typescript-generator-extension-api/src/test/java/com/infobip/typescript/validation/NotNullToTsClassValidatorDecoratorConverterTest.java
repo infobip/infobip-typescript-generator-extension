@@ -1,12 +1,11 @@
 package com.infobip.typescript.validation;
 
+import static org.assertj.core.api.BDDAssertions.then;
+
 import cz.habarta.typescript.generator.Input;
+import jakarta.validation.constraints.NotNull;
 import lombok.Value;
 import org.junit.jupiter.api.Test;
-
-import javax.validation.constraints.NotNull;
-
-import static org.assertj.core.api.BDDAssertions.then;
 
 class NotNullToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecoratorTestBase {
 

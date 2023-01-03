@@ -1,12 +1,12 @@
 package com.infobip.typescript.validation;
 
-import cz.habarta.typescript.generator.emitter.TsDecorator;
-import cz.habarta.typescript.generator.emitter.TsIdentifierReference;
-
-import javax.validation.Valid;
 import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.stream.Stream;
+
+import cz.habarta.typescript.generator.emitter.TsDecorator;
+import cz.habarta.typescript.generator.emitter.TsIdentifierReference;
+import jakarta.validation.Valid;
 
 class ValidToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Valid> {
 

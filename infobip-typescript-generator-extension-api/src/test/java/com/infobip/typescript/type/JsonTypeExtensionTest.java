@@ -1,15 +1,17 @@
 package com.infobip.typescript.type;
 
-import com.infobip.jackson.*;
+import static org.assertj.core.api.BDDAssertions.then;
+
+import java.util.Collections;
+
+import com.infobip.jackson.PresentPropertyJsonHierarchy;
+import com.infobip.jackson.SimpleJsonHierarchy;
+import com.infobip.jackson.TypeProvider;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.junit.jupiter.api.Test;
-
-import java.util.Collections;
-
-import static org.assertj.core.api.BDDAssertions.then;
 
 class JsonTypeExtensionTest extends TestBase {
 
@@ -27,23 +29,25 @@ class JsonTypeExtensionTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-                "\n" +
-                "export enum HierarchyType {\n" +
-                "    FIRST_LEAF = \"FIRST_LEAF\",\n" +
-                "    SECOND_LEAF = \"SECOND_LEAF\",\n" +
-                "}\n" +
-                "\n" +
-                "export interface HierarchyRoot {\n" +
-                "    type: HierarchyType;\n" +
-                "}\n" +
-                "\n" +
-                "export class FirstLeaf implements HierarchyRoot {\n" +
-                "    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;\n" +
-                "}\n" +
-                "\n" +
-                "export class SecondLeaf implements HierarchyRoot {\n" +
-                "    readonly type: HierarchyType = HierarchyType.SECOND_LEAF;\n" +
-                "}\n");
+            """
+
+                export enum HierarchyType {
+                    FIRST_LEAF = "FIRST_LEAF",
+                    SECOND_LEAF = "SECOND_LEAF",
+                }
+
+                export interface HierarchyRoot {
+                    type: HierarchyType;
+                }
+
+                export class FirstLeaf implements HierarchyRoot {
+                    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
+                }
+
+                export class SecondLeaf implements HierarchyRoot {
+                    readonly type: HierarchyType = HierarchyType.SECOND_LEAF;
+                }
+                """);
     }
 
     @Test
@@ -56,15 +60,17 @@ class JsonTypeExtensionTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-                "\n" +
-                "export interface PresentPropertyHierarchyRoot {\n" +
-                "}\n" +
-                "\n" +
-                "export class One implements PresentPropertyHierarchyRoot {\n" +
-                "}\n" +
-                "\n" +
-                "export class Two implements PresentPropertyHierarchyRoot {\n" +
-                "}\n");
+            """
+
+                export interface PresentPropertyHierarchyRoot {
+                }
+
+                export class One implements PresentPropertyHierarchyRoot {
+                }
+
+                export class Two implements PresentPropertyHierarchyRoot {
+                }
+                """);
 }
 
 

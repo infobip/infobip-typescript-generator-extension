@@ -17,14 +17,16 @@ class ValidToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecora
 
         // then
         then(actual).isEqualTo(
-                "\n" +
-                "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                "import { ValidateNested, IsOptional, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
-                "\n" +
-                "export class Foo {\n" +
-                "    @ValidateNested()\n" +
-                "    bar: any;\n" +
-                "}\n");
+            """
+
+                import { CommonValidationMessages } from 'infobip-typescript-generator-common';
+                import { ValidateNested, IsOptional, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';
+
+                export class Foo {
+                    @ValidateNested()
+                    bar: any;
+                }
+                """);
     }
 
     @Value

@@ -16,21 +16,22 @@ public class SimpleCustomValidationTypeScriptFileGeneratorTest extends TestBase 
         String actual = whenActualFileIsGenerated(Paths.get(".", "dist", "SimpleValidation.ts"));
 
         // then
-        then(actual).isEqualTo("/* tslint:disable */\n" +
-                                  "/* eslint-disable */\n" +
-                                  "import { IsDefined, IsNotEmpty, MinLength, ValidateNested, MaxLength } from 'class-validator';\n" +
-                                  "import { CommonValidationMessages } from './CommonValidationMessages';\n" +
-                                  "import { SimpleCustomValidation } from './validators/SimpleCustomValidation';\n" +
-                                  "\n" +
-                                  "export class Foo {\n" +
-                                  "    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })\n" +
-                                  "    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })\n" +
-                                  "    @SimpleCustomValidation({ message: 'must be valid element' })\n" +
-                                  "    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })\n" +
-                                  "    @IsDefined({ message: CommonValidationMessages.IsDefined })\n" +
-                                  "    @ValidateNested()\n" +
-                                  "    bar: string;\n" +
-                                  "}");
+        then(actual).isEqualTo("""
+                                   /* tslint:disable */
+                                   /* eslint-disable */
+                                   import { IsDefined, IsNotEmpty, MinLength, ValidateNested, MaxLength } from 'class-validator';
+                                   import { CommonValidationMessages } from './CommonValidationMessages';
+                                   import { SimpleCustomValidation } from './validators/SimpleCustomValidation';
+
+                                   export class Foo {
+                                       @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
+                                       @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
+                                       @SimpleCustomValidation({ message: 'must be valid element' })
+                                       @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
+                                       @IsDefined({ message: CommonValidationMessages.IsDefined })
+                                       @ValidateNested()
+                                       bar: string;
+                                   }""");
     }
 
 }

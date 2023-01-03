@@ -28,31 +28,31 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
         String actual = whenGenerate(Input.from(Root.class, Leaf.class, Unsupported.class));
 
         then(fixNewlines(actual)).isEqualTo(
-            "" +
-                "import { Type } from 'class-transformer';\n" +
-                "\n" +
-                "export enum Enumeration {\n" +
-                "    VALUE = \"VALUE\",\n" +
-                "}\n" +
-                "\n" +
-                "export class Leaf {\n" +
-                "    value: number;\n" +
-                "}\n" +
-                "\n" +
-                "export interface Unsupported {\n" +
-                "}\n" +
-                "\n" +
-                "export class Root {\n" +
-                "    @Type(() => Leaf)\n" +
-                "    leaf: Leaf;\n" +
-                "    leafOfBuiltInType: string;\n" +
-                "    @Type(() => Leaf)\n" +
-                        "    leafArray: Leaf[];\n" +
-                        "    enumeration: Enumeration;\n" +
-                        "    unsupported: Unsupported;\n" +
-                        "    @Type(() => Leaf)\n" +
-                        "    listOfLeaves: Leaf[];\n" +
-                        "}");
+            """
+                import { Type } from 'class-transformer';
+
+                export enum Enumeration {
+                    VALUE = "VALUE",
+                }
+
+                export class Leaf {
+                    value: number;
+                }
+
+                export interface Unsupported {
+                }
+
+                export class Root {
+                    @Type(() => Leaf)
+                    leaf: Leaf;
+                    leafOfBuiltInType: string;
+                    @Type(() => Leaf)
+                    leafArray: Leaf[];
+                    enumeration: Enumeration;
+                    unsupported: Unsupported;
+                    @Type(() => Leaf)
+                    listOfLeaves: Leaf[];
+                }""");
     }
 
     @Value
@@ -105,68 +105,68 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
         // then
         then(fixNewlines(actual)).isEqualTo(
-                "" +
-                        "import { Type } from 'class-transformer';\n" +
-                        "\n" +
-                        "export enum FirstHierarchyType {\n" +
-                        "    LEAF = \"LEAF\",\n" +
-                        "}\n" +
-                        "\n" +
-                        "export enum SecondHierarchyType {\n" +
-                        "    LEAF = \"LEAF\",\n" +
-                        "}\n" +
-                        "\n" +
-                        "export enum NestedHierarchyType {\n" +
-                        "    LEAF = \"LEAF\",\n" +
-                        "}\n" +
-                        "\n" +
-                        "export interface FirstHierarchyRoot {\n" +
-                        "    type: FirstHierarchyType;\n" +
-                        "}\n" +
-                        "\n" +
-                        "export interface SecondHierarchyRoot {\n" +
-                        "    type: SecondHierarchyType;\n" +
-                        "}\n" +
-                        "\n" +
-                        "export interface NestedHierarchyRoot {\n" +
-                        "    type: NestedHierarchyType;\n" +
-                        "}\n" +
-                        "\n" +
-                        "export class NestedHierarchyLeaf implements NestedHierarchyRoot {\n" +
-                        "    type: NestedHierarchyType;\n" +
-                        "}\n" +
-                        "\n" +
-                        "export class FirstHierarchyLeaf implements FirstHierarchyRoot {\n" +
-                        "    type: FirstHierarchyType;\n" +
-                        "    @Type(() => Object, {\n" +
-                        "        discriminator: {\n" +
-                        "            property: \"type\", subTypes: [\n" +
-                        "                { value: NestedHierarchyLeaf, name: NestedHierarchyType.LEAF }\n" +
-                        "            ]\n" +
-                        "        }\n" +
-                        "    })\n" +
-                        "    nested: NestedHierarchyRoot;\n" +
-                        "}\n" +
-                        "\n" +
-                        "export class SecondHierarchyLeaf implements SecondHierarchyRoot {\n" +
-                        "    type: SecondHierarchyType;\n" +
-                        "    @Type(() => Object, {\n" +
-                        "        discriminator: {\n" +
-                        "            property: \"type\", subTypes: [\n" +
-                        "                { value: NestedHierarchyLeaf, name: NestedHierarchyType.LEAF }\n" +
-                        "            ]\n" +
-                        "        }\n" +
-                        "    })\n" +
-                        "    nestedArray: NestedHierarchyRoot[];\n" +
-                        "    @Type(() => Object, {\n" +
-                        "        discriminator: {\n" +
-                        "            property: \"type\", subTypes: [\n" +
-                        "                { value: NestedHierarchyLeaf, name: NestedHierarchyType.LEAF }\n" +
-                        "            ]\n" +
-                        "        }\n" +
-                        "    })\n" +
-                        "    nestedList: NestedHierarchyRoot[];\n" +
-                        "}");
+            """
+                import { Type } from 'class-transformer';
+
+                export enum FirstHierarchyType {
+                    LEAF = "LEAF",
+                }
+
+                export enum SecondHierarchyType {
+                    LEAF = "LEAF",
+                }
+
+                export enum NestedHierarchyType {
+                    LEAF = "LEAF",
+                }
+
+                export interface FirstHierarchyRoot {
+                    type: FirstHierarchyType;
+                }
+
+                export interface SecondHierarchyRoot {
+                    type: SecondHierarchyType;
+                }
+
+                export interface NestedHierarchyRoot {
+                    type: NestedHierarchyType;
+                }
+
+                export class NestedHierarchyLeaf implements NestedHierarchyRoot {
+                    type: NestedHierarchyType;
+                }
+
+                export class FirstHierarchyLeaf implements FirstHierarchyRoot {
+                    type: FirstHierarchyType;
+                    @Type(() => Object, {
+                        discriminator: {
+                            property: "type", subTypes: [
+                                { value: NestedHierarchyLeaf, name: NestedHierarchyType.LEAF }
+                            ]
+                        }
+                    })
+                    nested: NestedHierarchyRoot;
+                }
+
+                export class SecondHierarchyLeaf implements SecondHierarchyRoot {
+                    type: SecondHierarchyType;
+                    @Type(() => Object, {
+                        discriminator: {
+                            property: "type", subTypes: [
+                                { value: NestedHierarchyLeaf, name: NestedHierarchyType.LEAF }
+                            ]
+                        }
+                    })
+                    nestedArray: NestedHierarchyRoot[];
+                    @Type(() => Object, {
+                        discriminator: {
+                            property: "type", subTypes: [
+                                { value: NestedHierarchyLeaf, name: NestedHierarchyType.LEAF }
+                            ]
+                        }
+                    })
+                    nestedList: NestedHierarchyRoot[];
+                }""");
     }
 
     private String fixNewlines(String actual) {

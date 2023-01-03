@@ -28,16 +28,18 @@ class CustomValidationDataMessageToTsClassValidatorDecoratorConverterTest extend
         String actual = whenGenerate(Input.from(Foo.class));
 
         // then
-        then(actual).isEqualTo("\n" +
-                                       "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                                       "import { validations } from './i18n';\n" +
-                                       "import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
-                                       "\n" +
-                                       "export class Foo {\n" +
-                                       "    @MaxLength(1000, { message: validations.textMessageMaxLength(1000) })\n" +
-                                       "    @IsNotEmpty({ message: validations.textMessageNotEmpty })\n" +
-                                       "    bar: string;\n" +
-                                       "}\n");
+        then(actual).isEqualTo("""
+
+                                   import { CommonValidationMessages } from 'infobip-typescript-generator-common';
+                                   import { validations } from './i18n';
+                                   import { ValidateNested, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';
+
+                                   export class Foo {
+                                       @MaxLength(1000, { message: validations.textMessageMaxLength(1000) })
+                                       @IsNotEmpty({ message: validations.textMessageNotEmpty })
+                                       bar: string;
+                                   }
+                                   """);
     }
 
     @Value

@@ -20,23 +20,25 @@ class SizeToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorat
 
         // then
         then(actual).isEqualTo(
-                "\n" +
-                "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                "import { ValidateNested, IsOptional, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';\n" +
-                "\n" +
-                "export class Foo {\n" +
-                "    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })\n" +
-                "    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })\n" +
-                "    @IsOptional()\n" +
-                "    bar: string;\n" +
-                "    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })\n" +
-                "    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })\n" +
-                "    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })\n" +
-                "    notEmptyBar: string;\n" +
-                "    @ArrayMaxSize(4, { message: CommonValidationMessages.ArrayMaxSize(4) })\n" +
-                "    @ArrayMinSize(3, { message: CommonValidationMessages.ArrayMinSize(3) })\n" +
-                "    objects: any[];\n" +
-                "}\n");
+            """
+
+                import { CommonValidationMessages } from 'infobip-typescript-generator-common';
+                import { ValidateNested, IsOptional, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';
+
+                export class Foo {
+                    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
+                    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
+                    @IsOptional()
+                    bar: string;
+                    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
+                    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
+                    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
+                    notEmptyBar: string;
+                    @ArrayMaxSize(4, { message: CommonValidationMessages.ArrayMaxSize(4) })
+                    @ArrayMinSize(3, { message: CommonValidationMessages.ArrayMinSize(3) })
+                    objects: any[];
+                }
+                """);
     }
 
     @Value

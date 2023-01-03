@@ -23,16 +23,18 @@ public class CustomValidationWithLocalizationToTSClassValidatorDecoratorConverte
         String actual = whenGenerate(Input.from(CustomValidationWithLocalizationToTSClassValidatorDecoratorConverterTest.Foo1.class));
 
         // then
-        then(actual).isEqualTo("\n" +
-                                   "import { CommonValidationMessages } from 'infobip-typescript-generator-common';\n" +
-                                   "import { ComplexValidation } from './validators/ComplexValidation';\n" +
-                                   "import { SimpleValidation } from './validators/SimpleValidation';\n" +
-                                   "import { localize } from './Localization';\n" +
-                                   "\n" +
-                                   "export class Foo1 {\n" +
-                                   "    @ComplexValidation(100, { message: localize(\"Value must be valid {length}\", { length: 100 }) })\n" +
-                                   "    bar1: string;\n" +
-                                   "}\n");
+        then(actual).isEqualTo("""
+
+                                   import { CommonValidationMessages } from 'infobip-typescript-generator-common';
+                                   import { ComplexValidation } from './validators/ComplexValidation';
+                                   import { SimpleValidation } from './validators/SimpleValidation';
+                                   import { localize } from './Localization';
+
+                                   export class Foo1 {
+                                       @ComplexValidation(100, { message: localize("Value must be valid {length}", { length: 100 }) })
+                                       bar1: string;
+                                   }
+                                   """);
     }
 
     @Value

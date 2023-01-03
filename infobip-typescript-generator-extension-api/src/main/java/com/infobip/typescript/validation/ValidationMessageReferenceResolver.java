@@ -15,7 +15,7 @@ class ValidationMessageReferenceResolver {
     String getMessageReference(Supplier<String> messageProvider, String identifier) {
         String message = messageProvider.get();
 
-        if (message.startsWith("{") && !message.startsWith("{javax")) {
+        if (message.startsWith("{") && !message.startsWith("{jakarta")) {
             return handleCustomMessage(message);
         }
 
@@ -25,7 +25,7 @@ class ValidationMessageReferenceResolver {
     Optional<String> getCustomMessageReferenceIfExist(Supplier<String> messageProvider) {
         String message = messageProvider.get();
 
-        if (message.startsWith("{") && !message.startsWith("{javax")) {
+        if (message.startsWith("{") && !message.startsWith("{jakarta")) {
             return Optional.of(handleCustomMessage(message));
         }
 

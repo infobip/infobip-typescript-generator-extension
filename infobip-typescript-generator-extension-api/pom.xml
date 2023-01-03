@@ -13,7 +13,7 @@
     <properties>
         <!-- DEPENDENCY VERSIONS -->
         <typescript-generator-core.version>3.0.1157</typescript-generator-core.version>
-        <infobip-jackson-extension.version>2.0.1</infobip-jackson-extension.version>
+        <infobip-jackson-extension.version>3.0.0</infobip-jackson-extension.version>
     </properties>
 
     <dependencies>

@@ -162,7 +162,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private boolean isTsTypeResolutionUnsupported(Class<?> type) {
-        return type.isPrimitive() || type.isEnum() || PresentPropertyJsonHierarchy.class.isAssignableFrom(type);
+        return type.isPrimitive() || type.isInterface() || type.isEnum() || PresentPropertyJsonHierarchy.class.isAssignableFrom(type);
     }
 
     private boolean isBuiltInType(Class<?> type) {

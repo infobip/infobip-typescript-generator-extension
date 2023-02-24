@@ -55,6 +55,25 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
                         "}");
     }
 
+    @Test
+    void shouldNotDecorateNonHierarchiesWithAbstractType() {
+        String actual = whenGenerate(Input.from(RootWithAbstractLeaf.class, AbstractLeaf.class, Unsupported.class));
+
+        then(fixNewlines(actual)).isEqualTo(
+            """
+                import { Type } from 'class-transformer';
+                
+                export class RootWithAbstractLeaf {
+                    leaf: AbstractLeaf;
+                }
+                
+                export interface AbstractLeaf {
+                }
+                
+                export interface Unsupported {
+                }""");
+    }
+
     @Value
     static class Root {
 
@@ -70,6 +89,15 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
     static class Leaf {
 
         int value;
+    }
+
+    @Data
+    static class RootWithAbstractLeaf {
+
+        AbstractLeaf leaf;
+    }
+
+    interface AbstractLeaf {
     }
 
     enum Enumeration {

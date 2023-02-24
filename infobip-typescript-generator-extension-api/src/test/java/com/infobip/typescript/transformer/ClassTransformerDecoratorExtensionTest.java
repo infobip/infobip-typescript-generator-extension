@@ -60,18 +60,17 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
         String actual = whenGenerate(Input.from(RootWithAbstractLeaf.class, AbstractLeaf.class, Unsupported.class));
 
         then(fixNewlines(actual)).isEqualTo(
-            """
-                import { Type } from 'class-transformer';
-                
-                export class RootWithAbstractLeaf {
-                    leaf: AbstractLeaf;
-                }
-                
-                export interface AbstractLeaf {
-                }
-                
-                export interface Unsupported {
-                }""");
+            "import { Type } from 'class-transformer';\n" +
+            "\n" +
+            "export class RootWithAbstractLeaf {\n" +
+            "    leaf: AbstractLeaf;\n" +
+            "}\n" +
+            "\n" +
+            "export interface AbstractLeaf {\n" +
+            "}\n" +
+            "\n" +
+            "export interface Unsupported {\n" +
+            "}");
     }
 
     @Value

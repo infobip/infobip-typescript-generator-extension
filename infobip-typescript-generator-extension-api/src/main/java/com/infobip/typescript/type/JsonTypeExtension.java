@@ -83,7 +83,8 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
         List<NamedType> subtypes = findSubtypes(resolver);
         Map<Class<?>, NamedType> typeToNamedType = subtypes.stream()
                                                            .collect(Collectors.toMap(NamedType::getType,
-                                                                                     Function.identity()));
+                                                                                     Function.identity(),
+                                                                                     (first, second) -> second));
         return beans.stream()
                     .map(bean -> addTypeInformationToHierarchy(context, bean, resolver,
                                                                typeToNamedType.get(bean.getOrigin())))

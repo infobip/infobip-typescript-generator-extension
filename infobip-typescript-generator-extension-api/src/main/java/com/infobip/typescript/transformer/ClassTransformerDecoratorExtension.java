@@ -7,6 +7,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,6 +16,7 @@ import com.infobip.jackson.CompositeJsonTypeResolver;
 import com.infobip.jackson.JsonTypeResolver;
 import com.infobip.jackson.JsonTypeResolverFactory;
 import com.infobip.jackson.PresentPropertyJsonHierarchy;
+import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.TsType;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
@@ -27,7 +29,16 @@ public class ClassTransformerDecoratorExtension extends Extension {
 
     static final TsIdentifierReference TYPE = new TsIdentifierReference("@Type");
     private final JsonTypeResolverFactory factory = new JsonTypeResolverFactory();
+    private final Supplier<Stream<DynamicHierarchyDeserializer<?>>> dynamicHierarchyDeserializerProvider;
     private final Map<Class<?>, List<Class<?>>> parentToChildren = new ConcurrentHashMap<>();
+
+    public ClassTransformerDecoratorExtension() {
+        this(Stream::empty);
+    }
+
+    public ClassTransformerDecoratorExtension(Supplier<Stream<DynamicHierarchyDeserializer<?>>> dynamicHierarchyDeserializerProvider1) {
+        this.dynamicHierarchyDeserializerProvider = dynamicHierarchyDeserializerProvider1;
+    }
 
     @Override
     public EmitterExtensionFeatures getFeatures() {
@@ -39,8 +50,8 @@ public class ClassTransformerDecoratorExtension extends Extension {
     @Override
     public List<TransformerDefinition> getTransformers() {
         return Collections.singletonList(
-                new TransformerDefinition(ModelCompiler.TransformationPhase.AfterDeclarationSorting,
-                                          (TsModelTransformer) this::decorateClass));
+            new TransformerDefinition(ModelCompiler.TransformationPhase.AfterDeclarationSorting,
+                                      (TsModelTransformer) this::decorateClass));
     }
 
     private TsModel decorateClass(TsModelTransformer.Context context, TsModel model) {
@@ -62,14 +73,14 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                        .stream()
                                        .map(model -> getDecorators(context, bean, model))
                                        .collect(Collectors.toList())
-        );
+                                  );
     }
 
     private TsPropertyModel getDecorators(TsModelTransformer.Context context, TsBeanModel model, TsPropertyModel tsPropertyModel) {
         return getField(model, tsPropertyModel).map(this::getParameterizedTypeClasses)
                                                .map(parameterizedTypeClasses -> tsPropertyModel.withDecorators(
-                                                       getDecorators(context, model, tsPropertyModel,
-                                                                     resolveTypeToDecorate(parameterizedTypeClasses))))
+                                                   getDecorators(context, model, tsPropertyModel,
+                                                                 resolveTypeToDecorate(parameterizedTypeClasses))))
                                                .orElse(tsPropertyModel);
     }
 
@@ -95,7 +106,21 @@ public class ClassTransformerDecoratorExtension extends Extension {
                       .filter(resolver -> isHierarchicalDecoratorNeeded(resolver, type))
                       .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
                       .map(resolver -> getHierarchyDecorators(context.getSymbolTable(), model, tsPropertyModel, resolver))
+                      .or(() -> getDynamicHierarchyDecorators(context, model, tsPropertyModel, type))
                       .orElseGet(() -> getNonHierarchyDecorators(context.getSymbolTable(), tsPropertyModel, type));
+    }
+
+    private Optional<? extends List<TsDecorator>> getDynamicHierarchyDecorators(TsModelTransformer.Context context,
+                                                                                TsBeanModel model,
+                                                                                TsPropertyModel tsPropertyModel,
+                                                                                Class<?> type) {
+        return dynamicHierarchyDeserializerProvider.get()
+                                                   .filter(deserializer -> deserializer.getHierarchyRootType().equals(type))
+                                                   .findFirst()
+                                                   .map(deserializer -> getHierarchyDecoratorsFromDeserializer(context.getSymbolTable(),
+                                                                                                               model,
+                                                                                                               tsPropertyModel,
+                                                                                                               deserializer));
     }
 
     private boolean isHierarchicalDecoratorNeeded(JsonTypeResolver resolver, Class<?> type) {
@@ -111,15 +136,35 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                      TsPropertyModel tsPropertyModel,
                                                      CompositeJsonTypeResolver<?> resolver) {
         TsArrowFunction emptyToObject = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
-                new TsType.ReferenceType(new Symbol("Object"))));
+            new TsType.ReferenceType(new Symbol("Object"))));
         TsStringLiteral property = new TsStringLiteral(resolver.getTypePropertyName());
         TsArrayLiteral subTypes = new TsArrayLiteral(getSubtypes(symbolTable, model, resolver));
         DiscriminatorValueTsObjectLiteral discriminatorValue = new DiscriminatorValueTsObjectLiteral(
-                new TsPropertyDefinition("property", property),
-                new TsPropertyDefinition("subTypes",
-                                         subTypes));
+            new TsPropertyDefinition("property", property),
+            new TsPropertyDefinition("subTypes",
+                                     subTypes));
         DiscriminatorTsObjectLiteral discriminator = new DiscriminatorTsObjectLiteral(
-                new TsPropertyDefinition("discriminator", discriminatorValue));
+            new TsPropertyDefinition("discriminator", discriminatorValue));
+        List<TsExpression> arguments = Stream.of(emptyToObject, discriminator).collect(Collectors.toList());
+        return Stream.concat(tsPropertyModel.getDecorators().stream(),
+                             Stream.of(new TsDecorator(TYPE, arguments)))
+                     .collect(Collectors.toList());
+    }
+
+    private List<TsDecorator> getHierarchyDecoratorsFromDeserializer(SymbolTable symbolTable,
+                                                                     TsBeanModel model,
+                                                                     TsPropertyModel tsPropertyModel,
+                                                                     DynamicHierarchyDeserializer<?> deserializer) {
+        TsArrowFunction emptyToObject = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
+            new TsType.ReferenceType(new Symbol("Object"))));
+        TsStringLiteral property = new TsStringLiteral(deserializer.getJsonValuePropertyName());
+        TsArrayLiteral subTypes = new TsArrayLiteral(getSubtypes(symbolTable, model, deserializer));
+        DiscriminatorValueTsObjectLiteral discriminatorValue = new DiscriminatorValueTsObjectLiteral(
+            new TsPropertyDefinition("property", property),
+            new TsPropertyDefinition("subTypes",
+                                     subTypes));
+        DiscriminatorTsObjectLiteral discriminator = new DiscriminatorTsObjectLiteral(
+            new TsPropertyDefinition("discriminator", discriminatorValue));
         List<TsExpression> arguments = Stream.of(emptyToObject, discriminator).collect(Collectors.toList());
         return Stream.concat(tsPropertyModel.getDecorators().stream(),
                              Stream.of(new TsDecorator(TYPE, arguments)))
@@ -131,11 +176,11 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                         Class<?> type) {
 
         TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
-                new TsType.ReferenceType(symbolTable.getSymbol(type))));
+            new TsType.ReferenceType(symbolTable.getSymbol(type))));
 
         Stream<TsDecorator> typeDecoratorStream = shouldNotBeDecorated(type) ?
-                Stream.empty() :
-                Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName)));
+            Stream.empty() :
+            Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName)));
 
         return Stream.concat(tsPropertyModel.getDecorators().stream(), typeDecoratorStream)
                      .collect(Collectors.toList());
@@ -149,11 +194,27 @@ public class ClassTransformerDecoratorExtension extends Extension {
         appendToParentToChildren(model.getOrigin(), subtypes.stream().map(NamedType::getType));
         return subtypes.stream()
                        .map(type -> new TsObjectLiteral(
-                               new TsPropertyDefinition("value",
-                                                        new TsTypeReferenceExpression(
-                                                                new TsType.ReferenceType(
-                                                                        symbolTable.getSymbol(type.getType())))),
-                               new TsPropertyDefinition("name", new TsEnumLiteral(resolver.getType(), type.getName()))))
+                           new TsPropertyDefinition("value",
+                                                    new TsTypeReferenceExpression(
+                                                        new TsType.ReferenceType(
+                                                            symbolTable.getSymbol(type.getType())))),
+                           new TsPropertyDefinition("name", new TsEnumLiteral(resolver.getType(), type.getName()))))
+                       .collect(Collectors.toList());
+    }
+
+    private List<TsExpression> getSubtypes(SymbolTable symbolTable,
+                                           TsBeanModel model,
+                                           DynamicHierarchyDeserializer<?> deserializer) {
+        List<NamedType> subtypes = findSubtypesFromDeserializer(deserializer);
+        appendToParentToChildren(model.getOrigin(), Stream.of(deserializer.getHierarchyRootType()));
+        appendToParentToChildren(model.getOrigin(), subtypes.stream().map(NamedType::getType));
+        return subtypes.stream()
+                       .map(type -> new TsObjectLiteral(
+                           new TsPropertyDefinition("value",
+                                                    new TsTypeReferenceExpression(
+                                                        new TsType.ReferenceType(
+                                                            symbolTable.getSymbol(type.getType())))),
+                           new TsPropertyDefinition("name", new TsStringLiteral(type.getName()))))
                        .collect(Collectors.toList());
     }
 
@@ -181,6 +242,14 @@ public class ClassTransformerDecoratorExtension extends Extension {
                      .collect(Collectors.toList());
     }
 
+    private <E extends Enum<E>> List<NamedType> findSubtypesFromDeserializer(DynamicHierarchyDeserializer<?> deserializer) {
+        return deserializer.getJsonValueToJavaType()
+                           .entrySet()
+                           .stream()
+                           .map(entry -> new NamedType(entry.getValue(), entry.getKey()))
+                           .collect(Collectors.toList());
+    }
+
     private Optional<Field> getField(TsBeanModel bean, TsPropertyModel model) {
         try {
             return Optional.of(bean.getOrigin().getDeclaredField(model.getName()));
@@ -203,4 +272,5 @@ public class ClassTransformerDecoratorExtension extends Extension {
         }
         return Optional.empty();
     }
+
 }

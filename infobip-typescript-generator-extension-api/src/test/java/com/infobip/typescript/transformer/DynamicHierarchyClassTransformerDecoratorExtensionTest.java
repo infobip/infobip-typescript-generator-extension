@@ -33,25 +33,24 @@ class DynamicHierarchyClassTransformerDecoratorExtensionTest extends TestBase {
 
         // then
         then(fixNewlines(actual)).isEqualTo(
-            """
-                import { Type } from 'class-transformer';
-                                
-                export interface HierarchyRoot {
-                }
-                                
-                export class HierarchyLeaf implements HierarchyRoot {
-                }
-                                
-                export class HierarchyContainer {
-                    @Type(() => Object, {
-                        discriminator: {
-                            property: "type", subTypes: [
-                                { value: HierarchyLeaf, name: "LEAF" }
-                            ]
-                        }
-                    })
-                    root: HierarchyRoot;
-                }""");
+            "import { Type } from 'class-transformer';\n" +
+            "\n" +
+            "export interface HierarchyRoot {\n" +
+            "}\n" +
+            "\n" +
+            "export class HierarchyLeaf implements HierarchyRoot {\n" +
+            "}\n" +
+            "\n" +
+            "export class HierarchyContainer {\n" +
+            "    @Type(() => Object, {\n" +
+            "        discriminator: {\n" +
+            "            property: \"type\", subTypes: [\n" +
+            "                { value: HierarchyLeaf, name: \"LEAF\" }\n" +
+            "            ]\n" +
+            "        }\n" +
+            "    })\n" +
+            "    root: HierarchyRoot;\n" +
+            "}");
     }
 
     private String fixNewlines(String actual) {

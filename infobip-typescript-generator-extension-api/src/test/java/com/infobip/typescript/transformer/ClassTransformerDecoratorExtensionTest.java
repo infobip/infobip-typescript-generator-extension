@@ -114,7 +114,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
     @Getter
     @AllArgsConstructor
-    enum UnsupportedType implements TypeProvider {
+    enum UnsupportedType implements TypeProvider<Unsupported> {
         VALUE(UnsupportedImpl.class);
 
         private final Class<? extends Unsupported> type;
@@ -203,7 +203,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
     @Getter
     @AllArgsConstructor
-    enum FirstHierarchyType implements TypeProvider {
+    enum FirstHierarchyType implements TypeProvider<FirstHierarchyRoot> {
         LEAF(FirstHierarchyLeaf.class);
 
         private final Class<? extends FirstHierarchyRoot> type;
@@ -211,7 +211,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
     @Getter
     @AllArgsConstructor
-    enum SecondHierarchyType implements TypeProvider {
+    enum SecondHierarchyType implements TypeProvider<SecondHierarchyRoot> {
         LEAF(SecondHierarchyLeaf.class);
 
         private final Class<? extends SecondHierarchyRoot> type;
@@ -219,7 +219,7 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
     @Getter
     @AllArgsConstructor
-    enum NestedHierarchyType implements TypeProvider {
+    enum NestedHierarchyType implements TypeProvider<NestedHierarchyRoot> {
         LEAF(NestedHierarchyLeaf.class);
 
         private final Class<? extends NestedHierarchyRoot> type;

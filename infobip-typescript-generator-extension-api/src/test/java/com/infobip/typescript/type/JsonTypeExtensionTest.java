@@ -3,10 +3,14 @@ package com.infobip.typescript.type;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 import com.infobip.jackson.PresentPropertyJsonHierarchy;
 import com.infobip.jackson.SimpleJsonHierarchy;
 import com.infobip.jackson.TypeProvider;
+import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
+import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
@@ -16,7 +20,10 @@ import org.junit.jupiter.api.Test;
 class JsonTypeExtensionTest extends TestBase {
 
     JsonTypeExtensionTest() {
-        super(new JsonTypeExtension(), Collections.emptyList());
+        super(new JsonTypeExtension(() -> Stream.of(new DynamicHierarchyDeserializer<>(DynamicHierarchyRoot.class,
+                                                                                       List.of(new JsonValueToJavaTypeJacksonMapping<>(
+                                                                                           "LEAF",
+                                                                                           DynamicLeaf.class))))), Collections.emptyList());
     }
 
     @Test
@@ -73,6 +80,26 @@ class JsonTypeExtensionTest extends TestBase {
                 """);
     }
 
+    @Test
+    void shouldAddReadonlyTypeFieldForDynamicHierarch() {
+
+        // when
+        String actual = whenGenerate(Input.from(DynamicHierarchyRoot.class,
+                                                DynamicLeaf.class));
+
+        // then
+        then(actual).isEqualTo(
+            """
+
+                export interface DynamicHierarchyRoot {
+                }
+
+                export class DynamicLeaf implements DynamicHierarchyRoot {
+                    readonly type: string = "LEAF";
+                }
+                """);
+    }
+
     @Getter
     @AllArgsConstructor
     enum HierarchyType implements TypeProvider {
@@ -120,6 +147,18 @@ class JsonTypeExtensionTest extends TestBase {
     }
 
     static class Two implements PresentPropertyHierarchyRoot {
+
+    }
+
+    interface DynamicHierarchyRoot {
+
+    }
+
+    static class DynamicLeaf implements DynamicHierarchyRoot {
+
+        public String getType() {
+            return "LEAF";
+        }
 
     }
 

@@ -55,8 +55,8 @@ class JsonTypeExtensionTest extends TestBase {
 
         // when
         String actual = whenGenerate(Input.from(PresentPropertyHierarchyRoot.class,
-                                             One.class,
-                                             Two.class));
+                                                One.class,
+                                                Two.class));
 
         // then
         then(actual).isEqualTo(
@@ -71,8 +71,7 @@ class JsonTypeExtensionTest extends TestBase {
                 export class Two implements PresentPropertyHierarchyRoot {
                 }
                 """);
-}
-
+    }
 
     @Getter
     @AllArgsConstructor
@@ -92,6 +91,7 @@ class JsonTypeExtensionTest extends TestBase {
         public HierarchyType getType() {
             return HierarchyType.FIRST_LEAF;
         }
+
     }
 
     static class SecondLeaf implements HierarchyRoot {
@@ -99,6 +99,7 @@ class JsonTypeExtensionTest extends TestBase {
         public HierarchyType getType() {
             return HierarchyType.SECOND_LEAF;
         }
+
     }
 
     @Getter
@@ -121,4 +122,5 @@ class JsonTypeExtensionTest extends TestBase {
     static class Two implements PresentPropertyHierarchyRoot {
 
     }
+
 }

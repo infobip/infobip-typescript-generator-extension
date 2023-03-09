@@ -79,7 +79,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                       .filter(resolver -> resolver instanceof CompositeJsonTypeResolver<?>)
                       .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
                       .map(resolver -> addTypeInformationToHierarchy(context, beans, resolver))
-                      .or(() -> addTypeInformationToDynamicHierarchy(context, beans, type))
+                      .or(() -> addTypeInformationToDynamicHierarchy(beans, type))
                       .orElse(beans);
     }
 
@@ -97,18 +97,15 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                     .collect(Collectors.toList());
     }
 
-    private Optional<List<TsBeanModel>> addTypeInformationToDynamicHierarchy(TsModelTransformer.Context context,
-                                                                             List<TsBeanModel> beans,
-                                                                             Class<?> type) {
+    private Optional<List<TsBeanModel>> addTypeInformationToDynamicHierarchy(List<TsBeanModel> beans, Class<?> type) {
 
         return dynamicHierarchyDeserializerProvider.get()
                                                    .filter(deserializer -> deserializer.getHierarchyRootType().equals(type))
                                                    .findFirst()
-                                                   .map(deserializer -> addTypeInformationToDynamicHierarchy(context, beans, deserializer));
+                                                   .map(deserializer -> addTypeInformationToDynamicHierarchy(beans, deserializer));
     }
 
-    private List<TsBeanModel> addTypeInformationToDynamicHierarchy(TsModelTransformer.Context context,
-                                                                   List<TsBeanModel> beans,
+    private List<TsBeanModel> addTypeInformationToDynamicHierarchy(List<TsBeanModel> beans,
                                                                    DynamicHierarchyDeserializer<?> deserializer) {
         List<NamedType> subtypes = findSubtypes(deserializer);
         Map<Class<?>, NamedType> typeToNamedType = subtypes.stream()
@@ -116,7 +113,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                                                                      Function.identity(),
                                                                                      (first, second) -> second));
         return beans.stream()
-                    .map(bean -> addTypeInformationToHierarchy(context, bean, deserializer,
+                    .map(bean -> addTypeInformationToHierarchy(bean, deserializer,
                                                                typeToNamedType.get(bean.getOrigin())))
                     .collect(Collectors.toList());
     }
@@ -135,24 +132,6 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                                                                                                tsPropertyModel,
                                                                                                                resolver.getType(),
                                                                                                                namedType))
-                                                     .collect(Collectors.toList())
-                                         );
-    }
-
-    private TsBeanModel addTypeInformationToHierarchy(TsModelTransformer.Context context,
-                                                      TsBeanModel tsBeanModel,
-                                                      DynamicHierarchyDeserializer<?> deserializer,
-                                                      NamedType namedType) {
-        if (Objects.isNull(namedType)) {
-            return tsBeanModel;
-        }
-
-        return tsBeanModel.withProperties(tsBeanModel.getProperties()
-                                                     .stream()
-                                                     .map(tsPropertyModel -> addTypeInformationToHierarchy(context,
-                                                                                                           tsPropertyModel,
-                                                                                                           deserializer.getHierarchyRootType(),
-                                                                                                           namedType))
                                                      .collect(Collectors.toList())
                                          );
     }
@@ -179,13 +158,26 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                    tsPropertyModel.comments);
     }
 
-    private TsPropertyModel addTypeInformationToHierarchy(TsModelTransformer.Context context,
-                                                          TsPropertyModel tsPropertyModel,
-                                                          Class<?> type,
-                                                          NamedType namedType) {
-        TsType expected = new TsType.BasicType("string");
+    private TsBeanModel addTypeInformationToHierarchy(TsBeanModel tsBeanModel,
+                                                      DynamicHierarchyDeserializer<?> deserializer,
+                                                      NamedType namedType) {
+        if (Objects.isNull(namedType)) {
+            return tsBeanModel;
+        }
 
-        if (!tsPropertyModel.getTsType().equals(expected)) {
+        return tsBeanModel.withProperties(tsBeanModel.getProperties()
+                                                     .stream()
+                                                     .map(tsPropertyModel -> addTypeInformationToHierarchy(tsPropertyModel,
+                                                                                                           namedType,
+                                                                                                           deserializer.getJsonValuePropertyName()))
+                                                     .collect(Collectors.toList())
+                                         );
+    }
+
+    private TsPropertyModel addTypeInformationToHierarchy(TsPropertyModel tsPropertyModel,
+                                                          NamedType namedType,
+                                                          String jsonValuePropertyName) {
+        if (!tsPropertyModel.getName().equals(jsonValuePropertyName)) {
             return tsPropertyModel;
         }
 
@@ -204,7 +196,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                      .collect(Collectors.toList());
     }
 
-    private <E extends Enum<E>> List<NamedType> findSubtypes(DynamicHierarchyDeserializer<?> deserializer) {
+    private List<NamedType> findSubtypes(DynamicHierarchyDeserializer<?> deserializer) {
         return deserializer.getJsonValueToJavaType()
                            .entrySet()
                            .stream()

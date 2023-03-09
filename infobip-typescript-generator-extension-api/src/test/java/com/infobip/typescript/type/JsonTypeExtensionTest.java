@@ -15,6 +15,7 @@ import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 import org.junit.jupiter.api.Test;
 
 class JsonTypeExtensionTest extends TestBase {
@@ -95,6 +96,7 @@ class JsonTypeExtensionTest extends TestBase {
                 }
 
                 export class DynamicLeaf implements DynamicHierarchyRoot {
+                    value: string;
                     readonly type: string = "LEAF";
                 }
                 """);
@@ -154,7 +156,10 @@ class JsonTypeExtensionTest extends TestBase {
 
     }
 
+    @Value
     static class DynamicLeaf implements DynamicHierarchyRoot {
+
+        private final String value;
 
         public String getType() {
             return "LEAF";

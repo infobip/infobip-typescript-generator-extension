@@ -111,21 +111,19 @@ class JsonTypeExtensionTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-                                
-                export enum DynamicHierarchyRootWithEnumType {
-                    LEAF = "LEAF",
-                }
-                                
-                export interface DynamicHierarchyRootWithEnum {
-                    type: DynamicHierarchyRootWithEnumType;
-                }
-
-                export class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {
-                    readonly type: DynamicHierarchyRootWithEnumType = DynamicHierarchyRootWithEnumType.LEAF;
-                    value: string;
-                }
-                """);
+            "\n" +
+            "export enum DynamicHierarchyRootWithEnumType {\n" +
+            "    LEAF = \"LEAF\",\n" +
+            "}\n" +
+            "\n" +
+            "export interface DynamicHierarchyRootWithEnum {\n" +
+            "    type: DynamicHierarchyRootWithEnumType;\n" +
+            "}\n" +
+            "\n" +
+            "export class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {\n" +
+            "    readonly type: DynamicHierarchyRootWithEnumType = DynamicHierarchyRootWithEnumType.LEAF;\n" +
+            "    value: string;\n" +
+            "}\n");
     }
 
     @Getter

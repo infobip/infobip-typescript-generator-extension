@@ -5,17 +5,17 @@ import cz.habarta.typescript.generator.TsType;
 
 class EnumInitializerType<E extends Enum<E>> extends TsType {
 
-    private final Class<E> type;
-    private final E value;
+    private final String type;
+    private final String value;
 
-    EnumInitializerType(Class<E> type, E value) {
+    EnumInitializerType(String type, String value) {
         this.type = type;
         this.value = value;
     }
 
     @Override
     public String format(Settings settings) {
-        java.lang.String enumName = type.getSimpleName();
+        java.lang.String enumName = type;
         return enumName + " = " + enumName + '.' + value ;
     }
 }

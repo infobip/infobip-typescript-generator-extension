@@ -39,16 +39,14 @@ class JsonTypeExtensionDynamicHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-
-                export interface DynamicHierarchyRoot {
-                }
-
-                export class DynamicLeaf implements DynamicHierarchyRoot {
-                    value: string;
-                    readonly type: string = "LEAF";
-                }
-                """);
+            "\n" +
+            "export interface DynamicHierarchyRoot {\n" +
+            "}\n" +
+            "\n" +
+            "export class DynamicLeaf implements DynamicHierarchyRoot {\n" +
+            "    value: string;\n" +
+            "    readonly type: string = \"LEAF\";\n" +
+            "}\n");
     }
 
     @Test
@@ -60,21 +58,19 @@ class JsonTypeExtensionDynamicHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-                                
-                export enum DynamicHierarchyRootWithEnumType {
-                    LEAF = "LEAF",
-                }
-                                
-                export interface DynamicHierarchyRootWithEnum {
-                    type: DynamicHierarchyRootWithEnumType;
-                }
-
-                export class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {
-                    readonly type: DynamicHierarchyRootWithEnumType = DynamicHierarchyRootWithEnumType.LEAF;
-                    value: string;
-                }
-                """);
+            "\n" +
+            "export enum DynamicHierarchyRootWithEnumType {\n" +
+            "    LEAF = \"LEAF\",\n" +
+            "}\n" +
+            "\n" +
+            "export interface DynamicHierarchyRootWithEnum {\n" +
+            "    type: DynamicHierarchyRootWithEnumType;\n" +
+            "}\n" +
+            "\n" +
+            "export class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {\n" +
+            "    readonly type: DynamicHierarchyRootWithEnumType = DynamicHierarchyRootWithEnumType.LEAF;\n" +
+            "    value: string;\n" +
+            "}\n");
     }
 
     interface DynamicHierarchyRoot {

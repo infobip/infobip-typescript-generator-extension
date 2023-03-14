@@ -30,25 +30,23 @@ class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-
-                export enum HierarchyType {
-                    FIRST_LEAF = "FIRST_LEAF",
-                    SECOND_LEAF = "SECOND_LEAF",
-                }
-
-                export interface HierarchyRoot {
-                    type: HierarchyType;
-                }
-
-                export class FirstLeaf implements HierarchyRoot {
-                    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
-                }
-
-                export class SecondLeaf implements HierarchyRoot {
-                    readonly type: HierarchyType = HierarchyType.SECOND_LEAF;
-                }
-                """);
+            "\n" +
+            "export enum HierarchyType {\n" +
+            "    FIRST_LEAF = \"FIRST_LEAF\",\n" +
+            "    SECOND_LEAF = \"SECOND_LEAF\",\n" +
+            "}\n" +
+            "\n" +
+            "export interface HierarchyRoot {\n" +
+            "    type: HierarchyType;\n" +
+            "}\n" +
+            "\n" +
+            "export class FirstLeaf implements HierarchyRoot {\n" +
+            "    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;\n" +
+            "}\n" +
+            "\n" +
+            "export class SecondLeaf implements HierarchyRoot {\n" +
+            "    readonly type: HierarchyType = HierarchyType.SECOND_LEAF;\n" +
+            "}\n");
     }
 
     @Getter

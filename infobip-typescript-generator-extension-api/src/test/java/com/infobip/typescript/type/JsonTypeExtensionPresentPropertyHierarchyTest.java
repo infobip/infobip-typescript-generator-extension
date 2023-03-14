@@ -30,17 +30,15 @@ class JsonTypeExtensionPresentPropertyHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-
-                export interface PresentPropertyHierarchyRoot {
-                }
-
-                export class One implements PresentPropertyHierarchyRoot {
-                }
-
-                export class Two implements PresentPropertyHierarchyRoot {
-                }
-                """);
+            "\n" +
+            "export interface PresentPropertyHierarchyRoot {\n" +
+            "}\n" +
+            "\n" +
+            "export class One implements PresentPropertyHierarchyRoot {\n" +
+            "}\n" +
+            "\n" +
+            "export class Two implements PresentPropertyHierarchyRoot {\n" +
+            "}\n");
     }
 
     @Getter

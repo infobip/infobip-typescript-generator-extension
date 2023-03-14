@@ -36,19 +36,17 @@ class JsonTypeExtensionMultiLevelDynamicHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-
-                export interface DynamicHierarchyRoot {
-                }
-
-                export class DynamicLeaf implements DynamicHierarchyNode {
-                    value: string;
-                    readonly type: string = "LEAF";
-                }
-                
-                export interface DynamicHierarchyNode extends DynamicHierarchyRoot {
-                }
-                """);
+            "\n" +
+            "export interface DynamicHierarchyRoot {\n" +
+            "}\n" +
+            "\n" +
+            "export class DynamicLeaf implements DynamicHierarchyNode {\n" +
+            "    value: string;\n" +
+            "    readonly type: string = \"LEAF\";\n" +
+            "}\n" +
+            "\n" +
+            "export interface DynamicHierarchyNode extends DynamicHierarchyRoot {\n" +
+            "}\n");
     }
 
     interface DynamicHierarchyRoot {

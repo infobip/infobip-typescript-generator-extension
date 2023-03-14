@@ -13,6 +13,7 @@ import com.infobip.jackson.JsonTypeResolverFactory;
 import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
 import com.infobip.typescript.TypeScriptImportResolver;
 import cz.habarta.typescript.generator.Extension;
+import cz.habarta.typescript.generator.Settings;
 import cz.habarta.typescript.generator.TsType;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
 import cz.habarta.typescript.generator.compiler.TsModelTransformer;
@@ -186,6 +187,10 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                                           NamedType namedType,
                                                           String jsonValuePropertyName) {
         if (!tsPropertyModel.getName().equals(jsonValuePropertyName)) {
+            return tsPropertyModel;
+        }
+
+        if(tsPropertyModel.getTsType().format(new Settings()).contains("=")) {
             return tsPropertyModel;
         }
 

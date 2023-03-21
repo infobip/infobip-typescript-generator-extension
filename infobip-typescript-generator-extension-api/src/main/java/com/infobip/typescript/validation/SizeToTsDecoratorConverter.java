@@ -1,14 +1,20 @@
 package com.infobip.typescript.validation;
 
-import cz.habarta.typescript.generator.emitter.*;
-
-import javax.validation.constraints.*;
 import java.lang.reflect.Field;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import cz.habarta.typescript.generator.emitter.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 class SizeToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Size> {
 
@@ -26,7 +32,7 @@ class SizeToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Si
                          .flatMap(Function.identity());
         }
 
-        if (Collection.class.isAssignableFrom(field.getType())) {
+        if (Collection.class.isAssignableFrom(field.getType()) || Optional.class.isAssignableFrom(field.getType())) {
             return Stream.concat(getMax("ArrayMaxSize", annotation, annotation.max()),
                                  Stream.of(new TsDecorator(new TsIdentifierReference("@ArrayMinSize"),
                                                            Stream.of(new TsIdentifierReference(

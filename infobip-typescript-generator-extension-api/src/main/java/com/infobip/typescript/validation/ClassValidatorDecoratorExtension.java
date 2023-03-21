@@ -4,6 +4,7 @@ import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_
 import static com.infobip.typescript.validation.Localization.LOCALIZATION_METHOD;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedParameterizedType;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
@@ -149,9 +150,19 @@ public class ClassValidatorDecoratorExtension extends Extension implements TypeS
     }
 
     private List<TsDecorator> getDecorators(TsPropertyModel model, Field field) {
-        Stream<TsDecorator> newDecorators = Arrays.stream(field.getAnnotations())
+        Stream<TsDecorator> newDecorators = Arrays.stream(getAnnotations(field))
                                                   .flatMap(annotation -> resolver.getDecorators(annotation, field));
         return Stream.concat(model.getDecorators().stream(), newDecorators).collect(Collectors.toList());
+    }
+
+    private Annotation[] getAnnotations(Field field) {
+
+        if (field.getType().equals(Optional.class)) {
+            var unwrappedType = ((AnnotatedParameterizedType) field.getAnnotatedType()).getAnnotatedActualTypeArguments()[0];
+            return Stream.concat(Stream.of(field.getAnnotations()), Stream.of(unwrappedType.getAnnotations())).toArray(Annotation[]::new);
+        }
+
+        return field.getAnnotations();
     }
 
     private Optional<Field> getField(TsBeanModel bean, TsPropertyModel model) {

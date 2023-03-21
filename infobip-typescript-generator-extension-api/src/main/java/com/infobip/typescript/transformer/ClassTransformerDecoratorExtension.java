@@ -92,9 +92,11 @@ public class ClassTransformerDecoratorExtension extends Extension {
         }
 
         Optional<Class<?>> typeArgument = parameterizedTypeClasses.getTypeArgument();
-        if (Collection.class.isAssignableFrom(type) && typeArgument.isPresent()) {
-            typeToDecorate = typeArgument.get();
+
+        if (Collection.class.isAssignableFrom(type) || Optional.class.isAssignableFrom(type)) {
+            return typeArgument.orElse(typeToDecorate);
         }
+
         return typeToDecorate;
     }
 

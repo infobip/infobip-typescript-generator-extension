@@ -15,6 +15,7 @@ import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 import org.junit.jupiter.api.Test;
 
 class DynamicHierarchyWithNestedStaticHierarchyInOptionalFieldClassTransformerDecoratorExtensionTest extends TestBase {
@@ -38,34 +39,33 @@ class DynamicHierarchyWithNestedStaticHierarchyInOptionalFieldClassTransformerDe
 
         // then
         then(fixNewlines(actual)).isEqualTo(
-            """
-                import { Type } from 'class-transformer';
-                                
-                export enum StaticHierarchyType {
-                    LEAF = "LEAF",
-                }
-                                
-                export interface StaticHierarchyRoot {
-                    type: StaticHierarchyType;
-                }
-                
-                export class StaticHierarchyLeaf implements StaticHierarchyRoot {
-                    type: StaticHierarchyType;
-                }
-                                
-                export interface DynamicHierarchyRoot {
-                }
-                                
-                export class DynamicHierarchyLeaf implements DynamicHierarchyRoot {
-                    @Type(() => Object, {
-                        discriminator: {
-                            property: "type", subTypes: [
-                                { value: StaticHierarchyLeaf, name: StaticHierarchyType.LEAF }
-                            ]
-                        }
-                    })
-                    root?: StaticHierarchyRoot;
-                }""");
+            "import { Type } from 'class-transformer';\n" +
+            "\n" +
+            "export enum StaticHierarchyType {\n" +
+            "    LEAF = \"LEAF\",\n" +
+            "}\n" +
+            "\n" +
+            "export interface StaticHierarchyRoot {\n" +
+            "    type: StaticHierarchyType;\n" +
+            "}\n" +
+            "\n" +
+            "export class StaticHierarchyLeaf implements StaticHierarchyRoot {\n" +
+            "    type: StaticHierarchyType;\n" +
+            "}\n" +
+            "\n" +
+            "export interface DynamicHierarchyRoot {\n" +
+            "}\n" +
+            "\n" +
+            "export class DynamicHierarchyLeaf implements DynamicHierarchyRoot {\n" +
+            "    @Type(() => Object, {\n" +
+            "        discriminator: {\n" +
+            "            property: \"type\", subTypes: [\n" +
+            "                { value: StaticHierarchyLeaf, name: StaticHierarchyType.LEAF }\n" +
+            "            ]\n" +
+            "        }\n" +
+            "    })\n" +
+            "    root?: StaticHierarchyRoot;\n" +
+            "}");
     }
 
     private String fixNewlines(String actual) {
@@ -76,7 +76,9 @@ class DynamicHierarchyWithNestedStaticHierarchyInOptionalFieldClassTransformerDe
 
     }
 
-    record DynamicHierarchyLeaf(Optional<StaticHierarchyRoot> root) implements DynamicHierarchyRoot {
+    @Value
+    static class DynamicHierarchyLeaf implements DynamicHierarchyRoot {
+        Optional<StaticHierarchyRoot> root;
 
     }
 
@@ -84,7 +86,7 @@ class DynamicHierarchyWithNestedStaticHierarchyInOptionalFieldClassTransformerDe
 
     }
 
-    static record StaticHierarchyLeaf() implements StaticHierarchyRoot {
+    static class StaticHierarchyLeaf implements StaticHierarchyRoot {
 
         @Override
         public StaticHierarchyType getType() {

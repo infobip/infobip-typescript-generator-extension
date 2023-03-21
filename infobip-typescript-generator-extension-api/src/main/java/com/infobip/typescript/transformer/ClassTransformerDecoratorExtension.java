@@ -91,6 +91,10 @@ public class ClassTransformerDecoratorExtension extends Extension {
             typeToDecorate = type.getComponentType();
         }
 
+        return resolveTypeRecursively(parameterizedTypeClasses, type, typeToDecorate);
+    }
+
+    private Class<?> resolveTypeRecursively(ParameterizedTypeClasses parameterizedTypeClasses, Class<?> type, Class<?> typeToDecorate) {
         Optional<Class<?>> typeArgument = parameterizedTypeClasses.getTypeArgument();
 
         if (Collection.class.isAssignableFrom(type) || Optional.class.isAssignableFrom(type)) {
@@ -261,17 +265,28 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private ParameterizedTypeClasses getParameterizedTypeClasses(Field field) {
-        return new ParameterizedTypeClasses(field.getType(), getTypeArgument(field));
+        return new ParameterizedTypeClasses(field.getType(), getReferenceTargetType(field));
     }
 
-    private Optional<Class<?>> getTypeArgument(Field field) {
+    private Optional<Class<?>> getReferenceTargetType(Field field) {
         Type genericType = field.getGenericType();
-        if (genericType instanceof ParameterizedType) {
-            Type[] actualTypeArguments = ((ParameterizedType) genericType).getActualTypeArguments();
-            if (actualTypeArguments.length != 0 && actualTypeArguments[0] instanceof Class) {
-                return Optional.of((Class<?>) actualTypeArguments[0]);
+        return getReferenceTargetTypeRecursively(genericType);
+    }
+
+    private Optional<Class<?>> getReferenceTargetTypeRecursively(Type type) {
+
+        if (type instanceof Class) {
+            return Optional.of((Class<?>) type);
+        }
+
+        if (type instanceof ParameterizedType) {
+            Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
+            if (actualTypeArguments.length == 1) {
+                var actualType = actualTypeArguments[0];
+                return getReferenceTargetTypeRecursively(actualType);
             }
         }
+
         return Optional.empty();
     }
 

@@ -3,6 +3,7 @@ package com.infobip.typescript.validation;
 import static org.assertj.core.api.BDDAssertions.then;
 
 import java.util.List;
+import java.util.Optional;
 
 import cz.habarta.typescript.generator.Input;
 import jakarta.validation.constraints.NotEmpty;
@@ -37,6 +38,9 @@ class SizeToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorat
                     @ArrayMaxSize(4, { message: CommonValidationMessages.ArrayMaxSize(4) })
                     @ArrayMinSize(3, { message: CommonValidationMessages.ArrayMinSize(3) })
                     objects: any[];
+                    @ArrayMaxSize(4, { message: CommonValidationMessages.ArrayMaxSize(4) })
+                    @ArrayMinSize(3, { message: CommonValidationMessages.ArrayMinSize(3) })
+                    optionalObjects?: any[];
                 }
                 """);
     }
@@ -53,5 +57,7 @@ class SizeToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorat
 
         @Size(min = 3, max = 4)
         List<Object> objects;
+
+        Optional<@Size(min = 3, max = 4) List<Object>> optionalObjects;
     }
 }

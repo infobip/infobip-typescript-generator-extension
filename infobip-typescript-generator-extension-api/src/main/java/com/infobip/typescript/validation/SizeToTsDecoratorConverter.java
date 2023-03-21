@@ -1,5 +1,9 @@
 package com.infobip.typescript.validation;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,10 +15,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import cz.habarta.typescript.generator.emitter.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 
 class SizeToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Size> {
 

@@ -12,6 +12,7 @@ import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 import org.junit.jupiter.api.Test;
 
 class HierarchyInsideOptionalTransformerDecoratorExtensionTest extends TestBase {
@@ -30,46 +31,46 @@ class HierarchyInsideOptionalTransformerDecoratorExtensionTest extends TestBase 
                                                 HierarchyLeaf.class));
 
         // then
-        then(fixNewlines(actual)).isEqualTo("""
-                                                import { Type } from 'class-transformer';
-                                                                         
-                                                export enum HierarchyType {
-                                                    LEAF = "LEAF",
-                                                }
-                                                                         
-                                                export interface HierarchyRoot {
-                                                    type: HierarchyType;
-                                                }
-                                                                         
-                                                export class HierarchyLeaf implements HierarchyRoot {
-                                                    type: HierarchyType;
-                                                }
-                                                                         
-                                                export class HierarchyWrapper {
-                                                    @Type(() => Object, {
-                                                        discriminator: {
-                                                            property: "type", subTypes: [
-                                                                { value: HierarchyLeaf, name: HierarchyType.LEAF }
-                                                            ]
-                                                        }
-                                                    })
-                                                    root?: HierarchyRoot;
-                                                }""");
+        then(fixNewlines(actual)).isEqualTo("import { Type } from 'class-transformer';\n" +
+                                            "\n" +
+                                            "export enum HierarchyType {\n" +
+                                            "    LEAF = \"LEAF\",\n" +
+                                            "}\n" +
+                                            "\n" +
+                                            "export interface HierarchyRoot {\n" +
+                                            "    type: HierarchyType;\n" +
+                                            "}\n" +
+                                            "\n" +
+                                            "export class HierarchyLeaf implements HierarchyRoot {\n" +
+                                            "    type: HierarchyType;\n" +
+                                            "}\n" +
+                                            "\n" +
+                                            "export class HierarchyWrapper {\n" +
+                                            "    @Type(() => Object, {\n" +
+                                            "        discriminator: {\n" +
+                                            "            property: \"type\", subTypes: [\n" +
+                                            "                { value: HierarchyLeaf, name: HierarchyType.LEAF }\n" +
+                                            "            ]\n" +
+                                            "        }\n" +
+                                            "    })\n" +
+                                            "    root?: HierarchyRoot;\n" +
+                                            "}");
     }
 
     private String fixNewlines(String actual) {
         return actual.trim().replace("\r\n", "\n");
     }
 
-    record HierarchyWrapper(Optional<HierarchyRoot> root) {
-
+    @Value
+    static class HierarchyWrapper {
+        private final Optional<HierarchyRoot> root;
     }
 
     interface HierarchyRoot extends SimpleJsonHierarchy<HierarchyType> {
 
     }
 
-    record HierarchyLeaf() implements HierarchyRoot {
+    static class HierarchyLeaf implements HierarchyRoot {
 
         @Override
         public HierarchyType getType() {

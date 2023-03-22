@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Optional;
 
 import cz.habarta.typescript.generator.Input;
-import lombok.Value;
 import org.junit.jupiter.api.Test;
 
 class SizeToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecoratorTestBase {
@@ -30,7 +29,11 @@ class SizeToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorat
             "    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })\n" +
             "    @IsOptional()\n" +
             "    bar: string;\n" +
-            "    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })\n" +
+            "    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
+                    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
+                    @IsOptional()
+                    optionalBar?: string;
+                    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })\n" +
             "    @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })\n" +
             "    @MinLength(1, { message: CommonValidationMessages.MinLength(1) })\n" +
             "    notEmptyBar: string;\n" +
@@ -43,19 +46,13 @@ class SizeToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecorat
             "}\n");
     }
 
-    @Value
-    static class Foo {
+    record Foo(
+        @Size(min = 1, max = 2) String bar,
+        Optional<@Size(min = 1, max = 2) String> optionalBar,
+        @NotEmpty @Size(min = 1, max = 2) String notEmptyBar,
+        @Size(min = 3, max = 4) List<Object> objects,
+        Optional<@Size(min = 3, max = 4) List<Object>> optionalObjects
+    ) {
 
-        @Size(min = 1, max = 2)
-        String bar;
-
-        @NotEmpty
-        @Size(min = 1, max = 2)
-        String notEmptyBar;
-
-        @Size(min = 3, max = 4)
-        List<Object> objects;
-
-        Optional<@Size(min = 3, max = 4) List<Object>> optionalObjects;
     }
 }

@@ -1,6 +1,7 @@
 package com.infobip.typescript.validation;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -25,7 +26,7 @@ class SizeToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Si
     @Override
     public Stream<TsDecorator> convert(Field field, Size annotation) {
         String min = String.valueOf(annotation.min());
-        if (field.getType().equals(String.class)) {
+        if (isStringOrOptionalOfString(field)) {
             return Stream.of(getMax("MaxLength", annotation, annotation.max()),
                              getMin(field, annotation, min),
                              getIsOptional(field))
@@ -36,7 +37,7 @@ class SizeToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Si
             return Stream.concat(getMax("ArrayMaxSize", annotation, annotation.max()),
                                  Stream.of(new TsDecorator(new TsIdentifierReference("@ArrayMinSize"),
                                                            Stream.of(new TsIdentifierReference(
-                                                                             min),
+                                                                         min),
                                                                      internationalization("ArrayMinSize",
                                                                                           annotation,
                                                                                           () -> min))
@@ -44,6 +45,18 @@ class SizeToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Si
         }
 
         return Stream.empty();
+    }
+
+    private boolean isStringOrOptionalOfString(Field field) {
+
+        if (Optional.class.isAssignableFrom(field.getType()) && field.getGenericType() instanceof ParameterizedType genericType) {
+            var actualTypeArgument = genericType.getActualTypeArguments()[0];
+            if (actualTypeArgument instanceof Class<?> optionalType && Objects.equals(optionalType, String.class)) {
+                return true;
+            }
+        }
+
+        return field.getType().equals(String.class);
     }
 
     @Override
@@ -89,8 +102,9 @@ class SizeToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Si
         String validationsReference = validationMessageReferenceResolver.getMessageReference(annotation::message,
                                                                                              identifier);
         return new TsObjectLiteral(
-                new TsPropertyDefinition("message",
-                                         new TsCallExpression(new TsIdentifierReference(validationsReference),
-                                                              new TsIdentifierReference(valueSupplier.get()))));
+            new TsPropertyDefinition("message",
+                                     new TsCallExpression(new TsIdentifierReference(validationsReference),
+                                                          new TsIdentifierReference(valueSupplier.get()))));
     }
+
 }

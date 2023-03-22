@@ -49,10 +49,14 @@ class SizeToTsDecoratorConverter extends BeanValidationToTsDecoratorConverter<Si
 
     private boolean isStringOrOptionalOfString(Field field) {
 
-        if (Optional.class.isAssignableFrom(field.getType()) && field.getGenericType() instanceof ParameterizedType genericType) {
+        if (Optional.class.isAssignableFrom(field.getType()) && field.getGenericType() instanceof ParameterizedType) {
+            var genericType = (ParameterizedType) field.getGenericType();
             var actualTypeArgument = genericType.getActualTypeArguments()[0];
-            if (actualTypeArgument instanceof Class<?> optionalType && Objects.equals(optionalType, String.class)) {
-                return true;
+            if (actualTypeArgument instanceof Class<?>) {
+                var optionalType = (Class<?>) actualTypeArgument;
+                if (Objects.equals(optionalType, String.class)) {
+                    return true;
+                }
             }
         }
 

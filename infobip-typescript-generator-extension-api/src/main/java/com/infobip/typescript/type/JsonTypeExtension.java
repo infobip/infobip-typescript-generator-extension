@@ -294,6 +294,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                   .stream()
                                   .filter(entry -> entry.getValue().equals(type))
                                   .map(Map.Entry::getKey)
+                                  .sorted((a, b) -> Integer.compare(a.ordinal(), b.ordinal()))
                                   .findAny()
                                   .orElse(null);
     }

@@ -28,19 +28,21 @@ class DuplicateKeyJsonTypeExtensionTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            "\n" +
-            "export enum HierarchyType {\n" +
-            "    FIRST = \"FIRST\",\n" +
-            "    FIRST_LEAF = \"FIRST_LEAF\",\n" +
-            "}\n" +
-            "\n" +
-            "export interface HierarchyRoot {\n" +
-            "    type: HierarchyType;\n" +
-            "}\n" +
-            "\n" +
-            "export class FirstLeaf implements HierarchyRoot {\n" +
-            "    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;\n" +
-            "}\n");
+            """
+
+                export enum HierarchyType {
+                    FIRST_LEAF = "FIRST_LEAF",
+                    FIRST = "FIRST",
+                }
+
+                export interface HierarchyRoot {
+                    type: HierarchyType;
+                }
+
+                export class FirstLeaf implements HierarchyRoot {
+                    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
+                }
+                """);
     }
 
     @Test
@@ -68,8 +70,8 @@ class DuplicateKeyJsonTypeExtensionTest extends TestBase {
     @Getter
     @AllArgsConstructor
     enum HierarchyType implements TypeProvider<HierarchyRoot> {
-        FIRST(FirstLeaf.class),
-        FIRST_LEAF(FirstLeaf.class);
+        FIRST_LEAF(FirstLeaf.class),
+        FIRST(FirstLeaf.class);
 
         private final Class<? extends HierarchyRoot> type;
     }

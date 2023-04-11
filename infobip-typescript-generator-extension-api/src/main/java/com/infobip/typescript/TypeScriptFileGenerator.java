@@ -8,17 +8,13 @@ import static com.infobip.typescript.validation.Localization.LOCALIZATION_FILE_N
 import static com.infobip.typescript.validation.Localization.LOCALIZATION_SOURCE_CODE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.lang.annotation.Annotation;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -28,16 +24,10 @@ import com.infobip.typescript.custom.validation.extractor.TSCustomDecoratorsExtr
 import com.infobip.typescript.transformer.ClassTransformerDecoratorExtension;
 import com.infobip.typescript.type.JsonTypeExtension;
 import com.infobip.typescript.validation.ClassValidatorDecoratorExtension;
-import cz.habarta.typescript.generator.ClassMapping;
-import cz.habarta.typescript.generator.EnumMapping;
-import cz.habarta.typescript.generator.Input;
-import cz.habarta.typescript.generator.JsonLibrary;
-import cz.habarta.typescript.generator.Settings;
-import cz.habarta.typescript.generator.StringQuotes;
-import cz.habarta.typescript.generator.TypeScriptFileType;
-import cz.habarta.typescript.generator.TypeScriptGenerator;
-import cz.habarta.typescript.generator.TypeScriptOutputKind;
+import cz.habarta.typescript.generator.*;
 import cz.habarta.typescript.generator.emitter.EmitterExtension;
+import cz.habarta.typescript.generator.emitter.TsModel;
+import cz.habarta.typescript.generator.parser.Model;
 
 public abstract class TypeScriptFileGenerator {
 
@@ -46,7 +36,7 @@ public abstract class TypeScriptFileGenerator {
 
     protected TypeScriptFileGenerator(Path basePath) {
         this.basePath = basePath;
-        this.tsCustomDecorators = new TSCustomDecoratorsExtractor(getCustomDecoratorBasePath().map(path -> Collections.singletonList(path))
+        this.tsCustomDecorators = new TSCustomDecoratorsExtractor(getCustomDecoratorBasePath().map(Collections::singletonList)
                                                                                               .orElse(Collections.emptyList())).extract();
     }
 
@@ -109,7 +99,7 @@ public abstract class TypeScriptFileGenerator {
 
     protected void write(Path path, String code) {
         try {
-            Files.write(path, code.trim().getBytes(StandardCharsets.UTF_8));
+            Files.writeString(path, code.trim());
         } catch (IOException e) {
             throw new UncheckedIOException(e);
         }
@@ -190,6 +180,16 @@ public abstract class TypeScriptFileGenerator {
 
     protected Optional<CustomValidationSettings> getCustomValidationAnnotationSettings() {
         return Optional.empty();
+    }
+
+    public void generateInfoJson(File file) {
+        List<EmitterExtension> extensions = createExtensions();
+        Settings settings = createSettings(extensions);
+        OrderedTypescriptGenerator orderedGenerator = createGenerator(settings);
+        final Model model = orderedGenerator.generator.getModelParser().parseModel(getInput().getSourceTypes());
+        final TsModel tsModel = orderedGenerator.generator.getModelCompiler().javaToTypeScript(model);
+        final Output out = Output.to(file);
+        orderedGenerator.generator.getInfoJsonEmitter().emit(tsModel, out.getWriter(), out.getName(), out.shouldCloseWriter());
     }
 
     private List<Class<? extends Annotation>> getCustomAnnotations() {

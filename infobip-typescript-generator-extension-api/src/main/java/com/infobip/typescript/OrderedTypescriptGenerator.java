@@ -4,7 +4,7 @@ import cz.habarta.typescript.generator.Input;
 import cz.habarta.typescript.generator.TypeScriptGenerator;
 
 public class OrderedTypescriptGenerator {
-    private final TypeScriptGenerator generator;
+    final TypeScriptGenerator generator;
 
     public OrderedTypescriptGenerator(TypeScriptGenerator generator) {
         this.generator = generator;

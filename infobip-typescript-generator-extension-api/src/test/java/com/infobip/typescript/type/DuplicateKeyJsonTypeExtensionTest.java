@@ -67,7 +67,7 @@ class DuplicateKeyJsonTypeExtensionTest extends TestBase {
 
     @Getter
     @AllArgsConstructor
-    enum HierarchyType implements TypeProvider {
+    enum HierarchyType implements TypeProvider<HierarchyRoot> {
         FIRST(FirstLeaf.class),
         FIRST_LEAF(FirstLeaf.class);
 

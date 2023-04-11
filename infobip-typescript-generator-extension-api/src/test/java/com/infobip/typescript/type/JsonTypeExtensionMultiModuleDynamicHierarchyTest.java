@@ -54,18 +54,16 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-                                
-                import * as A from "a";
-
-                export class FirstLeaf implements A.HierarchyRoot {
-                    readonly type: A.HierarchyType = A.HierarchyType.FIRST_LEAF;
-                }
-
-                export class SecondLeaf implements A.HierarchyRoot {
-                    readonly type: A.HierarchyType = A.HierarchyType.SECOND_LEAF;
-                }
-                """);
+            "\n" +
+            "import * as A from \"a\";\n" +
+            "\n" +
+            "export class FirstLeaf implements A.HierarchyRoot {\n" +
+            "    readonly type: A.HierarchyType = A.HierarchyType.FIRST_LEAF;\n" +
+            "}\n" +
+            "\n" +
+            "export class SecondLeaf implements A.HierarchyRoot {\n" +
+            "    readonly type: A.HierarchyType = A.HierarchyType.SECOND_LEAF;\n" +
+            "}\n");
     }
 
     @Getter

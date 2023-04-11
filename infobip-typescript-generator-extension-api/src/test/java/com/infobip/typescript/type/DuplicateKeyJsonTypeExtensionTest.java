@@ -31,8 +31,8 @@ class DuplicateKeyJsonTypeExtensionTest extends TestBase {
             """
 
                 export enum HierarchyType {
-                    FIRST = "FIRST",
                     FIRST_LEAF = "FIRST_LEAF",
+                    FIRST = "FIRST",
                 }
 
                 export interface HierarchyRoot {
@@ -72,8 +72,8 @@ class DuplicateKeyJsonTypeExtensionTest extends TestBase {
     @Getter
     @AllArgsConstructor
     enum HierarchyType implements TypeProvider<HierarchyRoot> {
-        FIRST(FirstLeaf.class),
-        FIRST_LEAF(FirstLeaf.class);
+        FIRST_LEAF(FirstLeaf.class),
+        FIRST(FirstLeaf.class);
 
         private final Class<? extends HierarchyRoot> type;
     }

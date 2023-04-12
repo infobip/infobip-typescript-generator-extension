@@ -54,18 +54,16 @@ class JsonTypeExtensionMultiModuleSimpleJsonHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-                                
-                import * as SimpleJsonHierarchy from "a";
-
-                export class FirstLeaf implements SimpleJsonHierarchy.HierarchyRoot {
-                    readonly type: SimpleJsonHierarchy.HierarchyType = SimpleJsonHierarchy.HierarchyType.FIRST_LEAF;
-                }
-
-                export class SecondLeaf implements SimpleJsonHierarchy.HierarchyRoot {
-                    readonly type: SimpleJsonHierarchy.HierarchyType = SimpleJsonHierarchy.HierarchyType.SECOND_LEAF;
-                }
-                """);
+            "\n" +
+            "import * as SimpleJsonHierarchy from \"a\";\n" +
+            "\n" +
+            "export class FirstLeaf implements SimpleJsonHierarchy.HierarchyRoot {\n" +
+            "    readonly type: SimpleJsonHierarchy.HierarchyType = SimpleJsonHierarchy.HierarchyType.FIRST_LEAF;\n" +
+            "}\n" +
+            "\n" +
+            "export class SecondLeaf implements SimpleJsonHierarchy.HierarchyRoot {\n" +
+            "    readonly type: SimpleJsonHierarchy.HierarchyType = SimpleJsonHierarchy.HierarchyType.SECOND_LEAF;\n" +
+            "}\n");
     }
 
     @Getter

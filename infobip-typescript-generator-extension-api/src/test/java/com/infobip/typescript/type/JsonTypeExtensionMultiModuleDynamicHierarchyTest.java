@@ -58,15 +58,13 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-                                
-                import * as DynamicHierarchy from "a";
-
-                export class DynamicLeafWithEnum implements DynamicHierarchy.DynamicHierarchyRootWithEnum {
-                    value: string;
-                    readonly type: DynamicHierarchy.DynamicHierarchyRootWithEnumType = DynamicHierarchy.DynamicHierarchyRootWithEnumType.LEAF;
-                }
-                """);
+            "\n" +
+            "import * as DynamicHierarchy from \"a\";\n" +
+            "\n" +
+            "export class DynamicLeafWithEnum implements DynamicHierarchy.DynamicHierarchyRootWithEnum {\n" +
+            "    value: string;\n" +
+            "    readonly type: DynamicHierarchy.DynamicHierarchyRootWithEnumType = DynamicHierarchy.DynamicHierarchyRootWithEnumType.LEAF;\n" +
+            "}\n");
     }
 
     interface DynamicHierarchyRootWithEnum {

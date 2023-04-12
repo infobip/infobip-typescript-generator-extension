@@ -279,8 +279,13 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
 
     private String getType(TsPropertyModel tsPropertyModel) {
         String type = tsPropertyModel.getTsType().toString();
-        String typeWithoutLastDollarSign = type.substring(0, type.length() - 1);
-        return typeWithoutLastDollarSign.substring(typeWithoutLastDollarSign.lastIndexOf('$') + 1);
+
+        if(type.contains("$")) {
+            String typeWithoutLastDollarSign = type.substring(0, type.length() - 1);
+            return typeWithoutLastDollarSign.substring(typeWithoutLastDollarSign.lastIndexOf('$') + 1);
+        }
+
+        return type.substring(type.lastIndexOf('$') + 1);
     }
 
     public List<Class<?>> getInterfaces(Class<?> type) {

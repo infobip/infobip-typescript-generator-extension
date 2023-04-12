@@ -7,8 +7,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.infobip.jackson.SimpleJsonHierarchy;
 import com.infobip.jackson.TypeProvider;
+import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
+import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
 import com.infobip.typescript.TestBase;
 import com.infobip.typescript.TypeScriptFileGenerator;
 import cz.habarta.typescript.generator.Input;
@@ -16,12 +17,16 @@ import cz.habarta.typescript.generator.ModuleDependency;
 import cz.habarta.typescript.generator.Settings;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 import org.junit.jupiter.api.Test;
 
 class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
 
     JsonTypeExtensionMultiModuleDynamicHierarchyTest() {
-        super(new JsonTypeExtension(Stream::empty),
+        super(new JsonTypeExtension(() -> Stream.of(new DynamicHierarchyDeserializer<>(DynamicHierarchyRootWithEnum.class,
+                                                                                       List.of(new JsonValueToJavaTypeJacksonMapping<>(
+                                                                                           DynamicHierarchyRootWithEnumType.LEAF,
+                                                                                           DynamicLeafWithEnum.class))))),
               Collections.emptyList(),
               createSettings());
     }
@@ -31,12 +36,12 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
                                                                                      .getCodeSource()
                                                                                      .getLocation()
                                                                                      .getPath());
-        var infoJsonFile = basePath.getParent().getParent().resolve("target").resolve("tmp").resolve("A.json").toFile();
+        var infoJsonFile = basePath.getParent().getParent().resolve("target").resolve("tmp").resolve("DynamicHierarchy.json").toFile();
         new CustomTypeScriptFileGenerator(basePath).generateInfoJson(infoJsonFile);
 
         var module = ModuleDependency.module(
             "a",
-            "A",
+            "DynamicHierarchy",
             infoJsonFile,
             null,
             null);
@@ -49,52 +54,44 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
     void shouldAddReadonlyTypeFieldForDynamicHierarchy() {
 
         // when
-        String actual = whenGenerate(Input.from(FirstLeaf.class,
-                                                SecondLeaf.class));
+        String actual = whenGenerate(Input.from(DynamicLeafWithEnum.class));
 
         // then
         then(actual).isEqualTo(
             """
                                 
-                import * as A from "a";
+                import * as DynamicHierarchy from "a";
 
-                export class FirstLeaf implements A.HierarchyRoot {
-                    readonly type: A.HierarchyType = A.HierarchyType.FIRST_LEAF;
-                }
-
-                export class SecondLeaf implements A.HierarchyRoot {
-                    readonly type: A.HierarchyType = A.HierarchyType.SECOND_LEAF;
+                export class DynamicLeafWithEnum implements DynamicHierarchy.DynamicHierarchyRootWithEnum {
+                    value: string;
+                    readonly type: DynamicHierarchy.DynamicHierarchyRootWithEnumType = DynamicHierarchy.DynamicHierarchyRootWithEnumType.LEAF;
                 }
                 """);
     }
 
+    interface DynamicHierarchyRootWithEnum {
+
+        DynamicHierarchyRootWithEnumType getType();
+
+    }
+
+    @Value
+    static class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {
+
+        private final String value;
+
+        public DynamicHierarchyRootWithEnumType getType() {
+            return DynamicHierarchyRootWithEnumType.LEAF;
+        }
+
+    }
+
     @Getter
     @AllArgsConstructor
-    enum HierarchyType implements TypeProvider<HierarchyRoot> {
-        FIRST_LEAF(FirstLeaf.class),
-        SECOND_LEAF(SecondLeaf.class);
+    enum DynamicHierarchyRootWithEnumType implements TypeProvider<DynamicHierarchyRootWithEnum> {
+        LEAF(DynamicLeafWithEnum.class);
 
-        private final Class<? extends HierarchyRoot> type;
-    }
-
-    interface HierarchyRoot extends SimpleJsonHierarchy<HierarchyType> {
-
-    }
-
-    static class FirstLeaf implements HierarchyRoot {
-
-        public HierarchyType getType() {
-            return HierarchyType.FIRST_LEAF;
-        }
-
-    }
-
-    static class SecondLeaf implements HierarchyRoot {
-
-        public HierarchyType getType() {
-            return HierarchyType.SECOND_LEAF;
-        }
-
+        private final Class<? extends DynamicHierarchyRootWithEnum> type;
     }
 
     static class CustomTypeScriptFileGenerator extends TypeScriptFileGenerator {
@@ -105,7 +102,7 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
 
         @Override
         protected Input getInput() {
-            return Input.from(HierarchyRoot.class);
+            return Input.from(DynamicHierarchyRootWithEnum.class);
         }
 
         @Override
@@ -120,5 +117,4 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
         }
 
     }
-
 }

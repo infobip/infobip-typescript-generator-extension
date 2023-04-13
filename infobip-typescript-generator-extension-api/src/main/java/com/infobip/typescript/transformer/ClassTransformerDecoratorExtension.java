@@ -17,6 +17,7 @@ import com.infobip.jackson.JsonTypeResolver;
 import com.infobip.jackson.JsonTypeResolverFactory;
 import com.infobip.jackson.PresentPropertyJsonHierarchy;
 import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
+import com.infobip.typescript.infrastructure.Symbols;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.TsType;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
@@ -182,7 +183,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                         Class<?> type) {
 
         TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
-            new TsType.ReferenceType(symbolTable.getSymbol(type))));
+            new TsType.ReferenceType(Symbols.resolve(symbolTable, type))));
 
         Stream<TsDecorator> typeDecoratorStream = shouldNotBeDecorated(type) ?
             Stream.empty() :
@@ -203,7 +204,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
                            new TsPropertyDefinition("value",
                                                     new TsTypeReferenceExpression(
                                                         new TsType.ReferenceType(
-                                                            resolve(symbolTable, type)))),
+                                                            Symbols.resolve(symbolTable, type.getType())))),
                            new TsPropertyDefinition("name", new TsEnumLiteral(resolver.getType(), type.getName()))))
                        .collect(Collectors.toList());
     }
@@ -219,16 +220,9 @@ public class ClassTransformerDecoratorExtension extends Extension {
                            new TsPropertyDefinition("value",
                                                     new TsTypeReferenceExpression(
                                                         new TsType.ReferenceType(
-                                                            resolve(symbolTable, type)))),
+                                                            Symbols.resolve(symbolTable, type.getType())))),
                            new TsPropertyDefinition("name", new TsStringLiteral(type.getName()))))
                        .collect(Collectors.toList());
-    }
-
-    private Symbol resolve(SymbolTable symbolTable, NamedType namedType) {
-        Class<?> type = namedType.getType();
-
-        return Optional.ofNullable(symbolTable.getSymbolIfImported(type))
-                       .orElseGet(() -> symbolTable.getSymbol(type));
     }
 
     private boolean shouldNotBeDecorated(Class<?> type) {

@@ -11,6 +11,7 @@ import com.infobip.jackson.CompositeJsonTypeResolver;
 import com.infobip.jackson.JsonTypeResolverFactory;
 import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
 import com.infobip.typescript.TypeScriptImportResolver;
+import com.infobip.typescript.infrastructure.Symbols;
 import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.Settings;
 import cz.habarta.typescript.generator.TsType;
@@ -210,7 +211,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
     private <E extends Enum<E>> boolean doesFieldTypeMatch(TsModelTransformer.Context context,
                                                            TsPropertyModel tsPropertyModel,
                                                            Class<E> enumType) {
-        TsType expected = new TsType.EnumReferenceType(context.getSymbolTable().getSymbol(enumType));
+        TsType expected = new TsType.EnumReferenceType(Symbols.resolve(context.getSymbolTable(), enumType));
 
         if (tsPropertyModel.getTsType().equals(expected)) {
             return true;
@@ -285,7 +286,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
             return typeWithoutLastDollarSign.substring(typeWithoutLastDollarSign.lastIndexOf('$') + 1);
         }
 
-        return type.substring(type.lastIndexOf('$') + 1);
+        return type;
     }
 
     public List<Class<?>> getInterfaces(Class<?> type) {

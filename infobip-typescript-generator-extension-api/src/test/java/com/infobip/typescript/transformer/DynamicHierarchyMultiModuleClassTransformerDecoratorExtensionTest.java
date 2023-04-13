@@ -33,11 +33,12 @@ class DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends 
 
     private static Settings createSettings() {
         var basePath = Path.of(DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest.class.getProtectionDomain()
-                                                                                     .getCodeSource()
-                                                                                     .getLocation()
-                                                                                     .getPath());
+                                                                                                      .getCodeSource()
+                                                                                                      .getLocation()
+                                                                                                      .getPath());
         var infoJsonFile = basePath.getParent().getParent().resolve("target").resolve("tmp").resolve("DynamicHierarchy.json").toFile();
-        new DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest.CustomTypeScriptFileGenerator(basePath).generateInfoJson(infoJsonFile);
+        new DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest.CustomTypeScriptFileGenerator(basePath).generateInfoJson(
+            infoJsonFile);
 
         var module = ModuleDependency.module(
             "a",
@@ -54,16 +55,17 @@ class DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends 
     void shouldDecorateHierarchiesWithType() {
 
         // when
-        String actual = whenGenerate(Input.from(HierarchyContainer.class));
+        String actual = whenGenerate(Input.from(HierarchyRootContainer.class,
+                                                HierarchyLeafContainer.class));
 
         // then
         then(fixNewlines(actual)).isEqualTo(
             """
                 import * as DynamicHierarchy from "a";
-                
+                                
                 import { Type } from 'class-transformer';
                                 
-                export class HierarchyContainer {
+                export class HierarchyRootContainer {
                     @Type(() => Object, {
                         discriminator: {
                             property: "type", subTypes: [
@@ -72,6 +74,11 @@ class DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends 
                         }
                     })
                     root: DynamicHierarchy.HierarchyRoot;
+                }
+                 
+                export class HierarchyLeafContainer {
+                    @Type(() => DynamicHierarchy.HierarchyLeaf)
+                    leaf: DynamicHierarchy.HierarchyLeaf;
                 }""");
     }
 
@@ -86,13 +93,19 @@ class DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends 
     @Value
     static class HierarchyLeaf implements HierarchyRoot {
 
+    }
+
+    @Value
+    static class HierarchyRootContainer {
+
+        private final HierarchyRoot root;
 
     }
 
     @Value
-    static class HierarchyContainer {
+    static class HierarchyLeafContainer {
 
-        private final HierarchyRoot root;
+        private final HierarchyLeaf leaf;
 
     }
 

@@ -51,7 +51,8 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
     void shouldDecorateHierarchiesWithType() {
 
         // when
-        String actual = whenGenerate(Input.from(HierarchyContainer.class));
+        String actual = whenGenerate(Input.from(HierarchyRootContainer.class,
+                                                HierarchyLeafContainer.class));
 
         // then
         then(fixNewlines(actual)).isEqualTo(
@@ -60,7 +61,7 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
                                 
                 import { Type } from 'class-transformer';
                                 
-                export class HierarchyContainer {
+                export class HierarchyRootContainer {
                     @Type(() => Object, {
                         discriminator: {
                             property: "type", subTypes: [
@@ -70,6 +71,11 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
                         }
                     })
                     root: SimpleJsonHierarchy.HierarchyRoot;
+                }
+                
+                export class HierarchyLeafContainer {
+                    @Type(() => SimpleJsonHierarchy.FirstLeaf)
+                    leaf: SimpleJsonHierarchy.FirstLeaf;
                 }""");
     }
 
@@ -107,9 +113,16 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
     }
 
     @Value
-    static class HierarchyContainer {
+    static class HierarchyRootContainer {
 
         private final HierarchyRoot root;
+
+    }
+
+    @Value
+    static class HierarchyLeafContainer {
+
+        private final FirstLeaf leaf;
 
     }
 

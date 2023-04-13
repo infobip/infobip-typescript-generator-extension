@@ -56,27 +56,26 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
 
         // then
         then(fixNewlines(actual)).isEqualTo(
-            """
-                import * as SimpleJsonHierarchy from "a";
-                                
-                import { Type } from 'class-transformer';
-                                
-                export class HierarchyRootContainer {
-                    @Type(() => Object, {
-                        discriminator: {
-                            property: "type", subTypes: [
-                                { value: SimpleJsonHierarchy.FirstLeaf, name: SimpleJsonHierarchy.HierarchyType.FIRST_LEAF },
-                                { value: SimpleJsonHierarchy.SecondLeaf, name: SimpleJsonHierarchy.HierarchyType.SECOND_LEAF }
-                            ]
-                        }
-                    })
-                    root: SimpleJsonHierarchy.HierarchyRoot;
-                }
-                
-                export class HierarchyLeafContainer {
-                    @Type(() => SimpleJsonHierarchy.FirstLeaf)
-                    leaf: SimpleJsonHierarchy.FirstLeaf;
-                }""");
+            "import * as SimpleJsonHierarchy from \"a\";\n" +
+            "\n" +
+            "import { Type } from 'class-transformer';\n" +
+            "\n" +
+            "export class HierarchyRootContainer {\n" +
+            "    @Type(() => Object, {\n" +
+            "        discriminator: {\n" +
+            "            property: \"type\", subTypes: [\n" +
+            "                { value: SimpleJsonHierarchy.FirstLeaf, name: SimpleJsonHierarchy.HierarchyType.FIRST_LEAF },\n" +
+            "                { value: SimpleJsonHierarchy.SecondLeaf, name: SimpleJsonHierarchy.HierarchyType.SECOND_LEAF }\n" +
+            "            ]\n" +
+            "        }\n" +
+            "    })\n" +
+            "    root: SimpleJsonHierarchy.HierarchyRoot;\n" +
+            "}\n" +
+            "\n" +
+            "export class HierarchyLeafContainer {\n" +
+            "    @Type(() => SimpleJsonHierarchy.FirstLeaf)\n" +
+            "    leaf: SimpleJsonHierarchy.FirstLeaf;\n" +
+            "}");
     }
 
     private String fixNewlines(String actual) {

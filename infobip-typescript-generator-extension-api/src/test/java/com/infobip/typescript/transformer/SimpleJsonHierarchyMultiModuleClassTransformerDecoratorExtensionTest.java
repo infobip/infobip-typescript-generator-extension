@@ -55,22 +55,21 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
 
         // then
         then(fixNewlines(actual)).isEqualTo(
-            """
-                import * as SimpleJsonHierarchy from "a";
-                                
-                import { Type } from 'class-transformer';
-                                
-                export class HierarchyContainer {
-                    @Type(() => Object, {
-                        discriminator: {
-                            property: "type", subTypes: [
-                                { value: SimpleJsonHierarchy.FirstLeaf, name: HierarchyType.FIRST_LEAF },
-                                { value: SimpleJsonHierarchy.SecondLeaf, name: HierarchyType.SECOND_LEAF }
-                            ]
-                        }
-                    })
-                    root: SimpleJsonHierarchy.HierarchyRoot;
-                }""");
+            "import * as SimpleJsonHierarchy from \"a\";\n" +
+            "\n" +
+            "import { Type } from 'class-transformer';\n" +
+            "\n" +
+            "export class HierarchyContainer {\n" +
+            "    @Type(() => Object, {\n" +
+            "        discriminator: {\n" +
+            "            property: \"type\", subTypes: [\n" +
+            "                { value: SimpleJsonHierarchy.FirstLeaf, name: HierarchyType.FIRST_LEAF },\n" +
+            "                { value: SimpleJsonHierarchy.SecondLeaf, name: HierarchyType.SECOND_LEAF }\n" +
+            "            ]\n" +
+            "        }\n" +
+            "    })\n" +
+            "    root: SimpleJsonHierarchy.HierarchyRoot;\n" +
+            "}");
     }
 
     private String fixNewlines(String actual) {

@@ -58,21 +58,20 @@ class DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends 
 
         // then
         then(fixNewlines(actual)).isEqualTo(
-            """
-                import * as DynamicHierarchy from "a";
-                
-                import { Type } from 'class-transformer';
-                                
-                export class HierarchyContainer {
-                    @Type(() => Object, {
-                        discriminator: {
-                            property: "type", subTypes: [
-                                { value: DynamicHierarchy.HierarchyLeaf, name: "LEAF" }
-                            ]
-                        }
-                    })
-                    root: DynamicHierarchy.HierarchyRoot;
-                }""");
+            "import * as DynamicHierarchy from \"a\";\n" +
+            "\n" +
+            "import { Type } from 'class-transformer';\n" +
+            "\n" +
+            "export class HierarchyContainer {\n" +
+            "    @Type(() => Object, {\n" +
+            "        discriminator: {\n" +
+            "            property: \"type\", subTypes: [\n" +
+            "                { value: DynamicHierarchy.HierarchyLeaf, name: \"LEAF\" }\n" +
+            "            ]\n" +
+            "        }\n" +
+            "    })\n" +
+            "    root: DynamicHierarchy.HierarchyRoot;\n" +
+            "}");
     }
 
     private String fixNewlines(String actual) {

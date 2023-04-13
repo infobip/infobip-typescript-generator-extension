@@ -205,7 +205,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                     new TsTypeReferenceExpression(
                                                         new TsType.ReferenceType(
                                                             Symbols.resolve(symbolTable, type.getType())))),
-                           new TsPropertyDefinition("name", new TsEnumLiteral(resolver.getType(), type.getName()))))
+                           new TsPropertyDefinition("name", new TsEnumLiteral(Symbols.resolve(symbolTable, resolver.getType()), type.getName()))))
                        .collect(Collectors.toList());
     }
 

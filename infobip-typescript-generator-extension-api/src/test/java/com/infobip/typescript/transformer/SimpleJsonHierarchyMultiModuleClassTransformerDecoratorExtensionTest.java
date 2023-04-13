@@ -65,8 +65,8 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
                     @Type(() => Object, {
                         discriminator: {
                             property: "type", subTypes: [
-                                { value: SimpleJsonHierarchy.FirstLeaf, name: HierarchyType.FIRST_LEAF },
-                                { value: SimpleJsonHierarchy.SecondLeaf, name: HierarchyType.SECOND_LEAF }
+                                { value: SimpleJsonHierarchy.FirstLeaf, name: SimpleJsonHierarchy.HierarchyType.FIRST_LEAF },
+                                { value: SimpleJsonHierarchy.SecondLeaf, name: SimpleJsonHierarchy.HierarchyType.SECOND_LEAF }
                             ]
                         }
                     })

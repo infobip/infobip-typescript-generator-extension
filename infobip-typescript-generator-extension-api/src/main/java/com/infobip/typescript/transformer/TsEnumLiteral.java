@@ -1,14 +1,15 @@
 package com.infobip.typescript.transformer;
 
 import cz.habarta.typescript.generator.Settings;
+import cz.habarta.typescript.generator.compiler.Symbol;
 import cz.habarta.typescript.generator.emitter.TsExpression;
 
 public class TsEnumLiteral extends TsExpression {
 
     private final String literal;
 
-    public <E extends Enum<E>> TsEnumLiteral(Class<E> type, String enumValue) {
-        this.literal = type.getSimpleName() + "." + enumValue;
+    public <E extends Enum<E>> TsEnumLiteral(Symbol symbol, String enumValue) {
+        this.literal = symbol.getFullName() + "." + enumValue;
     }
 
     @Override

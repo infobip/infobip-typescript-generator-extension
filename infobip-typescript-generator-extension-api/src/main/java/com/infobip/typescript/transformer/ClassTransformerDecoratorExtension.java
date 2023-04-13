@@ -203,7 +203,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
                            new TsPropertyDefinition("value",
                                                     new TsTypeReferenceExpression(
                                                         new TsType.ReferenceType(
-                                                            symbolTable.getSymbol(type.getType())))),
+                                                            resolve(symbolTable, type)))),
                            new TsPropertyDefinition("name", new TsEnumLiteral(resolver.getType(), type.getName()))))
                        .collect(Collectors.toList());
     }
@@ -219,9 +219,16 @@ public class ClassTransformerDecoratorExtension extends Extension {
                            new TsPropertyDefinition("value",
                                                     new TsTypeReferenceExpression(
                                                         new TsType.ReferenceType(
-                                                            symbolTable.getSymbol(type.getType())))),
+                                                            resolve(symbolTable, type)))),
                            new TsPropertyDefinition("name", new TsStringLiteral(type.getName()))))
                        .collect(Collectors.toList());
+    }
+
+    private Symbol resolve(SymbolTable symbolTable, NamedType namedType) {
+        Class<?> type = namedType.getType();
+
+        return Optional.ofNullable(symbolTable.getSymbolIfImported(type))
+                       .orElseGet(() -> symbolTable.getSymbol(type));
     }
 
     private boolean shouldNotBeDecorated(Class<?> type) {

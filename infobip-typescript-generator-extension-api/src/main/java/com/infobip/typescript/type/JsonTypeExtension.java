@@ -108,7 +108,13 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
             return Optional.empty();
         }
 
-        return addTypeInformationToType(context, bean, resolver, new NamedType(type, value.toString()));
+        var properties = addTypeInformationToType(context, bean, resolver, new NamedType(type, value.toString())).toList();
+
+        if(properties.isEmpty()) {
+            return Optional.empty();
+        }
+
+        return Optional.of(bean.withProperties(properties));
     }
 
     private <E extends Enum<E>> Map<E, Class<?>> getJsonValueToJavaType(CompositeJsonTypeResolver<E> resolver) {
@@ -157,44 +163,42 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                                     new NamedType(type, value)));
     }
 
-    private Optional<TsBeanModel> addTypeInformationToType(TsModelTransformer.Context context,
-                                                 TsBeanModel tsBeanModel,
-                                                 CompositeJsonTypeResolver<?> resolver,
-                                                 NamedType namedType) {
+    private Stream<TsPropertyModel> addTypeInformationToType(TsModelTransformer.Context context,
+                                                             TsBeanModel tsBeanModel,
+                                                             CompositeJsonTypeResolver<?> resolver,
+                                                             NamedType namedType) {
         if (Objects.isNull(namedType)) {
-            return Optional.empty();
+            return Stream.empty();
         }
 
-        return Optional.of(tsBeanModel.withProperties(tsBeanModel.getProperties()
-                                                                 .stream()
-                                                                 .map(tsPropertyModel -> addEnumTypeInformationToHierarchy(context,
-                                                                                                                           tsPropertyModel,
-                                                                                                                           resolver.getType(),
-                                                                                                                           namedType))
-                                                                 .collect(Collectors.toList())
-                                                     ));
+        return tsBeanModel.getProperties()
+                          .stream()
+                          .flatMap(tsPropertyModel -> addEnumTypeInformationToHierarchy(context,
+                                                                                        tsPropertyModel,
+                                                                                        resolver.getType(),
+                                                                                        namedType).stream());
     }
 
-    private <E extends Enum<E>> TsPropertyModel addEnumTypeInformationToHierarchy(TsModelTransformer.Context context,
-                                                                                  TsPropertyModel tsPropertyModel,
-                                                                                  Class<E> enumType,
-                                                                                  NamedType namedType) {
+    private <E extends Enum<E>> Optional<TsPropertyModel> addEnumTypeInformationToHierarchy(TsModelTransformer.Context context,
+                                                                                            TsPropertyModel tsPropertyModel,
+                                                                                            Class<E> enumType,
+                                                                                            NamedType namedType) {
         if (!doesFieldTypeMatch(context, tsPropertyModel, enumType)) {
-            return tsPropertyModel;
+            return Optional.empty();
         }
 
         E enumValue = Arrays.stream(enumType.getEnumConstants())
                             .filter(e -> e.name().equals(namedType.getName()))
                             .findFirst()
                             .orElse(null);
-        return new TsPropertyModel(tsPropertyModel.name,
-                                   new EnumInitializerType<>(getEnumInitializerType(tsPropertyModel, enumType),
-                                                             Objects.toString(enumValue)),
-                                   tsPropertyModel.decorators,
-                                   tsPropertyModel.modifiers.setReadonly(),
-                                   true,
-                                   null,
-                                   tsPropertyModel.comments);
+        return Optional.of(new TsPropertyModel(tsPropertyModel.name,
+                                               new EnumInitializerType<>(getEnumInitializerType(tsPropertyModel, enumType),
+                                                                         Objects.toString(enumValue)),
+                                               tsPropertyModel.decorators,
+                                               tsPropertyModel.modifiers.setReadonly(),
+                                               true,
+                                               null,
+                                               tsPropertyModel.comments));
     }
 
     private <E extends Enum<E>> String getEnumInitializerType(TsPropertyModel tsPropertyModel, Class<E> enumType) {

@@ -108,7 +108,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
             return Optional.empty();
         }
 
-        var properties = addTypeInformationToType(context, bean, resolver, new NamedType(type, value.toString())).toList();
+        var properties = addTypeInformationToType(context, bean, resolver, new NamedType(type, value.toString())).collect(Collectors.toList());
 
         if(properties.isEmpty()) {
             return Optional.empty();

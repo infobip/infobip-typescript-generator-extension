@@ -85,7 +85,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
             .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
             .flatMap(resolver -> addTypeInformationToType(context, bean, resolver, type).stream())
             .reduce((a, b) -> a.withProperties(b.getProperties()))
-            .or(() -> addTypeInformationToTypeInDynamicHierarchy(context, bean, type))
+            .or(() -> addTypeInformationToTypeInDynamicHierarchy(bean))
             .orElse(bean);
     }
 
@@ -122,24 +122,20 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                      .collect(Collectors.toMap(Function.identity(), resolver.getConverter()));
     }
 
-    private Optional<TsBeanModel> addTypeInformationToTypeInDynamicHierarchy(TsModelTransformer.Context context,
-                                                                             TsBeanModel bean,
-                                                                             Class<?> type) {
+    private Optional<TsBeanModel> addTypeInformationToTypeInDynamicHierarchy(TsBeanModel bean) {
 
         return dynamicHierarchyDeserializerProvider.get()
-                                                   .map(deserializer -> addTypeInformationToTypeInDynamicHierarchy(context,
-                                                                                                                   bean,
+                                                   .map(deserializer -> addTypeInformationToTypeInDynamicHierarchy(bean,
                                                                                                                    deserializer))
                                                    .map(value -> value.orElse(null))
                                                    .filter(Objects::nonNull)
                                                    .findAny();
     }
 
-    private Optional<TsBeanModel> addTypeInformationToTypeInDynamicHierarchy(TsModelTransformer.Context context,
-                                                                             TsBeanModel bean,
+    private Optional<TsBeanModel> addTypeInformationToTypeInDynamicHierarchy(TsBeanModel bean,
                                                                              DynamicHierarchyDeserializer<?> deserializer) {
         Class<?> type = bean.getOrigin();
-        Map<String, Class<?>> jsonValueToJavaType = (Map<String, Class<?>>) deserializer.getJsonValueToJavaType();
+        var jsonValueToJavaType = deserializer.getJsonValueToJavaType();
         var isIncludedInHierarchy = jsonValueToJavaType.containsValue(type);
 
         if (!isIncludedInHierarchy) {

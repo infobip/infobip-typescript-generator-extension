@@ -320,7 +320,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
                                            }
 
                                            return property;
-                                       }).toList());
+                                       }).collect(Collectors.toList()));
     }
 
 }

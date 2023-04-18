@@ -11,6 +11,7 @@ import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 import org.junit.jupiter.api.Test;
 
 class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
@@ -30,23 +31,26 @@ class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            "\n" +
-            "export enum HierarchyType {\n" +
-            "    FIRST_LEAF = \"FIRST_LEAF\",\n" +
-            "    SECOND_LEAF = \"SECOND_LEAF\",\n" +
-            "}\n" +
-            "\n" +
-            "export interface HierarchyRoot {\n" +
-            "    type: HierarchyType;\n" +
-            "}\n" +
-            "\n" +
-            "export class FirstLeaf implements HierarchyRoot {\n" +
-            "    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;\n" +
-            "}\n" +
-            "\n" +
-            "export class SecondLeaf implements HierarchyRoot {\n" +
-            "    readonly type: HierarchyType = HierarchyType.SECOND_LEAF;\n" +
-            "}\n");
+            """
+
+                export enum HierarchyType {
+                    FIRST_LEAF = "FIRST_LEAF",
+                    SECOND_LEAF = "SECOND_LEAF",
+                }
+
+                export interface HierarchyRoot {
+                    type: HierarchyType;
+                }
+
+                export class FirstLeaf implements HierarchyRoot {
+                    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
+                    value: string;
+                }
+
+                export class SecondLeaf implements HierarchyRoot {
+                    readonly type: HierarchyType = HierarchyType.SECOND_LEAF;
+                }
+                """);
     }
 
     @Getter
@@ -62,7 +66,10 @@ class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
 
     }
 
+    @Value
     static class FirstLeaf implements HierarchyRoot {
+
+        private final String value;
 
         public HierarchyType getType() {
             return HierarchyType.FIRST_LEAF;

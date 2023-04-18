@@ -11,6 +11,7 @@ import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Value;
 import org.junit.jupiter.api.Test;
 
 class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
@@ -43,6 +44,7 @@ class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
 
                 export class FirstLeaf implements HierarchyRoot {
                     readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
+                    value: string;
                 }
 
                 export class SecondLeaf implements HierarchyRoot {
@@ -64,7 +66,10 @@ class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
 
     }
 
+    @Value
     static class FirstLeaf implements HierarchyRoot {
+
+        private final String value;
 
         public HierarchyType getType() {
             return HierarchyType.FIRST_LEAF;

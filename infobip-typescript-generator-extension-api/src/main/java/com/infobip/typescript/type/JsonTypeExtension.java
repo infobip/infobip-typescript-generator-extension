@@ -110,11 +110,11 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
 
         var properties = addTypeInformationToType(context, bean, resolver, new NamedType(type, value.toString())).toList();
 
-        if(properties.isEmpty()) {
+        if (properties.isEmpty()) {
             return Optional.empty();
         }
 
-        return Optional.of(bean.withProperties(properties));
+        return Optional.of(addProperties(bean, properties));
     }
 
     private <E extends Enum<E>> Map<E, Class<?>> getJsonValueToJavaType(CompositeJsonTypeResolver<E> resolver) {
@@ -305,6 +305,22 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
         return getInterfaces(type).stream()
                                   .filter(t -> !t.equals(SimpleJsonHierarchy.class) && !t.equals(PresentPropertyJsonHierarchy.class))
                                   .flatMap(t -> factory.create(t).stream());
+    }
+
+    private TsBeanModel addProperties(TsBeanModel bean, List<TsPropertyModel> properties) {
+        var nameToProperty = properties.stream()
+                                       .collect(Collectors.toMap(TsPropertyModel::getName, Function.identity()));
+
+        return bean.withProperties(bean.getProperties().stream()
+                                       .map(property -> {
+                                           var overriddenProperty = nameToProperty.get(property.getName());
+
+                                           if (Objects.nonNull(overriddenProperty)) {
+                                               return overriddenProperty;
+                                           }
+
+                                           return property;
+                                       }).toList());
     }
 
 }

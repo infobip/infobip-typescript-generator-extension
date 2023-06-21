@@ -1,12 +1,12 @@
-package com.infobip.typescript.showcase.valdiation;
+package com.infobip.typescript.showcase.validation;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.typescript.showcase.TestBase;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import com.infobip.typescript.showcase.TestBase;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 public class SimpleCustomValidationTypeScriptFileGeneratorTest extends TestBase {
 

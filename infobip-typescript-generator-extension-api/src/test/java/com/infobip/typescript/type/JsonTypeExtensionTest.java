@@ -129,7 +129,7 @@ class JsonTypeExtensionTest extends TestBase {
                         """);
     }
 
-    enum HierarchyType implements TypeProvider {
+    enum HierarchyType implements TypeProvider<HierarchyRoot> {
         FIRST_LEAF(FirstLeaf.class),
         SECOND_LEAF(SecondLeaf.class);
 
@@ -163,7 +163,7 @@ class JsonTypeExtensionTest extends TestBase {
         }
     }
 
-    enum PresentPropertyHierarchyType implements TypeProvider {
+    enum PresentPropertyHierarchyType implements TypeProvider<PresentPropertyHierarchyRoot> {
         ONE(One.class),
         TWO(Two.class);
 

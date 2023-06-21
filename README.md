@@ -73,18 +73,30 @@ Input:
 
 ```java
 
-@Getter
-@AllArgsConstructor
 enum Channel {
     SMS(InboundSmsMessage.class, OutboundSmsMessage.class);
 
     private final Class<? extends InboundMessage> inboundMessageType;
     private final Class<? extends OutboundMessage> outboundMessageType;
+
+    Channel(Class<? extends InboundMessage> inboundMessageType,
+            Class<? extends OutboundMessage> outboundMessageType) {
+        this.inboundMessageType = inboundMessageType;
+        this.outboundMessageType = outboundMessageType;
+    }
+
+    public Class<? extends InboundMessage> getInboundMessageType() {
+        return inboundMessageType;
+    }
+
+    public Class<? extends OutboundMessage> getOutboundMessageType() {
+        return outboundMessageType;
+    }
 }
 
 @Getter
 @AllArgsConstructor
-enum Direction implements TypeProvider {
+enum Direction implements TypeProvider<Message> {
     INBOUND(InboundMessage.class),
     OUTBOUND(OutboundMessage.class);
 

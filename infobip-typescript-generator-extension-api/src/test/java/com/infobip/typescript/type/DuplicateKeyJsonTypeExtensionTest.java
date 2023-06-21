@@ -92,7 +92,7 @@ class DuplicateKeyJsonTypeExtensionTest extends TestBase {
         }
     }
 
-    enum PresentPropertyHierarchyType implements TypeProvider {
+    enum PresentPropertyHierarchyType implements TypeProvider<PresentPropertyHierarchyRoot> {
         ONE(One.class),
         TWO(Two.class);
 

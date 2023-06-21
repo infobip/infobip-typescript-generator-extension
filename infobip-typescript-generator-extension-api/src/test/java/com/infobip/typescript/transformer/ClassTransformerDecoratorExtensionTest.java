@@ -3,7 +3,6 @@ package com.infobip.typescript.transformer;
 import com.infobip.jackson.*;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
-import lombok.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -82,16 +81,12 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
     }
 
-    @Data
-    static class Leaf {
+    record Leaf(int value) {
 
-        int value;
     }
 
-    @Data
-    static class RootWithAbstractLeaf {
+    record RootWithAbstractLeaf(AbstractLeaf leaf) {
 
-        AbstractLeaf leaf;
     }
 
     interface AbstractLeaf {
@@ -110,12 +105,19 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
 
     }
 
-    @Getter
-    @AllArgsConstructor
     enum UnsupportedType implements TypeProvider<Unsupported> {
         VALUE(UnsupportedImpl.class);
 
         private final Class<? extends Unsupported> type;
+
+        UnsupportedType(Class<? extends Unsupported> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends Unsupported> getType() {
+            return type;
+        }
     }
 
     @Test
@@ -199,28 +201,49 @@ class ClassTransformerDecoratorExtensionTest extends TestBase {
         return actual.trim().replace("\r\n", "\n");
     }
 
-    @Getter
-    @AllArgsConstructor
     enum FirstHierarchyType implements TypeProvider<FirstHierarchyRoot> {
         LEAF(FirstHierarchyLeaf.class);
 
         private final Class<? extends FirstHierarchyRoot> type;
+
+        FirstHierarchyType(Class<? extends FirstHierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends FirstHierarchyRoot> getType() {
+            return type;
+        }
     }
 
-    @Getter
-    @AllArgsConstructor
     enum SecondHierarchyType implements TypeProvider<SecondHierarchyRoot> {
         LEAF(SecondHierarchyLeaf.class);
 
         private final Class<? extends SecondHierarchyRoot> type;
+
+        SecondHierarchyType(Class<? extends SecondHierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends SecondHierarchyRoot> getType() {
+            return type;
+        }
     }
 
-    @Getter
-    @AllArgsConstructor
     enum NestedHierarchyType implements TypeProvider<NestedHierarchyRoot> {
         LEAF(NestedHierarchyLeaf.class);
 
         private final Class<? extends NestedHierarchyRoot> type;
+
+        NestedHierarchyType(Class<? extends NestedHierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends NestedHierarchyRoot> getType() {
+            return type;
+        }
     }
 
     interface FirstHierarchyRoot extends SimpleJsonHierarchy<FirstHierarchyType> {

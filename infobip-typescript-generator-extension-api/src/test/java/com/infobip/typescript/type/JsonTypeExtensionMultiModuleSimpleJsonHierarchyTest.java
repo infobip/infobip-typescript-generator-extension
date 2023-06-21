@@ -1,22 +1,18 @@
 package com.infobip.typescript.type;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.jackson.SimpleJsonHierarchy;
+import com.infobip.jackson.TypeProvider;
+import com.infobip.typescript.TestBase;
+import com.infobip.typescript.TypeScriptFileGenerator;
+import cz.habarta.typescript.generator.*;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.infobip.jackson.SimpleJsonHierarchy;
-import com.infobip.jackson.TypeProvider;
-import com.infobip.typescript.TestBase;
-import com.infobip.typescript.TypeScriptFileGenerator;
-import cz.habarta.typescript.generator.Input;
-import cz.habarta.typescript.generator.ModuleDependency;
-import cz.habarta.typescript.generator.Settings;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class JsonTypeExtensionMultiModuleSimpleJsonHierarchyTest extends TestBase {
 
@@ -68,13 +64,20 @@ class JsonTypeExtensionMultiModuleSimpleJsonHierarchyTest extends TestBase {
                 """);
     }
 
-    @Getter
-    @AllArgsConstructor
     enum HierarchyType implements TypeProvider<HierarchyRoot> {
         FIRST_LEAF(FirstLeaf.class),
         SECOND_LEAF(SecondLeaf.class);
 
         private final Class<? extends HierarchyRoot> type;
+
+        HierarchyType(Class<? extends HierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends HierarchyRoot> getType() {
+            return type;
+        }
     }
 
     interface HierarchyRoot extends SimpleJsonHierarchy<HierarchyType> {

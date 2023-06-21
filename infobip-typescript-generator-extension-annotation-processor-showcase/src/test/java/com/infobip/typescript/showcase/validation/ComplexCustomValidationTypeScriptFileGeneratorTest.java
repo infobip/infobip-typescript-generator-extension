@@ -24,9 +24,9 @@ public class ComplexCustomValidationTypeScriptFileGeneratorTest extends TestBase
                                    import { ComplexValidator } from './validators/ComplexValidator';
 
                                    export class Foo {
+                                       @ComplexValidator(100, { message: 'must be valid element' })
                                        @MaxLength(2, { message: CommonValidationMessages.MaxLength(2) })
                                        @MinLength(1, { message: CommonValidationMessages.MinLength(1) })
-                                       @ComplexValidator(100, { message: 'must be valid element' })
                                        @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
                                        @IsDefined({ message: CommonValidationMessages.IsDefined })
                                        @ValidateNested()

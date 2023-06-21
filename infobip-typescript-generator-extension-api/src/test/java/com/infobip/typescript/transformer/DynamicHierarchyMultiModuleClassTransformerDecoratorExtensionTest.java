@@ -6,8 +6,6 @@ import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
 import com.infobip.typescript.TestBase;
 import com.infobip.typescript.TypeScriptFileGenerator;
 import cz.habarta.typescript.generator.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -99,12 +97,19 @@ class DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends 
 
     }
 
-    @Getter
-    @AllArgsConstructor
     enum HierarchyType implements TypeProvider<HierarchyRoot> {
         LEAF(HierarchyLeaf.class);
 
         private final Class<? extends HierarchyRoot> type;
+
+        HierarchyType(Class<? extends HierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends HierarchyRoot> getType() {
+            return type;
+        }
     }
 
     static class CustomTypeScriptFileGenerator extends TypeScriptFileGenerator {

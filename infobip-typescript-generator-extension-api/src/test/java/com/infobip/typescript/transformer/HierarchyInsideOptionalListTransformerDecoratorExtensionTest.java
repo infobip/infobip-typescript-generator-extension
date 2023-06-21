@@ -1,19 +1,15 @@
 package com.infobip.typescript.transformer;
 
-import static org.assertj.core.api.BDDAssertions.then;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import com.infobip.jackson.SimpleJsonHierarchy;
 import com.infobip.jackson.TypeProvider;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.junit.jupiter.api.Test;
+
+import java.util.*;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.BDDAssertions.then;
 
 class HierarchyInsideOptionalListTransformerDecoratorExtensionTest extends TestBase {
 
@@ -79,12 +75,19 @@ class HierarchyInsideOptionalListTransformerDecoratorExtensionTest extends TestB
 
     }
 
-    @Getter
-    @AllArgsConstructor
     enum HierarchyType implements TypeProvider<HierarchyRoot> {
         LEAF(HierarchyLeaf.class);
 
         private final Class<? extends HierarchyRoot> type;
+
+        HierarchyType(Class<? extends HierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends HierarchyRoot> getType() {
+            return type;
+        }
     }
 
 }

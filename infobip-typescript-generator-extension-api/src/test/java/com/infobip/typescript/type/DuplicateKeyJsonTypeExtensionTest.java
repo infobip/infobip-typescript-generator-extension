@@ -1,17 +1,13 @@
 package com.infobip.typescript.type;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.jackson.*;
+import com.infobip.typescript.TestBase;
+import cz.habarta.typescript.generator.Input;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 
-import com.infobip.jackson.PresentPropertyJsonHierarchy;
-import com.infobip.jackson.SimpleJsonHierarchy;
-import com.infobip.jackson.TypeProvider;
-import com.infobip.typescript.TestBase;
-import cz.habarta.typescript.generator.Input;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class DuplicateKeyJsonTypeExtensionTest extends TestBase {
 
@@ -69,13 +65,20 @@ class DuplicateKeyJsonTypeExtensionTest extends TestBase {
 }
 
 
-    @Getter
-    @AllArgsConstructor
     enum HierarchyType implements TypeProvider<HierarchyRoot> {
         FIRST_LEAF(FirstLeaf.class),
         FIRST(FirstLeaf.class);
 
         private final Class<? extends HierarchyRoot> type;
+
+        HierarchyType(Class<? extends HierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends HierarchyRoot> getType() {
+            return type;
+        }
     }
 
     interface HierarchyRoot extends SimpleJsonHierarchy<HierarchyType> {
@@ -89,13 +92,20 @@ class DuplicateKeyJsonTypeExtensionTest extends TestBase {
         }
     }
 
-    @Getter
-    @AllArgsConstructor
     enum PresentPropertyHierarchyType implements TypeProvider {
         ONE(One.class),
         TWO(Two.class);
 
         private final Class<? extends PresentPropertyHierarchyRoot> type;
+
+        PresentPropertyHierarchyType(Class<? extends PresentPropertyHierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends PresentPropertyHierarchyRoot> getType() {
+            return type;
+        }
     }
 
     interface PresentPropertyHierarchyRoot extends PresentPropertyJsonHierarchy<PresentPropertyHierarchyType> {

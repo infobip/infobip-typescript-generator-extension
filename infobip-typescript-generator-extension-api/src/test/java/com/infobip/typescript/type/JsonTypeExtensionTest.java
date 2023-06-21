@@ -5,8 +5,6 @@ import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
 import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -131,13 +129,20 @@ class JsonTypeExtensionTest extends TestBase {
                         """);
     }
 
-    @Getter
-    @AllArgsConstructor
     enum HierarchyType implements TypeProvider {
         FIRST_LEAF(FirstLeaf.class),
         SECOND_LEAF(SecondLeaf.class);
 
         private final Class<? extends HierarchyRoot> type;
+
+        HierarchyType(Class<? extends HierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends HierarchyRoot> getType() {
+            return type;
+        }
     }
 
     interface HierarchyRoot extends SimpleJsonHierarchy<HierarchyType> {
@@ -158,13 +163,20 @@ class JsonTypeExtensionTest extends TestBase {
         }
     }
 
-    @Getter
-    @AllArgsConstructor
     enum PresentPropertyHierarchyType implements TypeProvider {
         ONE(One.class),
         TWO(Two.class);
 
         private final Class<? extends PresentPropertyHierarchyRoot> type;
+
+        PresentPropertyHierarchyType(Class<? extends PresentPropertyHierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends PresentPropertyHierarchyRoot> getType() {
+            return type;
+        }
     }
 
     interface PresentPropertyHierarchyRoot extends PresentPropertyJsonHierarchy<PresentPropertyHierarchyType> {
@@ -202,11 +214,18 @@ class JsonTypeExtensionTest extends TestBase {
         }
     }
 
-    @Getter
-    @AllArgsConstructor
     enum DynamicHierarchyRootWithEnumType implements TypeProvider<DynamicHierarchyRootWithEnum> {
         LEAF(DynamicLeafWithEnum.class);
 
         private final Class<? extends DynamicHierarchyRootWithEnum> type;
+
+        DynamicHierarchyRootWithEnumType(Class<? extends DynamicHierarchyRootWithEnum> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends DynamicHierarchyRootWithEnum> getType() {
+            return type;
+        }
     }
 }

@@ -26,11 +26,6 @@
             <artifactId>infobip-bean-validation-api</artifactId>
             <version>${infobip-bean-validation.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
     </dependencies>
 
 </project>

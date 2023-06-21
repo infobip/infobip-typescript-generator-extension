@@ -5,8 +5,6 @@ import com.infobip.jackson.TypeProvider;
 import com.infobip.typescript.TestBase;
 import com.infobip.typescript.TypeScriptFileGenerator;
 import cz.habarta.typescript.generator.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
@@ -87,13 +85,20 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
         return actual.trim().replace("\r\n", "\n");
     }
 
-    @Getter
-    @AllArgsConstructor
     enum HierarchyType implements TypeProvider<HierarchyRoot> {
         FIRST_LEAF(FirstLeaf.class),
         SECOND_LEAF(SecondLeaf.class);
 
         private final Class<? extends HierarchyRoot> type;
+
+        HierarchyType(Class<? extends HierarchyRoot> type) {
+            this.type = type;
+        }
+
+        @Override
+        public Class<? extends HierarchyRoot> getType() {
+            return type;
+        }
     }
 
     interface HierarchyRoot extends SimpleJsonHierarchy<HierarchyType> {

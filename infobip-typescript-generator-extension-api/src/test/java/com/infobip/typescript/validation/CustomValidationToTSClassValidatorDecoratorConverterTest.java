@@ -1,17 +1,16 @@
 package com.infobip.typescript.validation;
 
+import com.infobip.typescript.validation.custom.*;
+import com.infobip.typescript.validation.exception.TSValidatorDoesNotExist;
+import cz.habarta.typescript.generator.Input;
+import org.junit.jupiter.api.Test;
+
 import static com.infobip.typescript.validation.helpers.AnnotationHelper.getSupportedAnnotations;
 import static com.infobip.typescript.validation.helpers.ImportDeclarationHelper.getImportsWithoutLocalization;
 import static com.infobip.typescript.validation.helpers.TsCustomDecoratorHelper.getDecorators;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.assertj.core.api.BDDAssertions.then;
-
-import com.infobip.typescript.validation.custom.*;
-import com.infobip.typescript.validation.exception.TSValidatorDoesNotExist;
-import cz.habarta.typescript.generator.Input;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
 
 public class CustomValidationToTSClassValidatorDecoratorConverterTest extends ClassValidatorDecoratorTestBase {
 
@@ -59,27 +58,30 @@ public class CustomValidationToTSClassValidatorDecoratorConverterTest extends Cl
                         "For given annotation: NonExistingTSDecorator, TypeScript decorator does not exists");
     }
 
-    @Value
-    static class Foo1 {
+    record Foo1(
 
-        @SimpleValidation
-        private final String bar1;
+            @SimpleValidation
+            String bar1,
 
-        @SimpleNoMessageValidation
-        private final String bar2;
+            @SimpleNoMessageValidation
+            String bar2,
 
-        @ComplexValidation(length = 100)
-        private final String bar3;
+            @ComplexValidation(length = 100)
+            String bar3,
 
-        @CombinedValidation
-        private final String bar4;
+            @CombinedValidation
+            String bar4
+
+    ) {
+
     }
 
-    @Value
-    static class Foo2 {
+    record Foo2(
 
-        @NonExistingTSDecorator
-        private final String bar1;
+            @NonExistingTSDecorator
+            String bar1
+
+    ) {
 
     }
 }

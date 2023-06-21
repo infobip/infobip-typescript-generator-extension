@@ -1,17 +1,16 @@
 package com.infobip.typescript.transformer;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
+import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
+import com.infobip.typescript.TestBase;
+import cz.habarta.typescript.generator.Input;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
-import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
-import com.infobip.typescript.TestBase;
-import cz.habarta.typescript.generator.Input;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class DynamicHierarchyClassTransformerDecoratorExtensionTest extends TestBase {
 
@@ -62,15 +61,11 @@ class DynamicHierarchyClassTransformerDecoratorExtensionTest extends TestBase {
 
     }
 
-    @Value
-    static class HierarchyLeaf implements HierarchyRoot {
+    record HierarchyLeaf() implements HierarchyRoot {
 
     }
 
-    @Value
-    static class HierarchyContainer {
-
-        private final HierarchyRoot root;
+    record HierarchyContainer(HierarchyRoot root) {
 
     }
 

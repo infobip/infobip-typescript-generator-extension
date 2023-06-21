@@ -1,17 +1,16 @@
 package com.infobip.typescript.type;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
+import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
+import com.infobip.typescript.TestBase;
+import cz.habarta.typescript.generator.Input;
+import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
-import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
-import com.infobip.typescript.TestBase;
-import cz.habarta.typescript.generator.Input;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class JsonTypeExtensionMultiLevelDynamicHierarchyTest extends TestBase {
 
@@ -59,14 +58,10 @@ class JsonTypeExtensionMultiLevelDynamicHierarchyTest extends TestBase {
 
     }
 
-    @Value
-    static class DynamicLeaf implements DynamicHierarchyNode {
+    record DynamicLeaf(String value) implements DynamicHierarchyNode {
 
-        private final String value;
-
-        public String getType() {
-            return "LEAF";
-        }
-
+            public String getType() {
+                return "LEAF";
+            }
     }
 }

@@ -1,14 +1,13 @@
 package com.infobip.typescript.validation;
 
+import com.infobip.typescript.validation.custom.ComplexValidation;
+import cz.habarta.typescript.generator.Input;
+import org.junit.jupiter.api.Test;
+
 import static com.infobip.typescript.validation.helpers.AnnotationHelper.getSupportedAnnotations;
 import static com.infobip.typescript.validation.helpers.ImportDeclarationHelper.getImports;
 import static com.infobip.typescript.validation.helpers.TsCustomDecoratorHelper.getDecorators;
 import static org.assertj.core.api.BDDAssertions.then;
-
-import com.infobip.typescript.validation.custom.ComplexValidation;
-import cz.habarta.typescript.generator.Input;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
 
 public class CustomValidationWithLocalizationToTSClassValidatorDecoratorConverterTest extends ClassValidatorDecoratorTestBase {
 
@@ -37,11 +36,12 @@ public class CustomValidationWithLocalizationToTSClassValidatorDecoratorConverte
                                    """);
     }
 
-    @Value
-    static class Foo1 {
+    record Foo1(
 
-        @ComplexValidation(length = 100, message = "Value must be valid {length}")
-        private final String bar1;
+            @ComplexValidation(length = 100, message = "Value must be valid {length}")
+            String bar1
+
+    ) {
 
     }
 

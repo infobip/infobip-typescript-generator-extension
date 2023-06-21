@@ -1,23 +1,20 @@
 package com.infobip.typescript.transformer;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.jackson.SimpleJsonHierarchy;
+import com.infobip.jackson.TypeProvider;
+import com.infobip.typescript.TestBase;
+import com.infobip.typescript.TypeScriptFileGenerator;
+import cz.habarta.typescript.generator.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.infobip.jackson.SimpleJsonHierarchy;
-import com.infobip.jackson.TypeProvider;
-import com.infobip.typescript.TestBase;
-import com.infobip.typescript.TypeScriptFileGenerator;
-import cz.habarta.typescript.generator.Input;
-import cz.habarta.typescript.generator.ModuleDependency;
-import cz.habarta.typescript.generator.Settings;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends TestBase {
 
@@ -28,20 +25,27 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
     }
 
     private static Settings createSettings() {
-        var basePath = Path.of(SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest.class.getProtectionDomain()
-                                                                                                         .getCodeSource()
-                                                                                                         .getLocation()
-                                                                                                         .getPath());
-        var infoJsonFile = basePath.getParent().getParent().resolve("target").resolve("tmp").resolve("DynamicHierarchy.json").toFile();
-        new SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest.CustomTypeScriptFileGenerator(basePath).generateInfoJson(
-            infoJsonFile);
+        var basePath = Path.of(
+                SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest.class.getProtectionDomain()
+                                                                                          .getCodeSource()
+                                                                                          .getLocation()
+                                                                                          .getPath());
+        var infoJsonFile = basePath.getParent()
+                                   .getParent()
+                                   .resolve("target")
+                                   .resolve("tmp")
+                                   .resolve("DynamicHierarchy.json")
+                                   .toFile();
+        new SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest.CustomTypeScriptFileGenerator(
+                basePath).generateInfoJson(
+                infoJsonFile);
 
         var module = ModuleDependency.module(
-            "a",
-            "SimpleJsonHierarchy",
-            infoJsonFile,
-            null,
-            null);
+                "a",
+                "SimpleJsonHierarchy",
+                infoJsonFile,
+                null,
+                null);
         var settings = new Settings();
         settings.moduleDependencies = List.of(module);
         return settings;
@@ -56,27 +60,27 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
 
         // then
         then(fixNewlines(actual)).isEqualTo(
-            """
-                import * as SimpleJsonHierarchy from "a";
-                                
-                import { Type } from 'class-transformer';
-                                
-                export class HierarchyRootContainer {
-                    @Type(() => Object, {
-                        discriminator: {
-                            property: "type", subTypes: [
-                                { value: SimpleJsonHierarchy.FirstLeaf, name: SimpleJsonHierarchy.HierarchyType.FIRST_LEAF },
-                                { value: SimpleJsonHierarchy.SecondLeaf, name: SimpleJsonHierarchy.HierarchyType.SECOND_LEAF }
-                            ]
+                """
+                        import * as SimpleJsonHierarchy from "a";
+                                        
+                        import { Type } from 'class-transformer';
+                                        
+                        export class HierarchyRootContainer {
+                            @Type(() => Object, {
+                                discriminator: {
+                                    property: "type", subTypes: [
+                                        { value: SimpleJsonHierarchy.FirstLeaf, name: SimpleJsonHierarchy.HierarchyType.FIRST_LEAF },
+                                        { value: SimpleJsonHierarchy.SecondLeaf, name: SimpleJsonHierarchy.HierarchyType.SECOND_LEAF }
+                                    ]
+                                }
+                            })
+                            root: SimpleJsonHierarchy.HierarchyRoot;
                         }
-                    })
-                    root: SimpleJsonHierarchy.HierarchyRoot;
-                }
-                
-                export class HierarchyLeafContainer {
-                    @Type(() => SimpleJsonHierarchy.FirstLeaf)
-                    leaf: SimpleJsonHierarchy.FirstLeaf;
-                }""");
+                                        
+                        export class HierarchyLeafContainer {
+                            @Type(() => SimpleJsonHierarchy.FirstLeaf)
+                            leaf: SimpleJsonHierarchy.FirstLeaf;
+                        }""");
     }
 
     private String fixNewlines(String actual) {
@@ -101,7 +105,6 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
         public HierarchyType getType() {
             return HierarchyType.FIRST_LEAF;
         }
-
     }
 
     static class SecondLeaf implements HierarchyRoot {
@@ -109,20 +112,13 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
         public HierarchyType getType() {
             return HierarchyType.SECOND_LEAF;
         }
+    }
+
+    record HierarchyRootContainer(HierarchyRoot root) {
 
     }
 
-    @Value
-    static class HierarchyRootContainer {
-
-        private final HierarchyRoot root;
-
-    }
-
-    @Value
-    static class HierarchyLeafContainer {
-
-        private final FirstLeaf leaf;
+    record HierarchyLeafContainer(FirstLeaf leaf) {
 
     }
 
@@ -150,7 +146,5 @@ class SimpleJsonHierarchyMultiModuleClassTransformerDecoratorExtensionTest exten
             settings.setExcludeFilter(List.of(), List.of("com.infobip.jackson**"));
             return settings;
         }
-
     }
-
 }

@@ -1,18 +1,17 @@
 package com.infobip.typescript.type;
 
-import static org.assertj.core.api.BDDAssertions.then;
-
-import java.util.Collections;
-import java.util.stream.Stream;
-
 import com.infobip.jackson.SimpleJsonHierarchy;
 import com.infobip.jackson.TypeProvider;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Value;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.BDDAssertions.then;
 
 class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
 
@@ -31,26 +30,26 @@ class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
+                """
 
-                export enum HierarchyType {
-                    FIRST_LEAF = "FIRST_LEAF",
-                    SECOND_LEAF = "SECOND_LEAF",
-                }
+                        export enum HierarchyType {
+                            FIRST_LEAF = "FIRST_LEAF",
+                            SECOND_LEAF = "SECOND_LEAF",
+                        }
 
-                export interface HierarchyRoot {
-                    type: HierarchyType;
-                }
+                        export interface HierarchyRoot {
+                            type: HierarchyType;
+                        }
 
-                export class FirstLeaf implements HierarchyRoot {
-                    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
-                    value: string;
-                }
+                        export class FirstLeaf implements HierarchyRoot {
+                            readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
+                            value: string;
+                        }
 
-                export class SecondLeaf implements HierarchyRoot {
-                    readonly type: HierarchyType = HierarchyType.SECOND_LEAF;
-                }
-                """);
+                        export class SecondLeaf implements HierarchyRoot {
+                            readonly type: HierarchyType = HierarchyType.SECOND_LEAF;
+                        }
+                        """);
     }
 
     @Getter
@@ -66,15 +65,11 @@ class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
 
     }
 
-    @Value
-    static class FirstLeaf implements HierarchyRoot {
-
-        private final String value;
+    record FirstLeaf(String value) implements HierarchyRoot {
 
         public HierarchyType getType() {
             return HierarchyType.FIRST_LEAF;
         }
-
     }
 
     static class SecondLeaf implements HierarchyRoot {
@@ -82,7 +77,5 @@ class JsonTypeExtensionSimpleJsonHierarchyTest extends TestBase {
         public HierarchyType getType() {
             return HierarchyType.SECOND_LEAF;
         }
-
     }
-
 }

@@ -31,14 +31,15 @@ Input:
 
 ```java
 
-@Value
-public class Foo {
+public record Foo(
 
-    @Size(min = 1, max = 2)
-    @NotEmpty
-    @NotNull
-    @Valid
-    private final String bar;
+        @Size(min = 1, max = 2)
+        @NotEmpty
+        @NotNull
+        @Valid
+        String bar
+
+) {
 
 }
 ```
@@ -141,42 +142,42 @@ public interface ContentType {
 
 }
 
-@Value
-class TextContent implements CommonContent {
+record TextContent(
 
-    @NotNull
-    @NotEmpty
-    private final String text;
+        @NotNull
+        @NotEmpty
+        String text
+
+) implements CommonContent {
 
     @Override
     public CommonContentType getType() {
         return CommonContentType.TEXT;
     }
-
 }
 
-@Value
-class InboundSmsMessage implements InboundMessage {
+record InboundSmsMessage(
 
-    private final CommonContent content;
+        CommonContent content
+
+) implements InboundMessage {
 
     @Override
     public Channel getChannel() {
         return Channel.SMS;
     }
-
 }
 
-@Value
-class OutboundSmsMessage implements OutboundMessage {
+record OutboundSmsMessage(
 
-    private final CommonContent content;
+        CommonContent content
+
+) implements OutboundMessage {
 
     @Override
     public Channel getChannel() {
         return Channel.SMS;
     }
-
 }
 ```
 
@@ -330,11 +331,12 @@ Input:
 
 ```java
 
-@Value
-public class Foo {
+public record Foo(
 
-    @ComplexCustomValidation(length = 100)
-    private final String bar;
+        @ComplexCustomValidation(length = 100)
+        String bar
+
+) {
 
 }
 ```

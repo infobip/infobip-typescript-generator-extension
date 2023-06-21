@@ -1,11 +1,10 @@
 package com.infobip.typescript.validation;
 
-import static org.assertj.core.api.BDDAssertions.then;
-
 import cz.habarta.typescript.generator.Input;
 import jakarta.validation.constraints.NotEmpty;
-import lombok.Value;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.BDDAssertions.then;
 
 class NotEmptyToTsClassValidatorDecoratorConverterTest extends ClassValidatorDecoratorTestBase {
 
@@ -17,22 +16,19 @@ class NotEmptyToTsClassValidatorDecoratorConverterTest extends ClassValidatorDec
 
         // then
         then(actual).isEqualTo(
-            """
+                """
 
-                import { CommonValidationMessages } from 'infobip-typescript-generator-common';
-                import { ValidateNested, IsOptional, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';
+                        import { CommonValidationMessages } from 'infobip-typescript-generator-common';
+                        import { ValidateNested, IsOptional, IsDefined, IsNotEmpty, MaxLength, MinLength, Max, Min, ArrayMaxSize, ArrayMinSize } from 'class-validator';
 
-                export class Foo {
-                    @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
-                    bar: string;
-                }
-                """);
+                        export class Foo {
+                            @IsNotEmpty({ message: CommonValidationMessages.IsNotEmpty })
+                            bar: string;
+                        }
+                        """);
     }
 
-    @Value
-    static class Foo {
+    record Foo(@NotEmpty String bar) {
 
-        @NotEmpty
-        String bar;
     }
 }

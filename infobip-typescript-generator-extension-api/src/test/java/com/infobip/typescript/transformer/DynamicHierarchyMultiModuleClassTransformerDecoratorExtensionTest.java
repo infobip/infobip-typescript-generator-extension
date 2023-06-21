@@ -1,24 +1,21 @@
 package com.infobip.typescript.transformer;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.jackson.TypeProvider;
+import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
+import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
+import com.infobip.typescript.TestBase;
+import com.infobip.typescript.TypeScriptFileGenerator;
+import cz.habarta.typescript.generator.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.infobip.jackson.TypeProvider;
-import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
-import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
-import com.infobip.typescript.TestBase;
-import com.infobip.typescript.TypeScriptFileGenerator;
-import cz.habarta.typescript.generator.Input;
-import cz.habarta.typescript.generator.ModuleDependency;
-import cz.habarta.typescript.generator.Settings;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends TestBase {
 
@@ -90,22 +87,15 @@ class DynamicHierarchyMultiModuleClassTransformerDecoratorExtensionTest extends 
 
     }
 
-    @Value
-    static class HierarchyLeaf implements HierarchyRoot {
+    record HierarchyLeaf() implements HierarchyRoot {
 
     }
 
-    @Value
-    static class HierarchyRootContainer {
-
-        private final HierarchyRoot root;
+    record HierarchyRootContainer(HierarchyRoot root) {
 
     }
 
-    @Value
-    static class HierarchyLeafContainer {
-
-        private final HierarchyLeaf leaf;
+    record HierarchyLeafContainer(HierarchyLeaf leaf) {
 
     }
 

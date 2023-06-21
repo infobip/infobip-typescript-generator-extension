@@ -1,34 +1,32 @@
 package com.infobip.typescript.type;
 
-import static org.assertj.core.api.BDDAssertions.then;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
-
-import com.infobip.jackson.PresentPropertyJsonHierarchy;
-import com.infobip.jackson.SimpleJsonHierarchy;
-import com.infobip.jackson.TypeProvider;
+import com.infobip.jackson.*;
 import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
 import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
 import com.infobip.typescript.TestBase;
 import cz.habarta.typescript.generator.Input;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Value;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static org.assertj.core.api.BDDAssertions.then;
 
 class JsonTypeExtensionTest extends TestBase {
 
     JsonTypeExtensionTest() {
         super(new JsonTypeExtension(() -> Stream.of(new DynamicHierarchyDeserializer<>(DynamicHierarchyRoot.class,
                                                                                        List.of(new JsonValueToJavaTypeJacksonMapping<>(
-                                                                                           "LEAF",
-                                                                                           DynamicLeaf.class))),
-                                                    new DynamicHierarchyDeserializer<>(DynamicHierarchyRootWithEnum.class,
-                                                                                       List.of(new JsonValueToJavaTypeJacksonMapping<>(
-                                                                                           DynamicHierarchyRootWithEnumType.LEAF,
-                                                                                           DynamicLeafWithEnum.class))))),
+                                                                                               "LEAF",
+                                                                                               DynamicLeaf.class))),
+                                                    new DynamicHierarchyDeserializer<>(
+                                                            DynamicHierarchyRootWithEnum.class,
+                                                            List.of(new JsonValueToJavaTypeJacksonMapping<>(
+                                                                    DynamicHierarchyRootWithEnumType.LEAF,
+                                                                    DynamicLeafWithEnum.class))))),
               Collections.emptyList());
     }
 
@@ -42,25 +40,25 @@ class JsonTypeExtensionTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
+                """
 
-                export enum HierarchyType {
-                    FIRST_LEAF = "FIRST_LEAF",
-                    SECOND_LEAF = "SECOND_LEAF",
-                }
+                        export enum HierarchyType {
+                            FIRST_LEAF = "FIRST_LEAF",
+                            SECOND_LEAF = "SECOND_LEAF",
+                        }
 
-                export interface HierarchyRoot {
-                    type: HierarchyType;
-                }
+                        export interface HierarchyRoot {
+                            type: HierarchyType;
+                        }
 
-                export class FirstLeaf implements HierarchyRoot {
-                    readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
-                }
+                        export class FirstLeaf implements HierarchyRoot {
+                            readonly type: HierarchyType = HierarchyType.FIRST_LEAF;
+                        }
 
-                export class SecondLeaf implements HierarchyRoot {
-                    readonly type: HierarchyType = HierarchyType.SECOND_LEAF;
-                }
-                """);
+                        export class SecondLeaf implements HierarchyRoot {
+                            readonly type: HierarchyType = HierarchyType.SECOND_LEAF;
+                        }
+                        """);
     }
 
     @Test
@@ -73,17 +71,17 @@ class JsonTypeExtensionTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
+                """
 
-                export interface PresentPropertyHierarchyRoot {
-                }
+                        export interface PresentPropertyHierarchyRoot {
+                        }
 
-                export class One implements PresentPropertyHierarchyRoot {
-                }
+                        export class One implements PresentPropertyHierarchyRoot {
+                        }
 
-                export class Two implements PresentPropertyHierarchyRoot {
-                }
-                """);
+                        export class Two implements PresentPropertyHierarchyRoot {
+                        }
+                        """);
     }
 
     @Test
@@ -95,16 +93,16 @@ class JsonTypeExtensionTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
+                """
 
-                export interface DynamicHierarchyRoot {
-                }
+                        export interface DynamicHierarchyRoot {
+                        }
 
-                export class DynamicLeaf implements DynamicHierarchyRoot {
-                    value: string;
-                    readonly type: string = "LEAF";
-                }
-                """);
+                        export class DynamicLeaf implements DynamicHierarchyRoot {
+                            value: string;
+                            readonly type: string = "LEAF";
+                        }
+                        """);
     }
 
     @Test
@@ -116,21 +114,21 @@ class JsonTypeExtensionTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-                                
-                export enum DynamicHierarchyRootWithEnumType {
-                    LEAF = "LEAF",
-                }
-                                
-                export interface DynamicHierarchyRootWithEnum {
-                    type: DynamicHierarchyRootWithEnumType;
-                }
+                """
+                                        
+                        export enum DynamicHierarchyRootWithEnumType {
+                            LEAF = "LEAF",
+                        }
+                                        
+                        export interface DynamicHierarchyRootWithEnum {
+                            type: DynamicHierarchyRootWithEnumType;
+                        }
 
-                export class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {
-                    readonly type: DynamicHierarchyRootWithEnumType = DynamicHierarchyRootWithEnumType.LEAF;
-                    value: string;
-                }
-                """);
+                        export class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {
+                            readonly type: DynamicHierarchyRootWithEnumType = DynamicHierarchyRootWithEnumType.LEAF;
+                            value: string;
+                        }
+                        """);
     }
 
     @Getter
@@ -151,7 +149,6 @@ class JsonTypeExtensionTest extends TestBase {
         public HierarchyType getType() {
             return HierarchyType.FIRST_LEAF;
         }
-
     }
 
     static class SecondLeaf implements HierarchyRoot {
@@ -159,7 +156,6 @@ class JsonTypeExtensionTest extends TestBase {
         public HierarchyType getType() {
             return HierarchyType.SECOND_LEAF;
         }
-
     }
 
     @Getter
@@ -187,32 +183,23 @@ class JsonTypeExtensionTest extends TestBase {
 
     }
 
-    @Value
-    static class DynamicLeaf implements DynamicHierarchyRoot {
-
-        private final String value;
+    record DynamicLeaf(String value) implements DynamicHierarchyRoot {
 
         public String getType() {
             return "LEAF";
         }
-
     }
 
     interface DynamicHierarchyRootWithEnum {
 
         DynamicHierarchyRootWithEnumType getType();
-
     }
 
-    @Value
-    static class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {
-
-        private final String value;
+    record DynamicLeafWithEnum(String value) implements DynamicHierarchyRootWithEnum {
 
         public DynamicHierarchyRootWithEnumType getType() {
             return DynamicHierarchyRootWithEnumType.LEAF;
         }
-
     }
 
     @Getter
@@ -222,5 +209,4 @@ class JsonTypeExtensionTest extends TestBase {
 
         private final Class<? extends DynamicHierarchyRootWithEnum> type;
     }
-
 }

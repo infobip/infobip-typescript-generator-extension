@@ -2,14 +2,14 @@ package com.infobip.typescript.showcase.hierarchy.message.content;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
-import lombok.Value;
 
-@Value
-class TextContent implements CommonContent {
+record TextContent(
 
-    @NotNull
-    @NotEmpty
-    private final String text;
+        @NotNull
+        @NotEmpty
+        String text
+
+) implements CommonContent {
 
     @Override
     public CommonContentType getType() {

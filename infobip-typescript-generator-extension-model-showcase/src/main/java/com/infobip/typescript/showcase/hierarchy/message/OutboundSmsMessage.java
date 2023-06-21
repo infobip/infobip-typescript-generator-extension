@@ -1,12 +1,12 @@
 package com.infobip.typescript.showcase.hierarchy.message;
 
 import com.infobip.typescript.showcase.hierarchy.message.content.CommonContent;
-import lombok.Value;
 
-@Value
-class OutboundSmsMessage implements OutboundMessage {
+record OutboundSmsMessage(
 
-    private final CommonContent content;
+        CommonContent content
+
+) implements OutboundMessage {
 
     @Override
     public Channel getChannel() {

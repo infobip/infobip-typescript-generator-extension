@@ -1,32 +1,30 @@
 package com.infobip.typescript.type;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.jackson.TypeProvider;
+import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
+import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
+import com.infobip.typescript.TestBase;
+import com.infobip.typescript.TypeScriptFileGenerator;
+import cz.habarta.typescript.generator.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.junit.jupiter.api.Test;
 
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.infobip.jackson.TypeProvider;
-import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
-import com.infobip.jackson.dynamic.JsonValueToJavaTypeJacksonMapping;
-import com.infobip.typescript.TestBase;
-import com.infobip.typescript.TypeScriptFileGenerator;
-import cz.habarta.typescript.generator.Input;
-import cz.habarta.typescript.generator.ModuleDependency;
-import cz.habarta.typescript.generator.Settings;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Value;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
 
     JsonTypeExtensionMultiModuleDynamicHierarchyTest() {
-        super(new JsonTypeExtension(() -> Stream.of(new DynamicHierarchyDeserializer<>(DynamicHierarchyRootWithEnum.class,
-                                                                                       List.of(new JsonValueToJavaTypeJacksonMapping<>(
-                                                                                           DynamicHierarchyRootWithEnumType.LEAF,
-                                                                                           DynamicLeafWithEnum.class))))),
+        super(new JsonTypeExtension(
+                      () -> Stream.of(new DynamicHierarchyDeserializer<>(DynamicHierarchyRootWithEnum.class,
+                                                                         List.of(new JsonValueToJavaTypeJacksonMapping<>(
+                                                                                 DynamicHierarchyRootWithEnumType.LEAF,
+                                                                                 DynamicLeafWithEnum.class))))),
               Collections.emptyList(),
               createSettings());
     }
@@ -36,15 +34,20 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
                                                                                      .getCodeSource()
                                                                                      .getLocation()
                                                                                      .getPath());
-        var infoJsonFile = basePath.getParent().getParent().resolve("target").resolve("tmp").resolve("DynamicHierarchy.json").toFile();
+        var infoJsonFile = basePath.getParent()
+                                   .getParent()
+                                   .resolve("target")
+                                   .resolve("tmp")
+                                   .resolve("DynamicHierarchy.json")
+                                   .toFile();
         new CustomTypeScriptFileGenerator(basePath).generateInfoJson(infoJsonFile);
 
         var module = ModuleDependency.module(
-            "a",
-            "DynamicHierarchy",
-            infoJsonFile,
-            null,
-            null);
+                "a",
+                "DynamicHierarchy",
+                infoJsonFile,
+                null,
+                null);
         var settings = new Settings();
         settings.moduleDependencies = List.of(module);
         return settings;
@@ -58,32 +61,27 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
 
         // then
         then(actual).isEqualTo(
-            """
-                                
-                import * as DynamicHierarchy from "a";
+                """
+                                        
+                        import * as DynamicHierarchy from "a";
 
-                export class DynamicLeafWithEnum implements DynamicHierarchy.DynamicHierarchyRootWithEnum {
-                    value: string;
-                    readonly type: DynamicHierarchy.DynamicHierarchyRootWithEnumType = DynamicHierarchy.DynamicHierarchyRootWithEnumType.LEAF;
-                }
-                """);
+                        export class DynamicLeafWithEnum implements DynamicHierarchy.DynamicHierarchyRootWithEnum {
+                            value: string;
+                            readonly type: DynamicHierarchy.DynamicHierarchyRootWithEnumType = DynamicHierarchy.DynamicHierarchyRootWithEnumType.LEAF;
+                        }
+                        """);
     }
 
     interface DynamicHierarchyRootWithEnum {
 
         DynamicHierarchyRootWithEnumType getType();
-
     }
 
-    @Value
-    static class DynamicLeafWithEnum implements DynamicHierarchyRootWithEnum {
-
-        private final String value;
+    record DynamicLeafWithEnum(String value) implements DynamicHierarchyRootWithEnum {
 
         public DynamicHierarchyRootWithEnumType getType() {
             return DynamicHierarchyRootWithEnumType.LEAF;
         }
-
     }
 
     @Getter
@@ -115,6 +113,5 @@ class JsonTypeExtensionMultiModuleDynamicHierarchyTest extends TestBase {
             settings.setExcludeFilter(List.of(), List.of("com.infobip.jackson**"));
             return settings;
         }
-
     }
 }

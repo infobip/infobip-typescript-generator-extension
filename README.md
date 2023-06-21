@@ -18,9 +18,10 @@ annotation processor support (which eliminates the requirement for a maven plugi
     * [Limitations](#CustomValidationLimitations)
     * [Example](#CustomValidationExample)
 3. [Localization.ts & CommonValidationMessages.ts](#Localization&CommonValidationMessages)
-4. [Annotation processor](#AnnotationProcessor)
-5. [Contributing](#Contributing)
-6. [License](#License)
+4. [Time type mappings](#TimeTypeMappings)
+5. [Annotation processor](#AnnotationProcessor)
+6. [Contributing](#Contributing)
+7. [License](#License)
 
 ## <a name="BeanValidationToClassValidatorTranslation"></a> Bean Validation to class-validator translation
 
@@ -375,6 +376,41 @@ overriding:
     @Override
     protected void writeLocalization(String code, Path filePath) {}
     ```
+    
+## <a name="TimeTypeMappings"></a> Time type mappings
+
+Time type mappings are mapped to string by default.
+
+```java
+import java.time.*;
+
+public record Foo(
+
+        Instant instant,
+
+        LocalDateTime localDateTime,
+
+        ZonedDateTime zonedDateTime,
+
+        Duration duration
+
+) {
+
+
+}
+```
+
+```typescript
+/* tslint:disable */
+/* eslint-disable */
+
+export class Foo {
+    instant: string;
+    localDateTime: string;
+    zonedDateTime: string;
+    duration: string;
+}
+```
 
 ## <a name="AnnotationProcessor"></a> Annotation processor
 

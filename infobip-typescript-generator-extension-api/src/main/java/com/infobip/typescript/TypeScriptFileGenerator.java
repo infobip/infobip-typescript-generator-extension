@@ -1,23 +1,5 @@
 package com.infobip.typescript;
 
-import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_CLASS_NAME;
-import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_FILE_NAME;
-import static com.infobip.typescript.validation.CommonValidationMessages.COMMON_VALIDATION_MESSAGES_SOURCE_CODE;
-import static com.infobip.typescript.validation.Localization.LOCALIZATION_CLASS_NAME;
-import static com.infobip.typescript.validation.Localization.LOCALIZATION_FILE_NAME;
-import static com.infobip.typescript.validation.Localization.LOCALIZATION_SOURCE_CODE;
-import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.lang.annotation.Annotation;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.infobip.typescript.custom.validation.AnnotationExtractor;
 import com.infobip.typescript.custom.validation.extractor.TSCustomDecorator;
 import com.infobip.typescript.custom.validation.extractor.TSCustomDecoratorsExtractor;
@@ -28,6 +10,20 @@ import cz.habarta.typescript.generator.*;
 import cz.habarta.typescript.generator.emitter.EmitterExtension;
 import cz.habarta.typescript.generator.emitter.TsModel;
 import cz.habarta.typescript.generator.parser.Model;
+import cz.habarta.typescript.generator.util.Utils;
+
+import java.io.*;
+import java.lang.annotation.Annotation;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.time.*;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static com.infobip.typescript.validation.CommonValidationMessages.*;
+import static com.infobip.typescript.validation.Localization.*;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public abstract class TypeScriptFileGenerator {
 
@@ -41,6 +37,8 @@ public abstract class TypeScriptFileGenerator {
     }
 
     public void generate() {
+        var objectMapper = Utils.getObjectMapper();
+        objectMapper.findAndRegisterModules();
         List<EmitterExtension> extensions = createExtensions();
         Settings settings = createSettings(extensions);
         OrderedTypescriptGenerator generator = createGenerator(settings);
@@ -150,6 +148,10 @@ public abstract class TypeScriptFileGenerator {
         settings.outputFileType = TypeScriptFileType.implementationFile;
         settings.noFileComment = true;
         settings.setStringQuotes(StringQuotes.singleQuotes);
+        settings.customTypeMappings.put(Instant.class.getName(), "string");
+        settings.customTypeMappings.put(LocalDateTime.class.getName(), "string");
+        settings.customTypeMappings.put(ZonedDateTime.class.getName(), "string");
+        settings.customTypeMappings.put(Duration.class.getName(), "string");
         return customizeSettings(settings);
     }
 

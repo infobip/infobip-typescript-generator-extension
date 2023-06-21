@@ -94,21 +94,35 @@ enum Channel {
     }
 }
 
-@Getter
-@AllArgsConstructor
 enum Direction implements TypeProvider<Message> {
     INBOUND(InboundMessage.class),
     OUTBOUND(OutboundMessage.class);
 
     private final Class<? extends Message> type;
+
+    Direction(Class<? extends Message> type) {
+        this.type = type;
+    }
+
+    @Override
+    public Class<? extends Message> getType() {
+        return type;
+    }
 }
 
-@Getter
-@AllArgsConstructor
-public enum CommonContentType implements TypeProvider, ContentType {
+public enum CommonContentType implements TypeProvider<CommonContent>, ContentType {
     TEXT(TextContent.class);
 
     private final Class<? extends CommonContent> type;
+
+    CommonContentType(Class<? extends CommonContent> type) {
+        this.type = type;
+    }
+
+    @Override
+    public Class<? extends CommonContent> getType() {
+        return type;
+    }
 }
 
 @JsonTypeResolveWith(InboundMessageJsonTypeResolver.class)

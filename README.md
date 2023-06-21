@@ -23,9 +23,11 @@ annotation processor support (which eliminates the requirement for a maven plugi
 6. [Contributing](#Contributing)
 7. [License](#License)
 
-## <a name="BeanValidationToClassValidatorTranslation"></a> Bean Validation to class-validator translation
+<a id="BeanValidationToClassValidatorTranslation"></a>
+##  Bean Validation to class-validator translation
 
-### <a name="SimpleObject"></a> Simple Object
+<a id="SimpleObject"></a>
+### Simple Object
 
 Input:
 
@@ -62,7 +64,8 @@ export class Foo {
 }
 ```
 
-### <a name="Hierarchy"></a> Hierarchy
+<a id="Hierarchy"></a>
+###  Hierarchy
 
 [class-transformer](https://github.com/typestack/class-transformer) together
 with [Infobip Jackson Extension](https://github.com/infobip/infobip-jackson-extension) is used to handle hierarchies.
@@ -286,9 +289,11 @@ export class OutboundSmsMessage implements OutboundMessage {
 }
 ```
 
-### <a name="CustomValidationToClassValidatorTranslation"></a> Custom Validation to class-validator translation
+<a id="CustomValidationToClassValidatorTranslation"></a>
+### Custom Validation to class-validator translation
 
-#### <a name="CustomTypeScriptDecoratorAnnotation"></a> @CustomTypeScriptDecorator
+<a id="CustomTypeScriptDecoratorAnnotation"></a>
+#### @CustomTypeScriptDecorator
 
 In order to link custom java validation annotation with appropriate decorator, java validation annotation must be marked **@CustomTypeScriptDecorator**
 annotation.
@@ -312,7 +317,8 @@ Also in class which extends from **TypeScriptFileGenerator** two methods must be
 After providing the above information, **TypeScriptFileGenerator** will take a scan project for custom annotations and will perform logic to link annotations wit
 appropriate TypeScript decorators.
 
-#### <a name="CustomValidationLimitations"></a> Limitations
+<a id="CustomValidationLimitations"></a>
+#### Limitations
 
 1. From class-validation only [Custom Validation Decorators](https://github.com/typestack/class-validator#custom-validation-decorators) are supported, reason
    behind supporting only [Custom Validation Decorators](https://github.com/typestack/class-validator#custom-validation-decorators) and not
@@ -327,7 +333,8 @@ appropriate TypeScript decorators.
    ClassGraph** annotation scanning. By default, **ClassGraph** will scan all classes in the class path and will try to extract annotations from them, if
    restriction is not performed given operation could result in **OutOfMemoryError**.
 
-#### <a name="CustomValidationExample"></a> Example
+<a id="CustomValidationExample"></a>
+#### Example
 
 Annotation implementation:
 
@@ -381,7 +388,8 @@ export class Foo {
 }
 ```
 
-### <a name="Localization&CommonValidationMessages"></a> Localization.ts & CommonValidationMessages.ts
+<a id="Localization&CommonValidationMessages"></a>
+### Localization.ts & CommonValidationMessages.ts
 
 Running **TypeScript Generator Extension** will result in two additional files:
 
@@ -404,8 +412,9 @@ overriding:
     @Override
     protected void writeLocalization(String code, Path filePath) {}
     ```
-    
-## <a name="TimeTypeMappings"></a> Time type mappings
+
+<a id="TimeTypeMappings"></a>
+## Time type mappings
 
 Time type mappings are mapped to string by default.
 
@@ -440,7 +449,8 @@ export class Foo {
 }
 ```
 
-## <a name="AnnotationProcessor"></a> Annotation processor
+<a id="AnnotationProcessor"></a>
+## Annotation processor
 
 Disclaimer: in order for annotation processor to work model classes and generator configuration have to be compiled before annotation processor is run. In
 practice this means that they have to be in separate modules.
@@ -531,12 +541,14 @@ dist to .gitignore, here it's not mainly to be used a an showcase of how the end
 Since there's no maven plugin it's possible to run TypeScript Generator with multiple different configurations in same project!
 Aforementioned showcase folders use this to test and showcase different parts of functionality.
 
-## <a name="Contributing"></a> Contributing
+<a id="Contributing"></a>
+## Contributing
 
 If you have an idea for a new feature or want to report a bug please use the issue tracker.
 
 Pull requests are welcome!
 
-## <a name="License"></a> License
+<a id="License"></a>
+## License
 
 This library is licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

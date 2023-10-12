@@ -1,30 +1,21 @@
 package com.infobip.typescript.transformer;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import com.fasterxml.jackson.databind.jsontype.NamedType;
+import com.infobip.jackson.*;
+import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
+import com.infobip.typescript.infrastructure.Symbols;
+import cz.habarta.typescript.generator.Extension;
+import cz.habarta.typescript.generator.TsType;
+import cz.habarta.typescript.generator.compiler.*;
+import cz.habarta.typescript.generator.emitter.*;
+
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import com.fasterxml.jackson.databind.jsontype.NamedType;
-import com.infobip.jackson.CompositeJsonTypeResolver;
-import com.infobip.jackson.JsonTypeResolver;
-import com.infobip.jackson.JsonTypeResolverFactory;
-import com.infobip.jackson.PresentPropertyJsonHierarchy;
-import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
-import com.infobip.typescript.infrastructure.Symbols;
-import cz.habarta.typescript.generator.Extension;
-import cz.habarta.typescript.generator.TsType;
-import cz.habarta.typescript.generator.compiler.ModelCompiler;
-import cz.habarta.typescript.generator.compiler.Symbol;
-import cz.habarta.typescript.generator.compiler.SymbolTable;
-import cz.habarta.typescript.generator.compiler.TsModelTransformer;
-import cz.habarta.typescript.generator.emitter.*;
 
 public class ClassTransformerDecoratorExtension extends Extension {
 
@@ -51,8 +42,8 @@ public class ClassTransformerDecoratorExtension extends Extension {
     @Override
     public List<TransformerDefinition> getTransformers() {
         return Collections.singletonList(
-            new TransformerDefinition(ModelCompiler.TransformationPhase.AfterDeclarationSorting,
-                                      (TsModelTransformer) this::decorateClass));
+                new TransformerDefinition(ModelCompiler.TransformationPhase.AfterDeclarationSorting,
+                                          (TsModelTransformer) this::decorateClass));
     }
 
     private TsModel decorateClass(TsModelTransformer.Context context, TsModel model) {
@@ -74,14 +65,16 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                        .stream()
                                        .map(model -> getDecorators(context, bean, model))
                                        .collect(Collectors.toList())
-                                  );
+        );
     }
 
-    private TsPropertyModel getDecorators(TsModelTransformer.Context context, TsBeanModel model, TsPropertyModel tsPropertyModel) {
+    private TsPropertyModel getDecorators(TsModelTransformer.Context context,
+                                          TsBeanModel model,
+                                          TsPropertyModel tsPropertyModel) {
         return getField(model, tsPropertyModel).map(this::getParameterizedTypeClasses)
                                                .map(parameterizedTypeClasses -> tsPropertyModel.withDecorators(
-                                                   getDecorators(context, model, tsPropertyModel,
-                                                                 resolveTypeToDecorate(parameterizedTypeClasses))))
+                                                       getDecorators(context, model, tsPropertyModel,
+                                                                     resolveTypeToDecorate(parameterizedTypeClasses))))
                                                .orElse(tsPropertyModel);
     }
 
@@ -95,7 +88,9 @@ public class ClassTransformerDecoratorExtension extends Extension {
         return resolveTypeRecursively(parameterizedTypeClasses, type, typeToDecorate);
     }
 
-    private Class<?> resolveTypeRecursively(ParameterizedTypeClasses parameterizedTypeClasses, Class<?> type, Class<?> typeToDecorate) {
+    private Class<?> resolveTypeRecursively(ParameterizedTypeClasses parameterizedTypeClasses,
+                                            Class<?> type,
+                                            Class<?> typeToDecorate) {
         Optional<Class<?>> typeArgument = parameterizedTypeClasses.getTypeArgument();
 
         if (Collection.class.isAssignableFrom(type) || Optional.class.isAssignableFrom(type)) {
@@ -110,11 +105,36 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                             TsPropertyModel tsPropertyModel,
                                             Class<?> type) {
         return factory.create(type)
-                      .filter(resolver -> isHierarchicalDecoratorNeeded(resolver, type))
-                      .map(resolver -> (CompositeJsonTypeResolver<?>) resolver)
-                      .map(resolver -> getHierarchyDecorators(context.getSymbolTable(), model, tsPropertyModel, resolver))
+                      .flatMap(resolver -> handleResolver(context, model, tsPropertyModel, type, resolver))
                       .or(() -> getDynamicHierarchyDecorators(context, model, tsPropertyModel, type))
                       .orElseGet(() -> getNonHierarchyDecorators(context.getSymbolTable(), tsPropertyModel, type));
+    }
+
+    private Optional<List<TsDecorator>> handleResolver(TsModelTransformer.Context context,
+                                                       TsBeanModel model,
+                                                       TsPropertyModel tsPropertyModel,
+                                                       Class<?> type,
+                                                       JsonTypeResolver resolver) {
+        if (!isHierarchyRoot(type)) {
+            return Optional.empty();
+        }
+
+        if (resolver instanceof CompositeJsonTypeResolver<?> compositeResolver) {
+            return Optional.of(getHierarchyDecorators(context.getSymbolTable(),
+                                                      model,
+                                                      tsPropertyModel,
+                                                      compositeResolver));
+        }
+
+        if (resolver instanceof SealedJsonHierarchiesTypeResolver sealedResolver) {
+            return Optional.of(getHierarchyDecorators(context.getSymbolTable(),
+                                                      model,
+                                                      tsPropertyModel,
+                                                      sealedResolver));
+        }
+
+
+        return Optional.empty();
     }
 
     private Optional<? extends List<TsDecorator>> getDynamicHierarchyDecorators(TsModelTransformer.Context context,
@@ -122,16 +142,14 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                                                 TsPropertyModel tsPropertyModel,
                                                                                 Class<?> type) {
         return dynamicHierarchyDeserializerProvider.get()
-                                                   .filter(deserializer -> deserializer.getHierarchyRootType().equals(type))
+                                                   .filter(deserializer -> deserializer.getHierarchyRootType()
+                                                                                       .equals(type))
                                                    .findFirst()
-                                                   .map(deserializer -> getHierarchyDecoratorsFromDeserializer(context.getSymbolTable(),
-                                                                                                               model,
-                                                                                                               tsPropertyModel,
-                                                                                                               deserializer));
-    }
-
-    private boolean isHierarchicalDecoratorNeeded(JsonTypeResolver resolver, Class<?> type) {
-        return resolver instanceof CompositeJsonTypeResolver<?> && isHierarchyRoot(type);
+                                                   .map(deserializer -> getHierarchyDecoratorsFromDeserializer(
+                                                           context.getSymbolTable(),
+                                                           model,
+                                                           tsPropertyModel,
+                                                           deserializer));
     }
 
     private boolean isHierarchyRoot(Class<?> type) {
@@ -143,15 +161,35 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                      TsPropertyModel tsPropertyModel,
                                                      CompositeJsonTypeResolver<?> resolver) {
         TsArrowFunction emptyToObject = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
-            new TsType.ReferenceType(new Symbol("Object"))));
+                new TsType.ReferenceType(new Symbol("Object"))));
         TsStringLiteral property = new TsStringLiteral(resolver.getTypePropertyName());
         TsArrayLiteral subTypes = new TsArrayLiteral(getSubtypes(symbolTable, model, resolver));
         DiscriminatorValueTsObjectLiteral discriminatorValue = new DiscriminatorValueTsObjectLiteral(
-            new TsPropertyDefinition("property", property),
-            new TsPropertyDefinition("subTypes",
-                                     subTypes));
+                new TsPropertyDefinition("property", property),
+                new TsPropertyDefinition("subTypes",
+                                         subTypes));
         DiscriminatorTsObjectLiteral discriminator = new DiscriminatorTsObjectLiteral(
-            new TsPropertyDefinition("discriminator", discriminatorValue));
+                new TsPropertyDefinition("discriminator", discriminatorValue));
+        List<TsExpression> arguments = Stream.of(emptyToObject, discriminator).collect(Collectors.toList());
+        return Stream.concat(tsPropertyModel.getDecorators().stream(),
+                             Stream.of(new TsDecorator(TYPE, arguments)))
+                     .collect(Collectors.toList());
+    }
+
+    private List<TsDecorator> getHierarchyDecorators(SymbolTable symbolTable,
+                                                     TsBeanModel model,
+                                                     TsPropertyModel tsPropertyModel,
+                                                     SealedJsonHierarchiesTypeResolver resolver) {
+        TsArrowFunction emptyToObject = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
+                new TsType.ReferenceType(new Symbol("Object"))));
+        TsStringLiteral property = new TsStringLiteral(resolver.getTypePropertyName());
+        TsArrayLiteral subTypes = new TsArrayLiteral(getSubtypes(symbolTable, model, resolver));
+        DiscriminatorValueTsObjectLiteral discriminatorValue = new DiscriminatorValueTsObjectLiteral(
+                new TsPropertyDefinition("property", property),
+                new TsPropertyDefinition("subTypes",
+                                         subTypes));
+        DiscriminatorTsObjectLiteral discriminator = new DiscriminatorTsObjectLiteral(
+                new TsPropertyDefinition("discriminator", discriminatorValue));
         List<TsExpression> arguments = Stream.of(emptyToObject, discriminator).collect(Collectors.toList());
         return Stream.concat(tsPropertyModel.getDecorators().stream(),
                              Stream.of(new TsDecorator(TYPE, arguments)))
@@ -163,15 +201,15 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                                      TsPropertyModel tsPropertyModel,
                                                                      DynamicHierarchyDeserializer<?> deserializer) {
         TsArrowFunction emptyToObject = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
-            new TsType.ReferenceType(new Symbol("Object"))));
+                new TsType.ReferenceType(new Symbol("Object"))));
         TsStringLiteral property = new TsStringLiteral(deserializer.getJsonValuePropertyName());
         TsArrayLiteral subTypes = new TsArrayLiteral(getSubtypes(symbolTable, model, deserializer));
         DiscriminatorValueTsObjectLiteral discriminatorValue = new DiscriminatorValueTsObjectLiteral(
-            new TsPropertyDefinition("property", property),
-            new TsPropertyDefinition("subTypes",
-                                     subTypes));
+                new TsPropertyDefinition("property", property),
+                new TsPropertyDefinition("subTypes",
+                                         subTypes));
         DiscriminatorTsObjectLiteral discriminator = new DiscriminatorTsObjectLiteral(
-            new TsPropertyDefinition("discriminator", discriminatorValue));
+                new TsPropertyDefinition("discriminator", discriminatorValue));
         List<TsExpression> arguments = Stream.of(emptyToObject, discriminator).collect(Collectors.toList());
         return Stream.concat(tsPropertyModel.getDecorators().stream(),
                              Stream.of(new TsDecorator(TYPE, arguments)))
@@ -183,11 +221,11 @@ public class ClassTransformerDecoratorExtension extends Extension {
                                                         Class<?> type) {
 
         TsArrowFunction emptyToTypeName = new TsArrowFunction(Collections.emptyList(), new TsTypeReferenceExpression(
-            new TsType.ReferenceType(Symbols.resolve(symbolTable, type))));
+                new TsType.ReferenceType(Symbols.resolve(symbolTable, type))));
 
         Stream<TsDecorator> typeDecoratorStream = shouldNotBeDecorated(type) ?
-            Stream.empty() :
-            Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName)));
+                Stream.empty() :
+                Stream.of(new TsDecorator(TYPE, Collections.singletonList(emptyToTypeName)));
 
         return Stream.concat(tsPropertyModel.getDecorators().stream(), typeDecoratorStream)
                      .collect(Collectors.toList());
@@ -201,12 +239,23 @@ public class ClassTransformerDecoratorExtension extends Extension {
         appendToParentToChildren(model.getOrigin(), subtypes.stream().map(NamedType::getType));
         return subtypes.stream()
                        .map(type -> new TsObjectLiteral(
-                           new TsPropertyDefinition("value",
-                                                    new TsTypeReferenceExpression(
-                                                        new TsType.ReferenceType(
-                                                            Symbols.resolve(symbolTable, type.getType())))),
-                           new TsPropertyDefinition("name", new TsEnumLiteral(Symbols.resolve(symbolTable, resolver.getType()), type.getName()))))
+                               new TsPropertyDefinition("value",
+                                                        new TsTypeReferenceExpression(
+                                                                new TsType.ReferenceType(
+                                                                        Symbols.resolve(symbolTable, type.getType())))),
+                               new TsPropertyDefinition("name", new TsEnumLiteral(
+                                       Symbols.resolve(symbolTable, resolver.getType()), type.getName()))))
                        .collect(Collectors.toList());
+    }
+
+    private List<TsExpression> getSubtypes(SymbolTable symbolTable,
+                                           TsBeanModel model,
+                                           SealedJsonHierarchiesTypeResolver resolver) {
+        return resolver.getTypeValueToResolver()
+                       .values()
+                       .stream()
+                       .flatMap(simpleResolver -> getSubtypes(symbolTable, model, simpleResolver).stream())
+                       .toList();
     }
 
     private List<TsExpression> getSubtypes(SymbolTable symbolTable,
@@ -217,11 +266,11 @@ public class ClassTransformerDecoratorExtension extends Extension {
         appendToParentToChildren(model.getOrigin(), subtypes.stream().map(NamedType::getType));
         return subtypes.stream()
                        .map(type -> new TsObjectLiteral(
-                           new TsPropertyDefinition("value",
-                                                    new TsTypeReferenceExpression(
-                                                        new TsType.ReferenceType(
-                                                            Symbols.resolve(symbolTable, type.getType())))),
-                           new TsPropertyDefinition("name", new TsStringLiteral(type.getName()))))
+                               new TsPropertyDefinition("value",
+                                                        new TsTypeReferenceExpression(
+                                                                new TsType.ReferenceType(
+                                                                        Symbols.resolve(symbolTable, type.getType())))),
+                               new TsPropertyDefinition("name", new TsStringLiteral(type.getName()))))
                        .collect(Collectors.toList());
     }
 
@@ -230,7 +279,8 @@ public class ClassTransformerDecoratorExtension extends Extension {
     }
 
     private boolean isTsTypeResolutionUnsupported(Class<?> type) {
-        return type.isPrimitive() || type.isInterface() || type.isEnum() || PresentPropertyJsonHierarchy.class.isAssignableFrom(type);
+        return type.isPrimitive() || type.isInterface() || type.isEnum() || PresentPropertyJsonHierarchy.class.isAssignableFrom(
+                type);
     }
 
     private boolean isBuiltInType(Class<?> type) {
@@ -290,5 +340,4 @@ public class ClassTransformerDecoratorExtension extends Extension {
 
         return Optional.empty();
     }
-
 }

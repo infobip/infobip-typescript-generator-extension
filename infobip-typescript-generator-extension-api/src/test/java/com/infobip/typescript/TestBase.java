@@ -1,11 +1,9 @@
 package com.infobip.typescript;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import cz.habarta.typescript.generator.*;
 import cz.habarta.typescript.generator.emitter.EmitterExtension;
+
+import java.util.*;
 
 public abstract class TestBase {
 
@@ -28,7 +26,7 @@ public abstract class TestBase {
         settings.importDeclarations = importDeclarations;
         settings.extensions.add(extension);
         settings.setExcludeFilter(Collections.emptyList(),
-                                  Arrays.asList("**SimpleJsonHierarchy", "**PresentPropertyJsonHierarchy"));
+                                  Arrays.asList("**SealedSimpleJsonHierarchies", "**SimpleJsonHierarchy", "**PresentPropertyJsonHierarchy"));
         settings.newline = "\n";
         this.generator = new OrderedTypescriptGenerator(new TypeScriptGenerator(settings));
     }

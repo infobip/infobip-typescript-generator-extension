@@ -1,25 +1,20 @@
 package com.infobip.typescript.type;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.infobip.jackson.*;
 import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
 import com.infobip.typescript.TypeScriptImportResolver;
 import com.infobip.typescript.infrastructure.Symbols;
-import cz.habarta.typescript.generator.Extension;
-import cz.habarta.typescript.generator.Settings;
-import cz.habarta.typescript.generator.TsType;
+import cz.habarta.typescript.generator.*;
 import cz.habarta.typescript.generator.compiler.ModelCompiler;
 import cz.habarta.typescript.generator.compiler.TsModelTransformer;
-import cz.habarta.typescript.generator.emitter.EmitterExtensionFeatures;
-import cz.habarta.typescript.generator.emitter.TsBeanModel;
-import cz.habarta.typescript.generator.emitter.TsModel;
-import cz.habarta.typescript.generator.emitter.TsPropertyModel;
+import cz.habarta.typescript.generator.emitter.*;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class JsonTypeExtension extends Extension implements TypeScriptImportResolver {
 
@@ -303,7 +298,10 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
 
     private Stream<JsonTypeResolver> getAllJsonTypeResolvers(Class<?> type) {
         return getInterfaces(type).stream()
-                                  .filter(t -> !t.equals(SimpleJsonHierarchy.class) && !t.equals(PresentPropertyJsonHierarchy.class))
+                                  .filter(t -> !t.equals(SimpleJsonHierarchy.class)
+                                          && !t.equals(PresentPropertyJsonHierarchy.class)
+                                          && !t.equals(SealedSimpleJsonHierarchies.class)
+                                  )
                                   .flatMap(t -> factory.create(t).stream());
     }
 

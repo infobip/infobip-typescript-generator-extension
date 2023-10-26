@@ -254,6 +254,7 @@ public class ClassTransformerDecoratorExtension extends Extension {
         return resolver.getTypeValueToResolver()
                        .values()
                        .stream()
+                       .distinct()
                        .flatMap(simpleResolver -> getSubtypes(symbolTable, model, simpleResolver).stream())
                        .toList();
     }

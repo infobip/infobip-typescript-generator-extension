@@ -28,8 +28,10 @@ class SealedHierarchiesTransformerDecoratorExtensionTest extends TestBase {
         String actual = whenGenerate(Input.from(Animal.class,
                                                 Mammal.class,
                                                 Human.class,
+                                                Seal.class,
                                                 Bird.class,
                                                 Parrot.class,
+                                                Kiwi.class,
                                                 AnimalContainer.class,
                                                 MammalContainer.class,
                                                 BirdContainer.class));
@@ -38,63 +40,78 @@ class SealedHierarchiesTransformerDecoratorExtensionTest extends TestBase {
         then(fixNewlines(actual)).isEqualTo(
                 """
                         import { Type } from 'class-transformer';
-
+                                                
                         export enum MammalType {
                             HUMAN = "HUMAN",
+                            SEAL = "SEAL",
                         }
-
+                                                
                         export enum BirdType {
                             PARROT = "PARROT",
+                            KIWI = "KIWI",
                         }
-
+                                                
                         export interface Animal {
                         }
-
+                                                
                         export interface Mammal extends Animal {
                             type: MammalType;
                         }
-
+                                                
                         export class Human implements Mammal {
                             type: MammalType;
                             name: string;
                         }
-
+                                                
+                        export class Seal implements Mammal {
+                            type: MammalType;
+                            name: string;
+                        }
+                                                
                         export interface Bird extends Animal {
                             type: BirdType;
                         }
-
+                                                
                         export class Parrot implements Bird {
                             type: BirdType;
                         }
-
+                                                
+                        export class Kiwi implements Bird {
+                            type: BirdType;
+                        }
+                                                
                         export class AnimalContainer {
                             @Type(() => Object, {
                                 discriminator: {
                                     property: "type", subTypes: [
+                                        { value: Parrot, name: BirdType.PARROT },
+                                        { value: Kiwi, name: BirdType.KIWI },
                                         { value: Human, name: MammalType.HUMAN },
-                                        { value: Parrot, name: BirdType.PARROT }
+                                        { value: Seal, name: MammalType.SEAL }
                                     ]
                                 }
                             })
                             animal: Animal;
                         }
-
+                                                
                         export class MammalContainer {
                             @Type(() => Object, {
                                 discriminator: {
                                     property: "type", subTypes: [
-                                        { value: Human, name: MammalType.HUMAN }
+                                        { value: Human, name: MammalType.HUMAN },
+                                        { value: Seal, name: MammalType.SEAL }
                                     ]
                                 }
                             })
                             mammal: Mammal;
                         }
-
+                                                
                         export class BirdContainer {
                             @Type(() => Object, {
                                 discriminator: {
                                     property: "type", subTypes: [
-                                        { value: Parrot, name: BirdType.PARROT }
+                                        { value: Parrot, name: BirdType.PARROT },
+                                        { value: Kiwi, name: BirdType.KIWI }
                                     ]
                                 }
                             })
@@ -115,7 +132,8 @@ class SealedHierarchiesTransformerDecoratorExtensionTest extends TestBase {
     }
 
     enum BirdType implements TypeProvider<Bird> {
-        PARROT(Parrot.class);
+        PARROT(Parrot.class),
+        KIWI(Kiwi.class);
 
         private final Class<? extends Bird> type;
 
@@ -137,12 +155,21 @@ class SealedHierarchiesTransformerDecoratorExtensionTest extends TestBase {
         }
     }
 
+    record Kiwi() implements Bird {
+
+        @Override
+        public BirdType getType() {
+            return BirdType.KIWI;
+        }
+    }
+
     sealed interface Mammal extends Animal, SimpleJsonHierarchy<MammalType> {
 
     }
 
     enum MammalType implements TypeProvider<Mammal> {
-        HUMAN(Human.class);
+        HUMAN(Human.class),
+        SEAL(Seal.class);
 
         private final Class<? extends Mammal> type;
 
@@ -161,6 +188,14 @@ class SealedHierarchiesTransformerDecoratorExtensionTest extends TestBase {
         @Override
         public MammalType getType() {
             return MammalType.HUMAN;
+        }
+    }
+
+    record Seal(String name) implements Mammal {
+
+        @Override
+        public MammalType getType() {
+            return MammalType.SEAL;
         }
     }
 

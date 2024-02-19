@@ -1,12 +1,12 @@
 package com.infobip.typescript.showcase.hierarchy;
 
-import static org.assertj.core.api.BDDAssertions.then;
+import com.infobip.typescript.showcase.TestBase;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 
-import com.infobip.typescript.showcase.TestBase;
-import org.junit.jupiter.api.Test;
+import static org.assertj.core.api.BDDAssertions.then;
 
 class HierarchyTypeScriptFileGeneratorTest extends TestBase {
 
@@ -19,7 +19,6 @@ class HierarchyTypeScriptFileGeneratorTest extends TestBase {
         then(actual).startsWith("""
                                     /* tslint:disable */
                                     /* eslint-disable */
-                                    import 'reflect-metadata';
                                     import { Type } from 'class-transformer';
                                     import { IsDefined, IsNotEmpty } from 'class-validator';
                                     import { CommonValidationMessages } from './CommonValidationMessages';

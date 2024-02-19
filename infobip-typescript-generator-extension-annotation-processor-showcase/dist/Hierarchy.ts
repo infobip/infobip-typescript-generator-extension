@@ -1,6 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-import 'reflect-metadata';
 import { Type } from 'class-transformer';
 import { IsDefined, IsNotEmpty } from 'class-validator';
 import { CommonValidationMessages } from './CommonValidationMessages';

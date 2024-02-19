@@ -45,8 +45,7 @@ public class JsonTypeExtension extends Extension implements TypeScriptImportReso
     @Override
     public List<String> resolve(String typeScript) {
         if (typeScript.contains("@Type(")) {
-            return Arrays.asList("import 'reflect-metadata';",
-                                 "import { Type } from 'class-transformer';");
+            return Arrays.asList("import { Type } from 'class-transformer';");
         }
 
         return Collections.emptyList();

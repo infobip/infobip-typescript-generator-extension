@@ -10,7 +10,6 @@ import cz.habarta.typescript.generator.*;
 import cz.habarta.typescript.generator.emitter.EmitterExtension;
 import cz.habarta.typescript.generator.emitter.TsModel;
 import cz.habarta.typescript.generator.parser.Model;
-import cz.habarta.typescript.generator.util.Utils;
 
 import java.io.*;
 import java.lang.annotation.Annotation;
@@ -37,8 +36,6 @@ public abstract class TypeScriptFileGenerator {
     }
 
     public void generate() {
-        var objectMapper = Utils.getObjectMapper();
-        objectMapper.findAndRegisterModules();
         List<EmitterExtension> extensions = createExtensions();
         Settings settings = createSettings(extensions);
         OrderedTypescriptGenerator generator = createGenerator(settings);

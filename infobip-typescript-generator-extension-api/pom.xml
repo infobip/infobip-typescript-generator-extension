@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>infobip-typescript-generator-extension-api</artifactId>
+    <name>infobip-typescript-generator-extension-api</name>
 
     <properties>
         <!-- DEPENDENCY VERSIONS -->

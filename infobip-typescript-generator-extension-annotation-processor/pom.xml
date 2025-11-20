@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>infobip-typescript-generator-extension-annotation-processor</artifactId>
+    <name>infobip-typescript-generator-extension-annotation-processor</name>
 
     <properties>
         <!-- DEPENDENCY VERSIONS -->

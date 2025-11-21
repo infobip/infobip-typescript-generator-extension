@@ -9,6 +9,7 @@
     </parent>
 
     <artifactId>infobip-typescript-generator-extension-model-showcase</artifactId>
+    <name>infobip-typescript-generator-extension-model-showcase</name>
 
     <properties>
         <infobip-bean-validation.version>3.0.0</infobip-bean-validation.version>

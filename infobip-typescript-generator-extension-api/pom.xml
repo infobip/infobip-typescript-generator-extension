@@ -14,7 +14,7 @@
     <properties>
         <!-- DEPENDENCY VERSIONS -->
         <typescript-generator-core.version>3.2.1263</typescript-generator-core.version>
-        <infobip-jackson-extension.version>4.0.0-RC2</infobip-jackson-extension.version>
+        <infobip-jackson-extension.version>4.0.0</infobip-jackson-extension.version>
     </properties>
 
     <dependencies>

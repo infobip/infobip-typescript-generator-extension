@@ -1,7 +1,7 @@
 # Infobip TypeScript Generator Extension
 
 [![](https://github.com/infobip/infobip-typescript-generator-extension/workflows/maven/badge.svg)](https://github.com/infobip/infobip-typescript-generator-extension/actions?query=workflow%3Amaven)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.infobip/infobip-typescript-generator-extension/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.infobip/infobip-typescript-generator-extension)
+[![Maven Central](https://maven-badges.sml.io/sonatype-central/com.infobip/infobip-typescript-generator-extension/badge.svg)](https://maven-badges.sml.io/sonatype-central/com.infobip/infobip-typescript-generator-extension)
 [![Coverage Status](https://coveralls.io/repos/github/infobip/infobip-typescript-generator-extension/badge.svg?branch=main)](https://coveralls.io/github/infobip/infobip-typescript-generator-extension?branch=main)
 [![Known Vulnerabilities](https://snyk.io/test/github/infobip/infobip-typescript-generator-extension/badge.svg)](https://snyk.io/test/github/infobip/infobip-typescript-generator-extension)
 

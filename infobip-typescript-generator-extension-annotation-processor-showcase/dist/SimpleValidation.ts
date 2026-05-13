@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-import { IsDefined, IsNotEmpty, MaxLength, MinLength, ValidateNested } from 'class-validator';
+import { IsDefined, IsNotEmpty, MinLength, ValidateNested, MaxLength } from 'class-validator';
 import { CommonValidationMessages } from './CommonValidationMessages';
 import { SimpleCustomValidation } from './validators/SimpleCustomValidation';
 

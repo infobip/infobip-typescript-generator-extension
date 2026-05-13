@@ -7,8 +7,7 @@ import com.infobip.typescript.transformer.ClassTransformerDecoratorExtension;
 import com.infobip.typescript.type.JsonTypeExtension;
 import com.infobip.typescript.validation.ClassValidatorDecoratorExtension;
 import cz.habarta.typescript.generator.*;
-import cz.habarta.typescript.generator.emitter.EmitterExtension;
-import cz.habarta.typescript.generator.emitter.TsModel;
+import cz.habarta.typescript.generator.emitter.*;
 import cz.habarta.typescript.generator.parser.Model;
 
 import java.io.*;
@@ -188,7 +187,8 @@ public abstract class TypeScriptFileGenerator {
         final Model model = orderedGenerator.generator.getModelParser().parseModel(getInput().getSourceTypes());
         final TsModel tsModel = orderedGenerator.generator.getModelCompiler().javaToTypeScript(model);
         final Output out = Output.to(file);
-        orderedGenerator.generator.getInfoJsonEmitter().emit(tsModel, out.getWriter(), out.getName(), out.shouldCloseWriter());
+        new InfoJsonEmitter(out.getWriter(), out.getName())
+                .emit(tsModel, out.shouldCloseWriter());
     }
 
     private List<Class<? extends Annotation>> getCustomAnnotations() {

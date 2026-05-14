@@ -152,8 +152,7 @@ public abstract class TypeScriptFileGenerator {
     }
 
     protected OrderedTypescriptGenerator createGenerator(Settings settings) {
-        TypeScriptGenerator generator = new TypeScriptGenerator(settings);
-        return new OrderedTypescriptGenerator(generator);
+        return new OrderedTypescriptGenerator(settings);
     }
 
     protected Settings customizeSettings(Settings settings) {

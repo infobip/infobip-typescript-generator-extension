@@ -28,7 +28,7 @@ public abstract class TestBase {
         settings.setExcludeFilter(Collections.emptyList(),
                                   Arrays.asList("**SealedSimpleJsonHierarchies", "**SimpleJsonHierarchy", "**PresentPropertyJsonHierarchy"));
         settings.newline = "\n";
-        this.generator = new OrderedTypescriptGenerator(new TypeScriptGenerator(settings));
+        this.generator = new OrderedTypescriptGenerator(settings);
     }
 
     protected String whenGenerate(Input input) {

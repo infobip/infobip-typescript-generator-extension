@@ -136,7 +136,7 @@ public abstract class TypeScriptFileGenerator {
     protected Settings createSettings(List<EmitterExtension> extensions) {
         Settings settings = new Settings();
         settings.outputKind = TypeScriptOutputKind.module;
-        settings.jsonLibrary = JsonLibrary.jackson2;
+        settings.jsonLibrary = JsonLibrary.jackson3;
         settings.mapEnum = EnumMapping.asEnum;
         settings.nonConstEnums = true;
         settings.mapClasses = ClassMapping.asClasses;

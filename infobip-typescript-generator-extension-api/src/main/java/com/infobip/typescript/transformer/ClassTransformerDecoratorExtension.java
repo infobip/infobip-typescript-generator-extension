@@ -1,6 +1,5 @@
 package com.infobip.typescript.transformer;
 
-import com.fasterxml.jackson.databind.jsontype.NamedType;
 import com.infobip.jackson.*;
 import com.infobip.jackson.dynamic.DynamicHierarchyDeserializer;
 import com.infobip.typescript.infrastructure.Symbols;
@@ -8,6 +7,7 @@ import cz.habarta.typescript.generator.Extension;
 import cz.habarta.typescript.generator.TsType;
 import cz.habarta.typescript.generator.compiler.*;
 import cz.habarta.typescript.generator.emitter.*;
+import tools.jackson.databind.jsontype.NamedType;
 
 import java.lang.reflect.*;
 import java.util.*;

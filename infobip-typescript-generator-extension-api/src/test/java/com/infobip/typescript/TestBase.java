@@ -14,7 +14,7 @@ public abstract class TestBase {
     }
 
     public TestBase(EmitterExtension extension, List<String> importDeclarations, Settings settings) {
-        settings.jsonLibrary = JsonLibrary.jackson2;
+        settings.jsonLibrary = JsonLibrary.jackson3;
         settings.mapEnum = EnumMapping.asEnum;
         settings.nonConstEnums = true;
         settings.mapClasses = ClassMapping.asClasses;
@@ -28,7 +28,7 @@ public abstract class TestBase {
         settings.setExcludeFilter(Collections.emptyList(),
                                   Arrays.asList("**SealedSimpleJsonHierarchies", "**SimpleJsonHierarchy", "**PresentPropertyJsonHierarchy"));
         settings.newline = "\n";
-        this.generator = new OrderedTypescriptGenerator(new TypeScriptGenerator(settings));
+        this.generator = new OrderedTypescriptGenerator(settings);
     }
 
     protected String whenGenerate(Input input) {
